@@ -80,7 +80,6 @@ export default function VendorOnboardingSuccessPage() {
           </Button>
 
           <Button
-            variant="outline"
             className="w-full"
             onClick={() => navigate("/")}
           >

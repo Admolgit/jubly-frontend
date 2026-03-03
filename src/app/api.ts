@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { UnknownAction } from "@reduxjs/toolkit";
 import {
   createApi,
   fetchBaseQuery,
   type BaseQueryApi,
   type FetchArgs,
 } from "@reduxjs/toolkit/query/react";
-import { REHYDRATE } from "redux-persist";
 
 // ✅ Use Vite env with fallback
 export const BASE = import.meta.env.VITE_API_URL || "http://localhost:4001/api/v1";
@@ -28,7 +28,7 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithErrorHandling = async (
   args: string | FetchArgs,
   api: BaseQueryApi,
-  extraOptions: {},
+  extraOptions: object,
 ) => {
   const result = await baseQuery(args, api, extraOptions);
 
@@ -60,9 +60,9 @@ export const api = createApi({
   endpoints: () => ({}),
 
   // Persist rehydration support
-  extractRehydrationInfo(action: { type: any; payload: any }, { reducerPath }) {
-    if (action.type === REHYDRATE) {
-      return action.payload?.[reducerPath];
+  extractRehydrationInfo(action: UnknownAction, { reducerPath }) {
+    if (action.type === "persist/REHYDRATE") {
+      return (action as any).payload?.[reducerPath];
     }
   },
 });
