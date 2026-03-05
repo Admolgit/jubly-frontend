@@ -1,5 +1,13 @@
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "../animations";
+import g1 from "../../assets/gallery-1.jpg";
+import g2 from "../../assets/gallery-2.jpg";
+import g3 from "../../assets/gallery-3.jpg";
+import g4 from "../../assets/gallery-4.jpg";
+import GalleryCarousel from "./GalleryCarousel";
+
+const images = [g1, g2, g3, g4];
+
 
 const Gallery = () => {
   return (
@@ -13,21 +21,12 @@ const Gallery = () => {
       >
         <motion.h2
           variants={fadeUp}
-          className="text-2xl font-semibold mb-10 text-center text-purple-700"
+          className="text-sm tracking-widest uppercase mb-10 text-center text-purple-700"
         >
           Gallery
         </motion.h2>
 
-        <div className="grid md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <motion.img
-              key={i}
-              variants={fadeUp}
-              src={`/images/gallery-${i}.jpg`}
-              className="rounded-lg object-cover h-48 w-full"
-            />
-          ))}
-        </div>
+        <GalleryCarousel images={images} />
       </motion.div>
     </section>
   );

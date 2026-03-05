@@ -211,7 +211,7 @@ export default function RegisterPage() {
             {isLoading ? "Registering..." : "Register"}
           </Button>
         </form>
-        <div className="max-w-md">
+        <div className="max-w-6l ">
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border"></div>

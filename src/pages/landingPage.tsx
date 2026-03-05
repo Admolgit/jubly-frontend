@@ -6,7 +6,7 @@ import Hero from "../components/landing-page/Hero";
 import Journey from "../components/landing-page/Journey";
 import Navbar from "../components/landing-page/Navbar";
 import Recommended from "../components/landing-page/Recommended";
-import Testimonials from "../components/landing-page/Testimonials";
+import TestimonialSection from "../components/landing-page/Testimonials";
 import Values from "../components/landing-page/Values";
 
 const LandingPage = () => {
@@ -17,7 +17,7 @@ const LandingPage = () => {
       <Categories />
       <Gallery />
       <Recommended />
-      <Testimonials />
+      <TestimonialSection />
       <Values />
       <Journey />
       <Contact />
