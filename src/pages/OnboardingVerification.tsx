@@ -72,18 +72,21 @@ export default function VendorOnboardingSuccessPage() {
             </p>
           </div>
 
-          <Button
+          {/* <Button
             className="w-full mb-3"
             onClick={() => navigate("/dashboard")}
           >
             Go to Dashboard
-          </Button>
+          </Button> */}
 
           <Button
             className="w-full"
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/login");
+              localStorage.clear();
+            }}
           >
-            Back to Home
+            Back to Login
           </Button>
         </div>
       </div>

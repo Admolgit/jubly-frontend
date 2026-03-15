@@ -1,24 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Navigate, Outlet } from "react-router-dom";
-// import { useSelector } from "react-redux";
-
-// const ProtectedRoute = () => {
-//   const token = useSelector(
-//     (state: { auth: { token: string } }) => state.auth.token,
-//   );
-
-//   return token ? <Outlet /> : <Navigate to="/login" replace />;
-// };
-
-// export default ProtectedRoute;
-
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function ProtectedRoute() {
-  const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
+  const token = useSelector(
+    (state: { auth: { token: string } }) => state.auth.token,
+  );
+  const user = useSelector(
+    (state: { vendor: { vendor: any } }) => state.vendor.vendor,
+  );
 
-  if (!user) return <Navigate to="/login" replace />;
+  console.log({ user });
+
+  if (!token || user && user?.kycStatus !== "APPROVED")
+    return <Navigate to="/login" replace />;
 
   return <Outlet />;
 }

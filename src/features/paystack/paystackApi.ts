@@ -15,7 +15,14 @@ export const paystackApi = api.injectEndpoints({
         method: "get",
       }),
     }),
+
+    verifyTransaction: builder.mutation({
+      query: (data) => ({
+        url: `/paystack/verify-payment/${data.reference}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetBankListsQuery, useResolveBankQuery } = paystackApi;
+export const { useGetBankListsQuery, useResolveBankQuery, useVerifyTransactionMutation } = paystackApi;

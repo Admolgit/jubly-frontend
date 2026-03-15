@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/VendorOnboardingStepper.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { Check } from "lucide-react";
 import { CustomSelect } from "./ui/Select";
 import Input from "./ui/Input";
 import {
@@ -11,9 +12,11 @@ import {
 } from "../features/paystack/paystackApi";
 import toast from "react-hot-toast";
 import { useDebounce } from "use-debounce";
-import { useCompleteVendorOnboardingMutation } from "../features/vendor/vendorApi";
+import {
+  useCompleteVendorOnboardingMutation,
+  useCreateVendorProfieMutation,
+} from "../features/vendor/vendorApi";
 import { useNavigate } from "react-router-dom";
-import { store } from "../app/store";
 import { useDispatch } from "react-redux";
 import { setVendorCredentials } from "../features/vendor/vendorSlice";
 
@@ -50,11 +53,14 @@ export const VendorOnboardingStepper = () => {
     completeVendorOnboarding,
     { isLoading: completeVendorOnboardingIsLoading },
   ] = useCompleteVendorOnboardingMutation();
-  
+  const [createVendorProfile] =
+    useCreateVendorProfieMutation();
+
   const [step, setStep] = useState(0);
   const {
     register,
     control,
+    getValues,
     handleSubmit,
     watch,
     trigger,
@@ -74,7 +80,7 @@ export const VendorOnboardingStepper = () => {
     name: "services",
   });
 
-  console.log("REDUX", store.getState());
+  console.log("REDUX", { step });
 
   const watchProfileImage = watch("profileImage");
   const watchPortfolioImages = watch("portfolioImages");
@@ -101,10 +107,6 @@ export const VendorOnboardingStepper = () => {
     },
   );
 
-  if (!isBankResolve && isBankResolveError) {
-    toast.error("Pasytack error");
-  }
-
   const stepFields: Record<number, (keyof OnboardingForm)[]> = {
     0: ["businessName", "category", "city", "state", "country"],
     1: ["accountNumber", "settlementBank"],
@@ -112,10 +114,35 @@ export const VendorOnboardingStepper = () => {
 
   const nextStep = async () => {
     const fieldsToValidate = stepFields[step];
+
     if (fieldsToValidate) {
       const isValid = await trigger(fieldsToValidate);
       if (!isValid) return;
     }
+
+    const values = getValues();
+    console.log({ values });
+
+    if (step === 0) {
+      try {
+        const res = await createVendorProfile({
+          businessName: values.businessName,
+          category: values.category,
+          city: values.city,
+          state: values.state,
+          country: values.country,
+          bio: values.bio,
+        }).unwrap();
+
+        if (res.status === 201) {
+          toast.success("Vendor details created.");
+        }
+      } catch (error) {
+        console.error("Vendor profile creation failed:", error);
+        return;
+      }
+    }
+
     setStep((prev) => prev + 1);
   };
 
@@ -228,25 +255,68 @@ export const VendorOnboardingStepper = () => {
     }
   };
 
+  useEffect(() => {
+    if (isBankResolveError) {
+      toast.error("Paystack resolve failed");
+    }
+  }, [isBankResolveError]);
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Step Header */}
       <div className="sticky top-0 z-30 bg-white border-b">
-        <div className="flex justify-between max-w-4xl mx-auto px-6 py-4">
-          {steps.map((s, idx) => (
-            <div
-              key={idx}
-              className={`flex-1 text-center text-sm font-semibold transition-colors ${
-                idx === step
-                  ? "text-blue-600"
-                  : idx < step
-                    ? "text-green-600"
-                    : "text-gray-400"
-              }`}
-            >
-              {s}
-            </div>
-          ))}
+        <div className="w-full mb-8 p-6">
+          <div className="flex items-center justify-between">
+            {steps.map((label, index) => {
+              const isCompleted = index < step;
+              const isActive = index === step;
+
+              return (
+                <div
+                  key={index}
+                  className="flex-1 flex flex-col items-center relative"
+                >
+                  {/* Line */}
+                  {index !== steps.length - 1 && (
+                    <div
+                      className={`absolute top-4 left-1/2 w-full h-[2px] 
+                    ${index < step ? "bg-green-500" : "bg-gray-200"}`}
+                    />
+                  )}
+
+                  {/* Circle */}
+                  <div
+                    className={`
+                    z-10 flex items-center justify-center
+                    w-8 h-8 rounded-full border-2
+                    ${
+                      isCompleted
+                        ? "bg-green-500 border-green-500 text-white"
+                        : isActive
+                          ? "border-blue-600 text-blue-600"
+                          : "border-gray-300 text-gray-300"
+                    }
+                  `}
+                  >
+                    {isCompleted ? <Check size={16} /> : index + 1}
+                  </div>
+
+                  {/* Label */}
+                  <p
+                    className={`mt-2 text-sm text-center ${
+                      isActive
+                        ? "text-blue-600 font-semibold"
+                        : isCompleted
+                          ? "text-green-600"
+                          : "text-gray-400"
+                    }`}
+                  >
+                    {label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -277,8 +347,16 @@ export const VendorOnboardingStepper = () => {
                         { label: "Makeup Artist", value: "Makeup Artist" },
                         { label: "Photographer", value: "Photographer" },
                         {
-                          label: "Fashion Designer",
-                          value: "Fashion Designer",
+                          label: "Hair Beautician",
+                          value: "Hair Beautician",
+                        },
+                        {
+                          label: "Nails Beautician",
+                          value: "Nails Beautician",
+                        },
+                        {
+                          label: "Barbing",
+                          value: "Barbing",
                         },
                       ]}
                       value={field.value}
@@ -488,7 +566,11 @@ export const VendorOnboardingStepper = () => {
                   className="w-full"
                 />
               </div>
-              <input type="file" {...register("documentFrontUrl")} />
+              <Input
+                label="Document"
+                type="file"
+                {...register("documentFrontUrl")}
+              />
               {(documentFrontUrl?.length as number) > 0 && (
                 <img
                   src={URL.createObjectURL((documentFrontUrl as any)[0])}
@@ -504,7 +586,12 @@ export const VendorOnboardingStepper = () => {
         {step === 3 && (
           <div className="space-y-4 p-4 bg-white shadow rounded">
             <h2 className="text-xl font-semibold">Portfolio Images</h2>
-            <input type="file" {...register("portfolioImages")} multiple />
+            <Input
+              label=""
+              type="file"
+              {...register("portfolioImages")}
+              multiple
+            />
             {(watchPortfolioImages?.length as number) > 0 && (
               <div className="mt-2 flex space-x-2 overflow-x-auto">
                 {Array.from(watchPortfolioImages as any).map((file, idx) => (
@@ -530,6 +617,7 @@ export const VendorOnboardingStepper = () => {
               Previous
             </button>
           )}
+
           {step < steps.length - 1 && (
             <button
               type="button"
@@ -539,13 +627,16 @@ export const VendorOnboardingStepper = () => {
               Next
             </button>
           )}
+
           {step === steps.length - 1 && (
             <button
               type="submit"
               className="px-4 py-2 bg-green-500 text-white rounded"
               disabled={completeVendorOnboardingIsLoading}
             >
-              {completeVendorOnboardingIsLoading ? "Onboarding..." : "Submit"}
+              {completeVendorOnboardingIsLoading
+                ? "Submitting..."
+                : "Finish Onboarding"}
             </button>
           )}
         </div>

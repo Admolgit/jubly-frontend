@@ -1,5 +1,4 @@
 import { api } from "../../app/api";
-import { setCredentials } from "./authSlice";
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,14 +8,17 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled;
-        dispatch(setCredentials(data));
-      },
     }),
     registerVendor: builder.mutation({
       query: (data) => ({
         url: "/auth/register",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    registerClient: builder.mutation({
+      query: (data) => ({
+        url: "/auth/client-register",
         method: "POST",
         body: data,
       }),
@@ -35,8 +37,20 @@ export const authApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    getPendingVendor: builder.mutation({
+      query: (userId) => ({
+        url: `/auth/pending-vendor/${userId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterVendorMutation, useVerifyOtpMutation, useResendOtpMutation } =
-  authApi;
+export const {
+  useLoginMutation,
+  useRegisterVendorMutation,
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+  useGetPendingVendorMutation,
+  useRegisterClientMutation,
+} = authApi;

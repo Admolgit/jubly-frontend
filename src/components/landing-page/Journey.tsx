@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { fadeUp } from "../animations";
+import ReceptionistImg from './../../assets/receptionists.jpg';
 
 const Journey = () => {
   return (
@@ -11,7 +12,7 @@ const Journey = () => {
           viewport={{ once: true }}
           variants={fadeUp}
         >
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-3xl font-bold mb-4">
             The start of the journey
           </h2>
           <p className="text-gray-600 mb-6">
@@ -32,7 +33,7 @@ const Journey = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <img src="/images/journey.jpg" className="rounded-lg shadow-lg" />
+          <img src={ReceptionistImg} className="rounded-lg shadow-lg" />
         </motion.div>
       </div>
     </section>

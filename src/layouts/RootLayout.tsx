@@ -1,16 +1,21 @@
-import { Outlet } from "react-router-dom";
-// import Navbar from "../components/partials/navbar";
-// import Footer from "../components/partials/footer";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import Navbar from "../components/landing-page/Navbar";
+import Footer from "../components/landing-page/Footer";
 
 export default function RootLayout() {
+  const token = useSelector(
+    (state: { auth: { token: string } }) => state.auth.token,
+  );
+
+  if (token) return <Navigate to="/dashboard" replace />;
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
-      {/* <Navbar /> */}
+      <Navbar />
       <main className="flex-grow p-2">
-      {/* <main className="flex-grow p-2 mt-[80px]"> */}
         <Outlet />
       </main>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

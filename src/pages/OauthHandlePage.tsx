@@ -64,7 +64,7 @@ export default function OAuthHandler() {
         "Successfully signed up via OAuth!, please complete your onboarding.",
       );
     }
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, dispatch]);
 
   return <p className="text-center text-primary">Signing you in…</p>;
 }
