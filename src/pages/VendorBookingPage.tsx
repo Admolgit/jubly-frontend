@@ -12,7 +12,7 @@ export default function VendorBookingPage() {
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_URi}/vendor/booking-vendor/${slug}`)
-      .then((res) => {
+      .then((res: any) => {
         setVendorDetails(res.data.data);
       });
   }, [slug]);
