@@ -56,10 +56,8 @@ export default function ServiceBookingPage() {
           <p className="text-sm text-gray-500">Secure booking</p>
         </div>
       </div>
-
-      {/* Main Layout */}
+      
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 p-6">
-        {/* LEFT SIDE — SERVICE DETAILS */}
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-2xl font-semibold">{service?.name}</h2>
@@ -82,8 +80,7 @@ export default function ServiceBookingPage() {
               </div>
             </div>
           </div>
-
-          {/* Trust Card */}
+          
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold mb-2">Why book here?</h3>
 
@@ -94,20 +91,17 @@ export default function ServiceBookingPage() {
             </ul>
           </div>
         </div>
-
-        {/* RIGHT SIDE — BOOKING PANEL */}
+        
         <div className="bg-white rounded-xl shadow p-6 sticky top-10 h-fit">
           <h2 className="text-xl font-semibold mb-5">Select Date & Time</h2>
-
-          {/* Date Picker */}
+          
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border w-full rounded-lg p-3 mb-6"
           />
-
-          {/* Time Slots */}
+          
           <div className="grid grid-cols-3 gap-3">
             {slotsIsLoading
               ? "Loading"
@@ -135,8 +129,6 @@ export default function ServiceBookingPage() {
                   );
                 })}
           </div>
-
-          {/* Continue Button */}
 
           <button
             disabled={!selectedSlot}
