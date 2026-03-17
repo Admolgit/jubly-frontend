@@ -21,6 +21,7 @@ import { Services } from "../components/vendor-dashboard/Service";
 import VendorBookingPage from "../pages/VendorBookingPage";
 import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";
+import SearchBookingPage from "../pages/SearchBookingPage";
 
 
 
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
       { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
       { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
       { path: "/verify-payment", element: <PaymentSuccessPage /> },
+      { path: "/booking", element: <SearchBookingPage /> },
     ],
   },
 

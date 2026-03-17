@@ -43,6 +43,12 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserById: builder.mutation({
+      query: (data) => ({
+        url: `/auth/user/${data.userId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -53,4 +59,5 @@ export const {
   useResendOtpMutation,
   useGetPendingVendorMutation,
   useRegisterClientMutation,
+  useGetUserByIdMutation,
 } = authApi;
