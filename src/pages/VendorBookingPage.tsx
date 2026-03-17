@@ -1,26 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import Footer from "../components/booking/Footer";
+import { useGetUserBySlugMutation } from "../features/vendor/vendorApi";
 
 export default function VendorBookingPage() {
   const slug = useParams().slug;
+  const [getUserBySlug, { isLoading }] = useGetUserBySlugMutation();
   const [vendorDetails, setVendorDetails] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URi}/vendor/booking-vendor/${slug}`)
-      .then((res: any) => {
-        setVendorDetails(res.data.data);
-      });
-  }, [slug]);
+    const fetchUser = async () => {
+      const res = await getUserBySlug({ slug }).unwrap();
+      if(res.status === 200) {
+        console.log({res})
+        setVendorDetails(res.data)
+      }
+    };
+    fetchUser();
+  }, [slug, getUserBySlug]);
 
   const vendor = vendorDetails?.vendor;
   const services = vendorDetails?.services;
-  
-  
+
   useEffect(() => {
     localStorage.setItem("businessName", JSON.stringify(vendor?.businessName));
   }, [vendor]);
@@ -34,7 +37,7 @@ export default function VendorBookingPage() {
     country: vendor?.country,
   };
 
-  if (!vendorDetails) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 w-full">
@@ -43,7 +46,7 @@ export default function VendorBookingPage() {
       <div
         className="h-64 w-full bg-gray-300 relative"
         style={{
-          backgroundImage: `url(${vendor.coverImage || "/default-cover.jpg"})`,
+          backgroundImage: `url("/default-cover.jpg")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -52,7 +55,7 @@ export default function VendorBookingPage() {
 
         <div className="absolute -bottom-12 left-10">
           <img
-            src={vendor.profileImage || "/default-avatar.png"}
+            src={vendor?.profileImage || "/default-avatar.png"}
             className="w-24 h-24 rounded-full border-4 border-white object-cover"
           />
         </div>
@@ -61,12 +64,12 @@ export default function VendorBookingPage() {
       {/* Vendor Info */}
 
       <div className="max-w-6xl mx-auto mt-16 px-6">
-        <h1 className="text-3xl font-bold">{vendor.businessName}</h1>
+        <h1 className="text-3xl font-bold">{vendor?.businessName}</h1>
 
-        <p className="text-gray-500">{vendor.category}</p>
+        <p className="text-gray-500">{vendor?.category}</p>
 
         <p className="text-gray-400">
-          {vendor.city}, {vendor.state}, {vendor.country}
+          {vendor?.city}, {vendor?.state}, {vendor?.country}
         </p>
 
         {/* Bio */}
@@ -74,17 +77,17 @@ export default function VendorBookingPage() {
         <div className="mt-6">
           <h2 className="font-semibold mb-2">About</h2>
 
-          <p className="text-gray-600">{vendor.bio}</p>
+          <p className="text-gray-600">{vendor?.bio}</p>
         </div>
 
         {/* Portfolio */}
 
-        {vendor.portfolioImages.length > 0 && (
+        {vendor?.portfolioImages?.length > 0 && (
           <div className="mt-8">
             <h2 className="font-semibold mb-3">Portfolio(s)</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {vendor.portfolioImages.map((img: string) => (
+              {vendor?.portfolioImages?.map((img: string) => (
                 <img
                   key={img}
                   src={img}
@@ -101,25 +104,25 @@ export default function VendorBookingPage() {
         <div className="mt-10">
           <h2 className="font-semibold text-xl mb-4">Services</h2>
 
-          {services.length === 0 ? (
+          {services?.length === 0 ? (
             <p className="text-gray-400">No services added yet</p>
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
-              {services.map((service: any) => (
+              {services?.map((service: any) => (
                 <div
-                  key={service.id}
+                  key={service?.id}
                   className="border rounded-lg p-4"
                   onClick={() =>
-                    window.open(`/${slug}/${service.id}`, "_blank")
+                    window.open(`/${slug}/${service?.id}`, "_blank")
                   }
                 >
-                  <h3 className="font-semibold">{service.name}</h3>
+                  <h3 className="font-semibold">{service?.name}</h3>
 
                   <p className="text-sm text-gray-500">
-                    {service.durationMins} minutes
+                    {service?.durationMins} minutes
                   </p>
 
-                  <p className="font-medium">₦{service.price}</p>
+                  <p className="font-medium">₦{service?.price}</p>
                 </div>
               ))}
             </div>

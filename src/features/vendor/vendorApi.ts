@@ -27,14 +27,26 @@ export const vendorApi = api.injectEndpoints({
       query: () => ({
         url: "/vendor",
         method: "GET",
-      })
+      }),
     }),
     getServiceById: builder.query({
       query: (serviceId: string) => ({
         url: `/vendor/service/${serviceId}`,
-        method: "GET"
-      }) 
-    })
+        method: "GET",
+      }),
+    }),
+    getSearchedVendor: builder.mutation({
+      query: (query) => ({
+        url: `/vendor/search-vendor?name=${query?.name}&location=${query?.location}&type=${query?.type}&page=${query.page}&limit=${query.limit}`,
+        method: "GET",
+      }),
+    }),
+    getUserBySlug: builder.mutation({
+      query: (data) => ({
+        url: `/vendor/booking-vendor/${data.slug}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -43,5 +55,7 @@ export const {
   useCompleteVendorOnboardingMutation,
   useSetVendorAvailabilityMutation,
   useGetVendorProfileByIdQuery,
-  useGetServiceByIdQuery
+  useGetServiceByIdQuery,
+  useGetSearchedVendorMutation,
+  useGetUserBySlugMutation,
 } = vendorApi;
