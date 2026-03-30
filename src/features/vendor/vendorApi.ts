@@ -47,6 +47,30 @@ export const vendorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getDashboardBookings: builder.query({
+      query: () => ({
+        url: "/vendor/dashboard/bookings",
+        method: "GET",
+      }),
+    }),
+    getDashboardServices: builder.query({
+      query: () => ({
+        url: "/vendor/dashboard/services",
+        method: "GET",
+      }),
+    }),
+    getDashboardWallet: builder.query({
+      query: () => ({
+        url: "/vendor/dashboard/wallet",
+        method: "GET",
+      }),
+    }),
+    getDashboardClients: builder.query({
+      query: () => ({
+        url: "/vendor/dashboard/clients",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -58,4 +82,8 @@ export const {
   useGetServiceByIdQuery,
   useGetSearchedVendorMutation,
   useGetUserBySlugMutation,
+  useGetDashboardBookingsQuery,
+  useGetDashboardServicesQuery,
+  useGetDashboardWalletQuery,
+  useGetDashboardClientsQuery,
 } = vendorApi;

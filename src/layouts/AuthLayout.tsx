@@ -2,16 +2,18 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
 const AuthLayout = () => {
-  const vendor = useSelector(
-    (state: { vendor: { vendor: { status: string } } }) => state?.vendor?.vendor?.status === "APPROVED",
+
+  const token = useSelector(
+    (state: { auth: { token: string }}) => state.auth.token,
   );
 
-  if (vendor) return <Navigate to="/dashboard" replace />;
+  if (token) return <Navigate to="/dashboard" replace />;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8 sm:px-6 lg:px-8">
       <Outlet />
     </div>
   );
 };
 
 export default AuthLayout;
+
