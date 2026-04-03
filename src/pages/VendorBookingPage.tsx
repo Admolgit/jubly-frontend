@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../components/booking/Footer";
 import { useGetUserBySlugMutation } from "../features/vendor/vendorApi";
+import Loader from "../components/ui/Loader"
 
 export default function VendorBookingPage() {
   const slug = useParams().slug;
@@ -13,9 +14,9 @@ export default function VendorBookingPage() {
   useEffect(() => {
     const fetchUser = async () => {
       const res = await getUserBySlug({ slug }).unwrap();
-      if(res.status === 200) {
-        console.log({res})
-        setVendorDetails(res.data)
+      if (res.status === 200) {
+        console.log({ res });
+        setVendorDetails(res.data);
       }
     };
     fetchUser();
@@ -37,7 +38,12 @@ export default function VendorBookingPage() {
     country: vendor?.country,
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 w-full">

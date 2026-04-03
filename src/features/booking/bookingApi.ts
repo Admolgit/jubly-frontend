@@ -16,7 +16,13 @@ export const userApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    getDashboardStarts: builder.query({
+      query: (vendorId) => ({
+        url: `/booking/dashboard-stats/${vendorId}`,
+        method: 'GET',
+      })
+    })
   }),
 });
 
-export const { useCreateBookingMutation, useCreateBookingPaymentMutation } = userApi;
+export const { useCreateBookingMutation, useCreateBookingPaymentMutation, useGetDashboardStartsQuery } = userApi;

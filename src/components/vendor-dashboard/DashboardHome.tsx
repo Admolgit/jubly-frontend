@@ -3,10 +3,12 @@ import { CalendarSyncStatus } from "./CalenderSyncStatus";
 import { EarningsChart } from "./EarningsChart";
 import { StatCard } from "./StatCard";
 import { useGetVendorProfileByIdQuery } from "../../features/vendor/vendorApi";
+import { useGetDashboardStartsQuery } from "../../features/booking/bookingApi";
 import { useEffect, useState } from "react";
 import { setVendorCredentials } from "../../features/vendor/vendorSlice";
 import Modal from "../ui/Modal";
 import Input from "../ui/Input";
+import Loader from '../ui/Loader'
 
 export interface IUser {
   firstName: string;
@@ -22,6 +24,10 @@ function DashboardHome() {
   const dispatch = useDispatch();
   const { data: vendorData, isLoading: vendorByUserIdLoading } =
     useGetVendorProfileByIdQuery({});
+  const { data: dashboardStats, isLoading: dashboardStatsLoading } =
+    useGetDashboardStartsQuery(vendorData?.data?.vendor?.id, {
+      skip: !vendorData?.data?.vendor?.id,
+    });
   const [bookingOpen, setBookingOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
 
@@ -68,7 +74,7 @@ function DashboardHome() {
 
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         {vendorByUserIdLoading ? (
-          "loading..."
+          <Loader />
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="text-[16px]">
@@ -78,17 +84,33 @@ function DashboardHome() {
               </span>
             </div>
             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-              Pending Verification
+              {vendorData?.data?.vendor?.kycStatus === "APPROVED" ? "Verified" : "Pending Verification"}
             </span>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Bookings" value="42" />
-        <StatCard title="Upcoming" value="6" />
-        <StatCard title="Earnings" value="NGN 120,000" />
-        <StatCard title="Profile Views" value="1,240" />
+        <StatCard
+          title="Total Bookings"
+          value={dashboardStats?.data?.bookingCount?.toString() || "0"}
+          isLoadingStats={dashboardStatsLoading}
+        />
+        <StatCard
+          title="Upcoming"
+          value={dashboardStats?.data?.upcomingBooking?.toString() || "0"}
+          isLoadingStats={dashboardStatsLoading}
+        />
+        <StatCard
+          title="Earnings"
+          value={dashboardStats?.data.earnings?.toString() || "0"}
+          isLoadingStats={dashboardStatsLoading}
+        />
+        <StatCard
+          title="Profile Views"
+          value={dashboardStats?.data?.profileViews?.toString() || "0"}
+          isLoadingStats={dashboardStatsLoading}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -157,7 +179,9 @@ function DashboardHome() {
             <Input label="Category" placeholder="Makeup" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Description</label>
+            <label className="mb-1 block text-sm font-medium">
+              Description
+            </label>
             <textarea
               placeholder="Describe the service"
               className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
