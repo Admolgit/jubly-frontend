@@ -1,15 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDispatch } from "react-redux";
 import { CalendarSyncStatus } from "./CalenderSyncStatus";
 import { EarningsChart } from "./EarningsChart";
 import { StatCard } from "./StatCard";
 import { useGetVendorProfileByIdQuery } from "../../features/vendor/vendorApi";
-import { useGetDashboardStartsQuery } from "../../features/booking/bookingApi";
+import {
+  useGetDashboardStartsQuery,
+  useGetServicesCountsQuery,
+  useGetUpcomingBookingsQuery,
+} from "../../features/booking/bookingApi";
 import { useEffect, useState } from "react";
 import { setVendorCredentials } from "../../features/vendor/vendorSlice";
 import Modal from "../ui/Modal";
 import Input from "../ui/Input";
 import Loader from "../ui/Loader";
 import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
+import { formatTimeFromISO } from "../utils/timeFormatter";
 
 export interface IUser {
   firstName: string;
@@ -33,6 +39,11 @@ function DashboardHome() {
     useGetCalendarLinkedQuery(vendorData?.data?.vendor?.userId, {
       skip: !vendorData?.data?.vendor?.userId,
     });
+  const { data: upcomingBookingsData, isLoading: upcomingIsLoading } =
+    useGetUpcomingBookingsQuery({});
+  const { data: servicesCountsData, isLoading: loadingServicesCounts } =
+    useGetServicesCountsQuery({});
+
   const [bookingOpen, setBookingOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
 
@@ -40,17 +51,7 @@ function DashboardHome() {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
   }, [vendorData, dispatch]);
 
-  const upcoming = [
-    { id: 1, client: "Tomi Ajayi", service: "Bridal Makeup", time: "10:00 AM" },
-    { id: 2, client: "Ada Nwosu", service: "Natural Glam", time: "1:30 PM" },
-    { id: 3, client: "Kemi Lawal", service: "Hair Styling", time: "4:00 PM" },
-  ];
-
-  const topServices = [
-    { name: "Bridal Makeup", bookings: 18 },
-    { name: "Natural Glam", bookings: 12 },
-    { name: "Hair Styling", bookings: 9 },
-  ];
+  console.log({ upcomingBookingsData });
 
   return (
     <div className="space-y-6">
@@ -122,7 +123,10 @@ function DashboardHome() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
-          <CalendarSyncStatus data={calendarLinkedData} isLoading={calendarLinkedLoading} />
+          <CalendarSyncStatus
+            data={calendarLinkedData}
+            isLoading={calendarLinkedLoading}
+          />
           <EarningsChart />
         </div>
 
@@ -130,44 +134,63 @@ function DashboardHome() {
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Today&apos;s Schedule</h3>
-              <span className="text-xs text-gray-400">3 bookings</span>
+              <span className="text-xs text-gray-400">
+                {upcomingBookingsData?.data?.length || 0} bookings
+              </span>
             </div>
             <div className="mt-4 space-y-3">
-              {upcoming.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between rounded-xl border border-gray-100 p-3"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {item.client}
-                    </p>
-                    <p className="text-xs text-gray-500">{item.service}</p>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {item.time}
-                  </span>
-                </div>
-              ))}
+              {upcomingIsLoading ? (
+                <Loader />
+              ) : (
+                upcomingBookingsData?.data?.map(
+                  (item: {
+                    id: string;
+                    clientName: string;
+                    services: { name: string }[];
+                    startTime: string;
+                  }) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-xl border border-gray-100 p-3"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {item.clientName ?? "Client Name"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {item.services[0]?.name || "Service Name"}
+                        </p>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">
+                        {formatTimeFromISO(item.startTime as string)}
+                      </span>
+                    </div>
+                  ),
+                )
+              )}
             </div>
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Top Services</h3>
             <div className="mt-4 space-y-3">
-              {topServices.map((service) => (
-                <div
-                  key={service.name}
-                  className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
-                >
-                  <p className="text-sm font-medium text-gray-900">
-                    {service.name}
-                  </p>
-                  <span className="text-xs font-semibold text-gray-600">
-                    {service.bookings} bookings
-                  </span>
-                </div>
-              ))}
+              {loadingServicesCounts ? (
+                <Loader />
+              ) : (
+                servicesCountsData?.data?.map((service: any) => (
+                  <div
+                    key={service.serviceName}
+                    className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
+                  >
+                    <p className="text-sm font-medium text-gray-900">
+                      {service.serviceName}
+                    </p>
+                    <span className="text-xs font-semibold text-gray-600">
+                      {service.count} bookings
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

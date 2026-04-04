@@ -12,7 +12,7 @@ export function CopyDiv({ text }: { text: string }) {
   };
 
   return (
-    <div className="flex justify-between items-center p-4 border rounded-xl">
+    <div className="flex justify-between items-center bg-white p-4 border rounded-xl">
       <span className="text-sm text-gray-600">{`${window.location.host}/vendor-booking/${text}`}</span>
 
       <button
