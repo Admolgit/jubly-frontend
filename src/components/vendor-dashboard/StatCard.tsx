@@ -1,8 +1,20 @@
-export function StatCard({ title, value }: { title: string; value: string}) {
+import Loader from "../ui/Loader";
+
+export function StatCard({
+  title,
+  value,
+  isLoadingStats,
+}: {
+  title: string;
+  value: string;
+  isLoadingStats: boolean;
+}) {
   return (
-    <div className="bg-white shadow rounded-2xl p-6">
-      <p className="text-sm text-gray-500">{title}</p>
-      <h2 className="text-2xl font-bold mt-2">{value}</h2>
+    <div className="bg-white shadow-sm rounded-2xl p-5">
+      <p className="text-xs text-gray-500 uppercase tracking-wide">{title}</p>
+      <h2 className="text-2xl font-semibold mt-2 text-gray-900">
+        {isLoadingStats ? <Loader /> : value}
+      </h2>
     </div>
   );
 }

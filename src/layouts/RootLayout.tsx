@@ -12,10 +12,11 @@ export default function RootLayout() {
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Navbar />
-      <main className="flex-grow p-2">
+      <main className="flex-grow px-4 py-6 sm:px-6 lg:px-8">
         <Outlet />
       </main>
       <Footer />
     </div>
   );
 }
+

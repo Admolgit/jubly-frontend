@@ -10,7 +10,6 @@ import VerifyOtpPage from "../pages/VerificationOtpPage";
 import VendorOnboardingSuccessPage from "../pages/OnboardingVerification";
 import VendorAvailability from "../pages/vendor/VendorAvailability";
 import GoogleSync from "../pages/vendor/GoogleSync";
-import { DashboardHome } from "../components/vendor-dashboard/DashboardHome";
 import { BookingCalendar } from "../components/vendor-dashboard/BookingCalender";
 import { Bookings } from "../components/vendor-dashboard/Booking";
 import { Clients } from "../components/vendor-dashboard/Services.";
@@ -22,6 +21,8 @@ import VendorBookingPage from "../pages/VendorBookingPage";
 import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";
 import SearchBookingPage from "../pages/SearchBookingPage";
+import DashboardHome from "../components/vendor-dashboard/DashboardHome";
+import ClientLayout from "../layouts/ClientLayout";
 
 
 
@@ -35,6 +36,16 @@ export const router = createBrowserRouter([
         path: "/",
         element: <LandingPage />,
       },
+    ],
+  },
+  {
+    path: "",
+    element: <ClientLayout />,
+    // errorElement: <ErrorPage />,
+    children: [
+      { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
+      { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
+      { path: "/verify-payment", element: <PaymentSuccessPage /> },
     ],
   },
 
@@ -52,9 +63,6 @@ export const router = createBrowserRouter([
       },
       { path: "/vendor-availability", element: <VendorAvailability /> },
       { path: "/vendor-sync", element: <GoogleSync /> },
-      { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
-      { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
-      { path: "/verify-payment", element: <PaymentSuccessPage /> },
       { path: "/booking", element: <SearchBookingPage /> },
     ],
   },

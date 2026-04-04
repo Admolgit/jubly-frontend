@@ -6,19 +6,37 @@ export function EarningsChart() {
     { month: "Feb", earnings: 35000 },
     { month: "Mar", earnings: 28000 },
     { month: "Apr", earnings: 50000 },
+    { month: "May", earnings: 42000 },
   ];
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow">
-      <h3 className="font-semibold mb-4">Earnings</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={data}>
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="earnings" stroke="#2563eb" />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="bg-white p-6 rounded-2xl shadow-sm">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">Earnings</h3>
+          <p className="text-xs text-gray-500">Last 5 months</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500">Total</p>
+          <p className="text-lg font-semibold text-gray-900">NGN 175,000</p>
+        </div>
+      </div>
+      <div className="mt-4">
+        <ResponsiveContainer width="100%" height={260}>
+          <LineChart data={data}>
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="earnings"
+              stroke="#1d4ed8"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

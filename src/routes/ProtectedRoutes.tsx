@@ -12,7 +12,7 @@ export default function ProtectedRoute() {
 
   console.log({ user });
 
-  if (!token || user && user?.kycStatus !== "APPROVED")
+  if (!token || (user && user?.kycStatus !== "APPROVED"))
     return <Navigate to="/login" replace />;
 
   return <Outlet />;
