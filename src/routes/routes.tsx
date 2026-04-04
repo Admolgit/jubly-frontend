@@ -22,6 +22,7 @@ import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";
 import SearchBookingPage from "../pages/SearchBookingPage";
 import DashboardHome from "../components/vendor-dashboard/DashboardHome";
+import ClientLayout from "../layouts/ClientLayout";
 
 
 
@@ -35,6 +36,16 @@ export const router = createBrowserRouter([
         path: "/",
         element: <LandingPage />,
       },
+    ],
+  },
+  {
+    path: "",
+    element: <ClientLayout />,
+    // errorElement: <ErrorPage />,
+    children: [
+      { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
+      { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
+      { path: "/verify-payment", element: <PaymentSuccessPage /> },
     ],
   },
 
@@ -52,9 +63,6 @@ export const router = createBrowserRouter([
       },
       { path: "/vendor-availability", element: <VendorAvailability /> },
       { path: "/vendor-sync", element: <GoogleSync /> },
-      { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
-      { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
-      { path: "/verify-payment", element: <PaymentSuccessPage /> },
       { path: "/booking", element: <SearchBookingPage /> },
     ],
   },

@@ -1,6 +1,11 @@
+import { useSelector } from "react-redux";
 import Input from "../ui/Input";
+import { CopyDiv } from "./UrlCopy";
 
 export function Settings() {
+  const slug = useSelector(
+    (state: { auth: { user: { slug: string}} }) => state.auth.user.slug,
+  );
   return (
     <div className="space-y-6">
       <div>
@@ -51,7 +56,6 @@ export function Settings() {
               </button>
             </div>
           </div>
-
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Payout Details</h3>
             <div className="mt-4 space-y-3">
@@ -60,6 +64,7 @@ export function Settings() {
               <Input label="Account Name" placeholder="Jubly Beauty" />
             </div>
           </div>
+          <CopyDiv text={slug} />
         </div>
       </div>
 

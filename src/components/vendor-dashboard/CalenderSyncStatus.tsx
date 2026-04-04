@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSelector } from "react-redux";
 import { useConnectCalenderMutation } from "../../features/auth/authApi";
+import Loader from "../ui/Loader";
 
-export function CalendarSyncStatus() {
-  const connected = false;
+export function CalendarSyncStatus({ data, isLoading }: { data: any; isLoading: boolean }) {
+  const connected = data?.data?.linked.linked || false;
   const [connectCalender] = useConnectCalenderMutation();
 
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
@@ -22,11 +23,19 @@ export function CalendarSyncStatus() {
       <div>
         <h3 className="font-semibold">Google Calendar</h3>
         <p className="text-sm text-gray-500">
-          {connected ? "Calendar Connected" : "Not Connected"}
+          {isLoading ? (
+            <Loader />
+          ) : connected ? (
+            "Calendar Connected"
+          ) : (
+            "Not Connected"
+          )}
         </p>
       </div>
 
-      {connected ? (
+      {isLoading ? (
+        <Loader />
+      ) : connected ? (
         <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
           <span className="h-2 w-2 rounded-full bg-green-500" />
           Connected

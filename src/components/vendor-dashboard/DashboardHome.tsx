@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import { setVendorCredentials } from "../../features/vendor/vendorSlice";
 import Modal from "../ui/Modal";
 import Input from "../ui/Input";
-import Loader from '../ui/Loader'
+import Loader from "../ui/Loader";
+import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
 
 export interface IUser {
   firstName: string;
@@ -27,6 +28,10 @@ function DashboardHome() {
   const { data: dashboardStats, isLoading: dashboardStatsLoading } =
     useGetDashboardStartsQuery(vendorData?.data?.vendor?.id, {
       skip: !vendorData?.data?.vendor?.id,
+    });
+  const { data: calendarLinkedData, isLoading: calendarLinkedLoading } =
+    useGetCalendarLinkedQuery(vendorData?.data?.vendor?.userId, {
+      skip: !vendorData?.data?.vendor?.userId,
     });
   const [bookingOpen, setBookingOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -84,7 +89,9 @@ function DashboardHome() {
               </span>
             </div>
             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-              {vendorData?.data?.vendor?.kycStatus === "APPROVED" ? "Verified" : "Pending Verification"}
+              {vendorData?.data?.vendor?.kycStatus === "APPROVED"
+                ? "Verified"
+                : "Pending Verification"}
             </span>
           </div>
         )}
@@ -115,7 +122,7 @@ function DashboardHome() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
-          <CalendarSyncStatus />
+          <CalendarSyncStatus data={calendarLinkedData} isLoading={calendarLinkedLoading} />
           <EarningsChart />
         </div>
 
