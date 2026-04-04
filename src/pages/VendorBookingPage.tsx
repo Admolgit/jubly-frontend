@@ -128,7 +128,9 @@ export default function VendorBookingPage() {
                     {service?.durationMins} minutes
                   </p>
 
-                  <p className="font-medium">₦{service?.price}</p>
+                  <p className="font-medium">
+                    ₦{Number(service?.price).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
