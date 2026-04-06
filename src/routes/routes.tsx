@@ -12,7 +12,7 @@ import VendorAvailability from "../pages/vendor/VendorAvailability";
 import GoogleSync from "../pages/vendor/GoogleSync";
 import { BookingCalendar } from "../components/vendor-dashboard/BookingCalender";
 import { Bookings } from "../components/vendor-dashboard/Booking";
-import { Clients } from "../components/vendor-dashboard/Services.";
+import { Clients } from "../components/vendor-dashboard/Clients";
 import { Wallet } from "../components/vendor-dashboard/Wallet";
 import { Settings } from "../components/vendor-dashboard/Settings";
 import DashboardLayout from "../pages/vendor-dashboard/Dashboard";
