@@ -1,4 +1,5 @@
 import { useGetClientsVendorStatsQuery } from "../../features/booking/bookingApi";
+import Loader from "../ui/Loader";
 
 export function Clients() {
   const { data: clientsStatsData, isLoading: clientsStatsLoading } =
@@ -27,8 +28,6 @@ export function Clients() {
     },
   ];
 
-  console.log({ clientsStatsData });
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -52,25 +51,37 @@ export function Clients() {
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Total Clients</p>
           <p className="mt-2 text-xl font-semibold">
-            {clientsStatsData?.data?.totalClients
-              ? clientsStatsData?.data?.totalClients.toString()
-              : "0"}
+            {clientsStatsLoading ? (
+              <Loader />
+            ) : clientsStatsData?.data?.totalClients ? (
+              clientsStatsData?.data?.totalClients.toString()
+            ) : (
+              "0"
+            )}
           </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Repeat Clients</p>
           <p className="mt-2 text-xl font-semibold">
-            {clientsStatsData?.data?.repeatRate
-              ? `${clientsStatsData?.data?.repeatRate}%`
-              : "0%"}
+            {clientsStatsLoading ? (
+              <Loader />
+            ) : clientsStatsData?.data?.repeatRate ? (
+              `${clientsStatsData?.data?.repeatRate}%`
+            ) : (
+              "0%"
+            )}
           </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Avg. Booking Value</p>
           <p className="mt-2 text-xl font-semibold">
-            {clientsStatsData?.data?.avgBookingValue
-              ? `₦ ${clientsStatsData?.data?.avgBookingValue?.toLocaleString()}`
-              : "0"}
+            {clientsStatsLoading ? (
+              <Loader />
+            ) : clientsStatsData?.data?.avgBookingValue ? (
+              `₦ ${clientsStatsData?.data?.avgBookingValue?.toLocaleString()}`
+            ) : (
+              "0"
+            )}
           </p>
         </div>
       </div>
