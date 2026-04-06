@@ -1,6 +1,48 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useSelector } from "react-redux";
 import { StatCard } from "./StatCard";
+import SelectLimit from "../utils/selectLimit";
+import Pagination from "../utils/pagination";
+import { useEffect, useState } from "react";
+import {
+  useGetTransactionHistoryByVendorQuery,
+} from "../../features/transactions/transactionAPI";
+
+const statusStyles: Record<string, string> = {
+  CONFIRMED: "bg-green-100 text-green-700",
+  PENDING: "bg-amber-100 text-amber-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
+
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 export function Wallet() {
+  const vendor = useSelector(
+    (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
+  );
+  const totalEarned = useSelector(
+    (state: any) => state.transactions.transactions,
+  );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+
+  const { data: transactionsList } = useGetTransactionHistoryByVendorQuery(
+    {
+      vendorId: vendor?.id,
+      page: currentPage,
+      limit: itemsPerPage,
+      searchValue,
+    },
+    {
+      skip: !vendor?.id,
+    },
+  );
+
+  const transactions = transactionsList?.data?.transactions || [];
+
   const payouts = [
     {
       id: 1,
@@ -22,6 +64,25 @@ export function Wallet() {
     },
   ];
 
+  const totalPages = Math.ceil(transactionsList?.meta?.total / itemsPerPage);
+
+  const handleItemsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      handleSearch(searchFilter.trim());
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchFilter]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -37,7 +98,10 @@ export function Wallet() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard title="Total Earned" value="NGN 1,200,000" />
+        <StatCard
+          title="Total Earned"
+          value={Number(totalEarned).toLocaleString()}
+        />
         <StatCard title="Available" value="NGN 140,000" />
         <StatCard title="Pending" value="NGN 20,000" />
       </div>
@@ -92,6 +156,97 @@ export function Wallet() {
           </button>
         </div>
       </div>
+
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap gap-2">
+          <p>Clients transactions view</p>
+        </div>
+        <input
+          placeholder="Search bookings"
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm md:w-64"
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+        />
+      </div>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[640px] text-left">
+          <thead className="text-xs uppercase text-gray-400">
+            <tr className="border-b">
+              <th className="px-3 py-3">Client</th>
+              <th className="px-3 py-3">Contact</th>
+              <th className="px-3 py-3">Bookings title</th>
+              <th className="px-3 py-3">Category</th>
+              <th className="px-3 py-3">Paid at</th>
+              <th className="px-3 py-3">Booked at</th>
+              <th className="px-3 py-3">Status</th>
+              <th className="px-3 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm">
+            {transactions?.map((transaction: any) => (
+              <tr key={transaction.id} className="border-b last:border-b-0">
+                <td className="px-3 py-4 font-medium text-gray-900">
+                  {transaction?.senderDetails?.senderName || "Client Name"}
+                </td>
+                <td className="px-3 py-4 text-gray-600">
+                  <div>
+                    {transaction.senderDetails?.phone || "+234 800 000 0000"}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {transaction?.title || "Service Booked"}
+                  </div>
+                </td>
+                <td className="px-3 py-4 font-semibold text-gray-900">
+                  {transaction?.title || "Service Title"}
+                </td>
+                <td className="px-3 py-4 font-semibold text-gray-900">
+                  {transaction?.Category || "Service Category"}
+                </td>
+                <td className="px-3 py-4 text-gray-600">
+                  {transaction?.paidAt
+                    ? new Date(transaction?.paidAt).toLocaleDateString()
+                    : "N/A"}
+                </td>
+                <td className="px-3 py-4 text-gray-600">
+                  {transaction?.createdAt
+                    ? new Date(transaction?.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </td>
+                <td className="px-3 py-4 text-gray-600">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      statusStyles[transaction?.status] ||
+                      "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {transaction?.status}
+                  </span>
+                </td>
+                <td className="px-3 py-4">
+                  <button className="text-sm font-semibold text-blue-700 hover:underline">
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {transactions.length > 0 && (
+        <div className="mt-4 flex items-center align-center justify-between">
+          <SelectLimit
+            ITEMS_OPTIONS={[5, 10, 20, 50]}
+            itemsPerPage={itemsPerPage}
+            handleItemsChange={handleItemsChange}
+            text="Bookings"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

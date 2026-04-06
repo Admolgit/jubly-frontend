@@ -16,8 +16,12 @@ import Input from "../ui/Input";
 import Loader from "../ui/Loader";
 import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
 import { formatTimeFromISO } from "../utils/timeFormatter";
-import { useGetTransactionAmountByVendorQuery } from "../../features/transactions/transactionAPI";
+import {
+  useGetTransactionAmountByVendorQuery,
+  useGetTransactionHistoryByVendorQuery,
+} from "../../features/transactions/transactionAPI";
 import { setTransactions } from "../../features/transactions/transactionSlice";
+import { setTransactionsList } from "../../features/transactions/transactionsSlice";
 
 export interface IUser {
   firstName: string;
@@ -49,6 +53,12 @@ function DashboardHome() {
     useGetTransactionAmountByVendorQuery(vendorData?.data?.vendor?.id, {
       skip: !vendorData?.data?.vendor?.id,
     });
+  const { data: transationsList } = useGetTransactionHistoryByVendorQuery(
+    vendorData?.data?.vendor?.id,
+    {
+      skip: !vendorData?.data?.vendor?.id,
+    },
+  );
 
   const [bookingOpen, setBookingOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
@@ -60,9 +70,20 @@ function DashboardHome() {
         transactions: getTransactionsHistoryByVendor?.data?.total,
       }),
     );
-  }, [vendorData, getTransactionsHistoryByVendor, dashboardStats, dispatch]);
+    dispatch(
+      setTransactionsList({
+        transactionsList: transationsList?.data?.transactions || [],
+      }),
+    );
+  }, [
+    vendorData,
+    getTransactionsHistoryByVendor,
+    dashboardStats,
+    transationsList,
+    dispatch,
+  ]);
 
-  console.log({ upcomingBookingsData });
+  console.log({ transationsList });
 
   return (
     <div className="space-y-6">
