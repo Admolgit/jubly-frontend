@@ -1,31 +1,60 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import {
+  useGetCalendarLinkedQuery,
+  useGetCalendarListQuery,
+} from "../../features/calendar/calendarAPI";
+import { useSelector } from "react-redux";
+import React from "react";
+import { useConnectCalenderMutation } from "../../features/auth/authApi";
+import Loader from "../ui/Loader";
 
 const localizer = momentLocalizer(moment);
 
-const events = [
-  {
-    title: "John Doe Booking",
-    start: new Date(2026, 3, 20, 14, 0),
-    end: new Date(2026, 3, 20, 15, 0),
-    status: "Confirmed",
-  },
-  {
-    title: "Sarah Smith Booking",
-    start: new Date(2026, 3, 21, 10, 0),
-    end: new Date(2026, 3, 21, 11, 0),
-    status: "Pending",
-  },
-  {
-    title: "Kemi Lawal Booking",
-    start: new Date(2026, 3, 22, 16, 0),
-    end: new Date(2026, 3, 22, 17, 0),
-    status: "Confirmed",
-  },
-];
-
 export function BookingCalendar() {
+  const vendor = useSelector(
+    (state: { vendor: { vendor: any } }) => state.vendor.vendor,
+  );
+  const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
+  const now = new Date();
+
+  const { data: bookingCalendarData, isLoading: isBookingCalendarLoading } =
+    useGetCalendarListQuery({
+      year: now.getFullYear(),
+      month: now.getMonth() + 1,
+      vendorId: vendor.id,
+    });
+  const [connectCalender] = useConnectCalenderMutation();
+  const { data: calendarLinkedData, isLoading: calendarLinkedLoading } =
+    useGetCalendarLinkedQuery(vendor?.userId, {
+      skip: !vendor?.userId,
+    });
+
+  const events = React.useMemo(() => {
+    if (!bookingCalendarData?.data?.calendar) return [];
+
+    return Object.values(bookingCalendarData.data.calendar)
+      .flat()
+      .map((booking: any) => ({
+        title: booking.customer || "Booking",
+        start: new Date(booking.startTime),
+        end: new Date(booking.endTime),
+        status: booking.status,
+      }));
+  }, [bookingCalendarData]);
+
+  const handleConnect = async () => {
+    const response = await connectCalender({
+      userId: user?.id,
+    }).unwrap();
+    if (response.url) {
+      window.location.href = response.url;
+    }
+  };
+
+  console.log({ calendarLinkedData, bookingCalendarData });
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -35,9 +64,22 @@ export function BookingCalendar() {
             View your schedule and manage availability.
           </p>
         </div>
-        <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
-          Sync Calendar
-        </button>
+        {calendarLinkedLoading ? (
+          <Loader />
+        ) : calendarLinkedData?.data?.linked?.linked ? (
+          <button
+            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+          >
+            Calendar Synced
+          </button>
+        ) : (
+          <button
+            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            onClick={handleConnect}
+          >
+            Sync Calendar
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.6fr]">
@@ -55,7 +97,7 @@ export function BookingCalendar() {
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Upcoming Bookings</h3>
             <div className="mt-4 space-y-3">
-              {events.map((event, index) => (
+              {events.slice(0, 5).map((event, index) => (
                 <div
                   key={`${event.title}-${index}`}
                   className="rounded-xl border border-gray-100 p-3"

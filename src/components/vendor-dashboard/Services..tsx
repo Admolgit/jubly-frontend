@@ -1,4 +1,8 @@
+import { useGetClientsVendorStatsQuery } from "../../features/booking/bookingApi";
+
 export function Clients() {
+  const { data: clientsStatsData, isLoading: clientsStatsLoading } =
+    useGetClientsVendorStatsQuery({});
   const clients = [
     {
       name: "John Doe",
@@ -23,6 +27,8 @@ export function Clients() {
     },
   ];
 
+  console.log({ clientsStatsData });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -45,15 +51,27 @@ export function Clients() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Total Clients</p>
-          <p className="mt-2 text-xl font-semibold">86</p>
+          <p className="mt-2 text-xl font-semibold">
+            {clientsStatsData?.data?.totalClients
+              ? clientsStatsData?.data?.totalClients.toString()
+              : "0"}
+          </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Repeat Clients</p>
-          <p className="mt-2 text-xl font-semibold">42%</p>
+          <p className="mt-2 text-xl font-semibold">
+            {clientsStatsData?.data?.repeatRate
+              ? `${clientsStatsData?.data?.repeatRate}%`
+              : "0%"}
+          </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Avg. Booking Value</p>
-          <p className="mt-2 text-xl font-semibold">NGN 9,500</p>
+          <p className="mt-2 text-xl font-semibold">
+            {clientsStatsData?.data?.avgBookingValue
+              ? `₦ ${clientsStatsData?.data?.avgBookingValue?.toLocaleString()}`
+              : "0"}
+          </p>
         </div>
       </div>
 

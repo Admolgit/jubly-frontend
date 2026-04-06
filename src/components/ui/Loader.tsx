@@ -18,8 +18,10 @@ export default function Spinner({
   };
 
   return (
-    <div
-      className={`animate-spin rounded-full ${sizeMap[size]} ${colorMap[color]}`}
-    />
+    <div className="flex justify-center">
+      <div
+        className={`animate-spin rounded-full ${sizeMap[size]} ${colorMap[color]}`}
+      />
+    </div>
   );
 }
