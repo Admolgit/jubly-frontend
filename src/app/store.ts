@@ -13,16 +13,25 @@ import storage from "redux-persist/lib/storage";
 
 import authReducer from "../features/auth/authSlice";
 import vendorReducer from "../features/vendor/vendorSlice";
-import availabilityReducer from '../features/availability/availabilitySlice';
-import bookingReducer from '../features/booking/bookingSlice';
-import calendarReducer from '../features/calendar/calendarSlice';
-import transactionsReducer from '../features/transactions/transactionSlice';
+import availabilityReducer from "../features/availability/availabilitySlice";
+import bookingReducer from "../features/booking/bookingSlice";
+import calendarReducer from "../features/calendar/calendarSlice";
+import transactionsReducer from "../features/transactions/transactionSlice";
+import transactionsListReducer from "../features/transactions/transactionsSlice";
 import { api } from "./api";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "vendor", "booking", "availability", "calendar", "transactions"],
+  whitelist: [
+    "auth",
+    "vendor",
+    "booking",
+    "availability",
+    "calendar",
+    "transactions",
+    "transactionsList",
+  ],
 };
 
 const rootReducer = combineReducers({
@@ -32,6 +41,7 @@ const rootReducer = combineReducers({
   booking: bookingReducer,
   calendar: calendarReducer,
   transactions: transactionsReducer,
+  transactionsList: transactionsListReducer,
   [api.reducerPath]: api.reducer,
 });
 
