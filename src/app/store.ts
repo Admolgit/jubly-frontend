@@ -16,12 +16,13 @@ import vendorReducer from "../features/vendor/vendorSlice";
 import availabilityReducer from '../features/availability/availabilitySlice';
 import bookingReducer from '../features/booking/bookingSlice';
 import calendarReducer from '../features/calendar/calendarSlice';
+import transactionsReducer from '../features/transactions/transactionSlice';
 import { api } from "./api";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "vendor", "availability", "calendar"],
+  whitelist: ["auth", "vendor", "booking", "availability", "calendar", "transactions"],
 };
 
 const rootReducer = combineReducers({
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   availability: availabilityReducer,
   booking: bookingReducer,
   calendar: calendarReducer,
+  transactions: transactionsReducer,
   [api.reducerPath]: api.reducer,
 });
 

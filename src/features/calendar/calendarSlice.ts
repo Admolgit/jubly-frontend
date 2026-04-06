@@ -5,7 +5,7 @@ const initialState = {
 };
 
 const calendarSlice = createSlice({
-  name: "booking",
+  name: "calendar",
   initialState,
   reducers: {
     setCalendar: (state, action) => {

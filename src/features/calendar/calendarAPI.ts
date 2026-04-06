@@ -5,10 +5,17 @@ export const calendarApi = api.injectEndpoints({
     getCalendarLinked: builder.query({
       query: (userId) => ({
         url: `/google/linked?userId=${userId}`,
-        method: 'GET',
+        method: "GET",
+      }),
+    }),
+    getCalendarList: builder.query({
+      query: (data) => ({
+        url: `/google/calendar-list/${data.vendorId}/?view=month&year=2026&month=4`,
+        method: "GET",
       }),
     }),
   }),
 });
 
-export const { useGetCalendarLinkedQuery } = calendarApi;
+export const { useGetCalendarLinkedQuery, useGetCalendarListQuery } =
+  calendarApi;

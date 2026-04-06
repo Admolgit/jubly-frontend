@@ -16,6 +16,8 @@ import Input from "../ui/Input";
 import Loader from "../ui/Loader";
 import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
 import { formatTimeFromISO } from "../utils/timeFormatter";
+import { useGetTransactionAmountByVendorQuery } from "../../features/transactions/transactionAPI";
+import { setTransactions } from "../../features/transactions/transactionSlice";
 
 export interface IUser {
   firstName: string;
@@ -43,13 +45,22 @@ function DashboardHome() {
     useGetUpcomingBookingsQuery({});
   const { data: servicesCountsData, isLoading: loadingServicesCounts } =
     useGetServicesCountsQuery({});
+  const { data: getTransactionsHistoryByVendor } =
+    useGetTransactionAmountByVendorQuery(vendorData?.data?.vendor?.id, {
+      skip: !vendorData?.data?.vendor?.id,
+    });
 
   const [bookingOpen, setBookingOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
 
   useEffect(() => {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
-  }, [vendorData, dispatch]);
+    dispatch(
+      setTransactions({
+        transactions: getTransactionsHistoryByVendor?.data?.total,
+      }),
+    );
+  }, [vendorData, getTransactionsHistoryByVendor, dashboardStats, dispatch]);
 
   console.log({ upcomingBookingsData });
 
@@ -111,7 +122,7 @@ function DashboardHome() {
         />
         <StatCard
           title="Earnings"
-          value={dashboardStats?.data.earnings?.toString() || "0"}
+          value={`₦ ${getTransactionsHistoryByVendor?.data?.total?.toLocaleString() || "0"}`}
           isLoadingStats={dashboardStatsLoading}
         />
         <StatCard
@@ -146,7 +157,7 @@ function DashboardHome() {
                   (item: {
                     id: string;
                     clientName: string;
-                    services: { name: string }[];
+                    services: { name: string };
                     startTime: string;
                   }) => (
                     <div
@@ -158,7 +169,7 @@ function DashboardHome() {
                           {item.clientName ?? "Client Name"}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {item.services[0]?.name || "Service Name"}
+                          {item.services?.name || "Service Name"}
                         </p>
                       </div>
                       <span className="text-sm font-medium text-gray-700">

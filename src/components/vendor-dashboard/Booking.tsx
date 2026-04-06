@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { useGetBookingsQuery } from "../../features/booking/bookingApi";
+import {
+  useGetBookingsQuery,
+  useGetDashboardStartsQuery,
+} from "../../features/booking/bookingApi";
 import { formatDate } from "../utils/dateFormatter";
 import Pagination from "../utils/pagination";
 import SelectLimit from "../utils/selectLimit";
 import { formatTimeFromISO } from "../utils/timeFormatter";
 import Loader from "../ui/Loader";
+import { useSelector } from "react-redux";
+import { useGetTransactionAmountByVendorQuery } from "../../features/transactions/transactionAPI";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -15,7 +20,26 @@ const statusStyles: Record<string, string> = {
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
+const statusOptions = [
+  { label: "All", value: "ALL", style: "bg-blue-50 text-blue-700" },
+  { label: "Upcoming", value: "PENDING", style: "bg-amber-100 text-amber-700" },
+  {
+    label: "Confirmed",
+    value: "CONFIRMED",
+    style: "bg-green-100 text-green-700",
+  },
+  {
+    label: "Completed",
+    value: "COMPLETED",
+    style: "bg-gray-100 text-gray-600",
+  },
+  { label: "Cancelled", value: "CANCELLED", style: "bg-red-100 text-red-700" },
+];
+
 export function Bookings() {
+  const vendor = useSelector(
+    (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -31,6 +55,14 @@ export function Bookings() {
       search: searchValue || undefined,
       date: undefined,
     });
+  const { data: dashboardStats } =
+    useGetDashboardStartsQuery(vendor?.id, {
+      skip: !vendor?.id,
+    });
+  const { data: getTransactionsHistoryByVendor } =
+    useGetTransactionAmountByVendorQuery(vendor?.id, {
+      skip: !vendor?.id,
+    });
 
   const totalPages = Math.ceil(getBookingsData?.meta?.total / itemsPerPage);
 
@@ -43,7 +75,7 @@ export function Bookings() {
     console.log("Debounced search value:", value);
     setSearchValue(value);
   };
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       handleSearch(searchFilter.trim());
@@ -74,51 +106,36 @@ export function Bookings() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Total Bookings</p>
-          <p className="mt-2 text-xl font-semibold">124</p>
+          <p className="mt-2 text-xl font-semibold">
+            {dashboardStats?.data?.bookingCount?.toString() || "0"}
+          </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">Upcoming</p>
-          <p className="mt-2 text-xl font-semibold">18</p>
+          <p className="mt-2 text-xl font-semibold">
+            {dashboardStats?.data?.upcomingBooking?.toString() || "0"}
+          </p>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-xs text-gray-500">This Month Revenue</p>
-          <p className="mt-2 text-xl font-semibold">NGN 420,000</p>
+          <p className="mt-2 text-xl font-semibold">{`₦ ${getTransactionsHistoryByVendor?.data?.total?.toLocaleString() || "0"}`}</p>
         </div>
       </div>
 
       <div className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-2">
-            <button
-              className="rounded-full bg-blue-50 px-4 py-1 text-xs font-semibold text-blue-700"
-              onClick={() => setStatusFilter("All")}
-            >
-              All
-            </button>
-            <button
-              className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
-              onClick={() => setStatusFilter("PENDING")}
-            >
-              Upcoming
-            </button>
-            <button
-              className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
-              onClick={() => setStatusFilter("CONFIRMED")}
-            >
-              Confirmed
-            </button>
-            <button
-              className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
-              onClick={() => setStatusFilter("COMPLETED")}
-            >
-              Completed
-            </button>
-            <button
-              className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
-              onClick={() => setStatusFilter("CANCELLED")}
-            >
-              Cancelled
-            </button>
+            {statusOptions.map((option) => (
+              <button
+                key={option.value}
+                className={`rounded-full px-4 py-1 text-xs font-semibold ${option.style} ${
+                  statusFilter === option.value ? "ring-2 ring-blue-500" : ""
+                }`}
+                onClick={() => setStatusFilter(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
           <input
             placeholder="Search bookings"
