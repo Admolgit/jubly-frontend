@@ -18,6 +18,7 @@ import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
 import { formatTimeFromISO } from "../utils/timeFormatter";
 import {
   useGetTransactionAmountByVendorQuery,
+  useGetTransactionAnalyticsQuery,
   useGetTransactionHistoryByVendorQuery,
 } from "../../features/transactions/transactionAPI";
 import { setTransactions } from "../../features/transactions/transactionSlice";
@@ -35,6 +36,9 @@ export const lightPurple = "#C271AC";
 export const darkPurple = "#77467D";
 function DashboardHome() {
   const dispatch = useDispatch();
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [changeView, setChangeView] = useState("year");
   const { data: vendorData, isLoading: vendorByUserIdLoading } =
     useGetVendorProfileByIdQuery({});
   const { data: dashboardStats, isLoading: dashboardStatsLoading } =
@@ -53,15 +57,22 @@ function DashboardHome() {
     useGetTransactionAmountByVendorQuery(vendorData?.data?.vendor?.id, {
       skip: !vendorData?.data?.vendor?.id,
     });
+  const { data: trasactionsAnalysis, isLoading: loadingTransactionsAnalyics } =
+    useGetTransactionAnalyticsQuery(
+      {
+        vendorId: vendorData?.data?.vendor?.id,
+        view: changeView,
+      },
+      {
+        skip: !vendorData?.data?.vendor?.id,
+      },
+    );
   const { data: transationsList } = useGetTransactionHistoryByVendorQuery(
     vendorData?.data?.vendor?.id,
     {
       skip: !vendorData?.data?.vendor?.id,
     },
   );
-
-  const [bookingOpen, setBookingOpen] = useState(false);
-  const [serviceOpen, setServiceOpen] = useState(false);
 
   useEffect(() => {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
@@ -159,7 +170,11 @@ function DashboardHome() {
             data={calendarLinkedData}
             isLoading={calendarLinkedLoading}
           />
-          <EarningsChart />
+          <EarningsChart
+            transactionsAnalytics={trasactionsAnalysis}
+            loadingTransactionsAnalyics={loadingTransactionsAnalyics}
+            setChangeView={setChangeView}
+          />
         </div>
 
         <div className="space-y-6">

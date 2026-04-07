@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import {
   useGetTransactionHistoryByVendorQuery,
 } from "../../features/transactions/transactionAPI";
+import Loader from "../ui/Loader";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -29,7 +30,7 @@ export function Wallet() {
   const [searchFilter, setSearchFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: transactionsList } = useGetTransactionHistoryByVendorQuery(
+  const { data: transactionsList, isLoading } = useGetTransactionHistoryByVendorQuery(
     {
       vendorId: vendor?.id,
       page: currentPage,
@@ -169,68 +170,72 @@ export function Wallet() {
         />
       </div>
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left">
-          <thead className="text-xs uppercase text-gray-400">
-            <tr className="border-b">
-              <th className="px-3 py-3">Client</th>
-              <th className="px-3 py-3">Contact</th>
-              <th className="px-3 py-3">Bookings title</th>
-              <th className="px-3 py-3">Category</th>
-              <th className="px-3 py-3">Paid at</th>
-              <th className="px-3 py-3">Booked at</th>
-              <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            {transactions?.map((transaction: any) => (
-              <tr key={transaction.id} className="border-b last:border-b-0">
-                <td className="px-3 py-4 font-medium text-gray-900">
-                  {transaction?.senderDetails?.senderName || "Client Name"}
-                </td>
-                <td className="px-3 py-4 text-gray-600">
-                  <div>
-                    {transaction.senderDetails?.phone || "+234 800 000 0000"}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {transaction?.title || "Service Booked"}
-                  </div>
-                </td>
-                <td className="px-3 py-4 font-semibold text-gray-900">
-                  {transaction?.title || "Service Title"}
-                </td>
-                <td className="px-3 py-4 font-semibold text-gray-900">
-                  {transaction?.Category || "Service Category"}
-                </td>
-                <td className="px-3 py-4 text-gray-600">
-                  {transaction?.paidAt
-                    ? new Date(transaction?.paidAt).toLocaleDateString()
-                    : "N/A"}
-                </td>
-                <td className="px-3 py-4 text-gray-600">
-                  {transaction?.createdAt
-                    ? new Date(transaction?.createdAt).toLocaleDateString()
-                    : "N/A"}
-                </td>
-                <td className="px-3 py-4 text-gray-600">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      statusStyles[transaction?.status] ||
-                      "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {transaction?.status}
-                  </span>
-                </td>
-                <td className="px-3 py-4">
-                  <button className="text-sm font-semibold text-blue-700 hover:underline">
-                    View
-                  </button>
-                </td>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <table className="w-full min-w-[640px] text-left">
+            <thead className="text-xs uppercase text-gray-400">
+              <tr className="border-b">
+                <th className="px-3 py-3">Client</th>
+                <th className="px-3 py-3">Contact</th>
+                <th className="px-3 py-3">Bookings title</th>
+                <th className="px-3 py-3">Category</th>
+                <th className="px-3 py-3">Paid at</th>
+                <th className="px-3 py-3">Booked at</th>
+                <th className="px-3 py-3">Status</th>
+                <th className="px-3 py-3">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="text-sm">
+              {transactions?.map((transaction: any) => (
+                <tr key={transaction.id} className="border-b last:border-b-0">
+                  <td className="px-3 py-4 font-medium text-gray-900">
+                    {transaction?.senderDetails?.senderName || "Client Name"}
+                  </td>
+                  <td className="px-3 py-4 text-gray-600">
+                    <div>
+                      {transaction.senderDetails?.phone || "+234 800 000 0000"}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {transaction?.title || "Service Booked"}
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 font-semibold text-gray-900">
+                    {transaction?.title || "Service Title"}
+                  </td>
+                  <td className="px-3 py-4 font-semibold text-gray-900">
+                    {transaction?.Category || "Service Category"}
+                  </td>
+                  <td className="px-3 py-4 text-gray-600">
+                    {transaction?.paidAt
+                      ? new Date(transaction?.paidAt).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+                  <td className="px-3 py-4 text-gray-600">
+                    {transaction?.createdAt
+                      ? new Date(transaction?.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+                  <td className="px-3 py-4 text-gray-600">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        statusStyles[transaction?.status] ||
+                        "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {transaction?.status}
+                    </span>
+                  </td>
+                  <td className="px-3 py-4">
+                    <button className="text-sm font-semibold text-blue-700 hover:underline">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
       {transactions.length > 0 && (
         <div className="mt-4 flex items-center align-center justify-between">

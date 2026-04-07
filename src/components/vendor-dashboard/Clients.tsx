@@ -1,32 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useSelector } from "react-redux";
 import { useGetClientsVendorStatsQuery } from "../../features/booking/bookingApi";
+import { useLazyGetVendorClientsQuery } from "../../features/users/userApi";
 import Loader from "../ui/Loader";
+import { useEffect } from "react";
+import { formatDate } from "../utils/dateFormatter";
 
 export function Clients() {
+  const vendor = useSelector(
+    (state: { vendor: { vendor: any } }) => state.vendor.vendor,
+  );
   const { data: clientsStatsData, isLoading: clientsStatsLoading } =
     useGetClientsVendorStatsQuery({});
-  const clients = [
-    {
-      name: "John Doe",
-      email: "john@email.com",
-      phone: "+234 803 000 1122",
-      bookings: 3,
-      lastVisit: "May 12, 2026",
-    },
-    {
-      name: "Sarah Smith",
-      email: "sarah@email.com",
-      phone: "+234 803 000 2233",
-      bookings: 1,
-      lastVisit: "May 02, 2026",
-    },
-    {
-      name: "Ada Nwosu",
-      email: "ada@email.com",
-      phone: "+234 803 000 3344",
-      bookings: 5,
-      lastVisit: "Apr 28, 2026",
-    },
-  ];
+  const [getClients, { data: clientsData, isLoading }] =
+    useLazyGetVendorClientsQuery();
+
+  useEffect(() => {
+    if (vendor?.id) {
+      getClients(vendor.id);
+    }
+  }, [vendor?.id]);
+
+  const clients = clientsData?.data?.clients;
+
+  console.log({ clients, vendor });
 
   return (
     <div className="space-y-6">
@@ -106,41 +104,47 @@ export function Clients() {
         </div>
 
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left">
-            <thead className="text-xs uppercase text-gray-400">
-              <tr className="border-b">
-                <th className="px-3 py-3">Client</th>
-                <th className="px-3 py-3">Contact</th>
-                <th className="px-3 py-3">Bookings</th>
-                <th className="px-3 py-3">Last Visit</th>
-                <th className="px-3 py-3">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {clients.map((client) => (
-                <tr key={client.email} className="border-b last:border-b-0">
-                  <td className="px-3 py-4 font-medium text-gray-900">
-                    {client.name}
-                  </td>
-                  <td className="px-3 py-4 text-gray-600">
-                    <div>{client.email}</div>
-                    <div className="text-xs text-gray-400">{client.phone}</div>
-                  </td>
-                  <td className="px-3 py-4 font-semibold text-gray-900">
-                    {client.bookings}
-                  </td>
-                  <td className="px-3 py-4 text-gray-600">
-                    {client.lastVisit}
-                  </td>
-                  <td className="px-3 py-4">
-                    <button className="text-sm font-semibold text-blue-700 hover:underline">
-                      View Profile
-                    </button>
-                  </td>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <table className="w-full min-w-[640px] text-left">
+              <thead className="text-xs uppercase text-gray-400">
+                <tr className="border-b">
+                  <th className="px-3 py-3">Client</th>
+                  <th className="px-3 py-3">Contact</th>
+                  <th className="px-3 py-3">Bookings</th>
+                  <th className="px-3 py-3">Last Visit</th>
+                  <th className="px-3 py-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-sm">
+                {clients?.map((client: any) => (
+                  <tr key={client.email} className="border-b last:border-b-0">
+                    <td className="px-3 py-4 font-medium text-gray-900">
+                      {client.firstName} {client.lastName}
+                    </td>
+                    <td className="px-3 py-4 text-gray-600">
+                      <div>{client.email}</div>
+                      <div className="text-xs text-gray-400">
+                        {client.phone}
+                      </div>
+                    </td>
+                    <td className="px-3 py-4 font-semibold text-gray-900">
+                      {client.bookings}
+                    </td>
+                    <td className="px-3 py-4 text-gray-600">
+                      {formatDate(client.lastLogin)}
+                    </td>
+                    <td className="px-3 py-4">
+                      <button className="text-sm font-semibold text-blue-700 hover:underline">
+                        View Profile
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
