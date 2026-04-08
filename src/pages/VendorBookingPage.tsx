@@ -57,7 +57,6 @@ export default function VendorBookingPage() {
           backgroundPosition: "center",
         }}
       >
-        {/* Profile Image */}
 
         <div className="absolute -bottom-12 left-10">
           <img
@@ -66,8 +65,6 @@ export default function VendorBookingPage() {
           />
         </div>
       </div>
-
-      {/* Vendor Info */}
 
       <div className="max-w-6xl mx-auto mt-16 px-6">
         <h1 className="text-3xl font-bold">{vendor?.businessName}</h1>

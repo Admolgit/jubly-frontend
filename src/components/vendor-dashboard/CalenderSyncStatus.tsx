@@ -19,7 +19,7 @@ export function CalendarSyncStatus({ data, isLoading }: { data: any; isLoading: 
   };
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="bg-white p-4 rounded-2xl shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-6">
       <div>
         <h3 className="font-semibold">Google Calendar</h3>
         <p className="text-sm text-gray-500">

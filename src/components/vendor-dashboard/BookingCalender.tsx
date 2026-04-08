@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import React from "react";
 import { useConnectCalenderMutation } from "../../features/auth/authApi";
 import Loader from "../ui/Loader";
+import { useGetVendorUpcomingBookingsQuery } from "../../features/booking/bookingApi";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,6 +27,8 @@ export function BookingCalendar() {
       month: now.getMonth() + 1,
       vendorId: vendor.id,
     });
+  const { data: vendorUpcomingData, isLoading: vendorUpcomingLoading } =
+    useGetVendorUpcomingBookingsQuery({});
   const [connectCalender] = useConnectCalenderMutation();
   const { data: calendarLinkedData, isLoading: calendarLinkedLoading } =
     useGetCalendarLinkedQuery(vendor?.userId, {
@@ -44,6 +47,21 @@ export function BookingCalendar() {
         status: booking.status,
       }));
   }, [bookingCalendarData]);
+
+  const upcomingEvents = React.useMemo(() => {
+    if (!vendorUpcomingData?.data) return [];
+
+    return Object.values(vendorUpcomingData.data)
+      .flat()
+      .map((booking: any) => ({
+        title: booking.customer || "Booking",
+        start: new Date(booking.startTime),
+        end: new Date(booking.endTime),
+        status: booking.status,
+      }));
+  }, [vendorUpcomingData]);
+
+  console.log({ upcomingEvents });
 
   const handleConnect = async () => {
     const response = await connectCalender({
@@ -69,9 +87,7 @@ export function BookingCalendar() {
         {calendarLinkedLoading ? (
           <Loader />
         ) : calendarLinkedData?.data?.linked?.linked ? (
-          <button
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
-          >
+          <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
             Calendar Synced
           </button>
         ) : (
@@ -99,22 +115,26 @@ export function BookingCalendar() {
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Upcoming Bookings</h3>
             <div className="mt-4 space-y-3">
-              {events.slice(0, 5).map((event, index) => (
-                <div
-                  key={`${event.title}-${index}`}
-                  className="rounded-xl border border-gray-100 p-3"
-                >
-                  <p className="text-sm font-semibold text-gray-900">
-                    {event.title}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {moment(event.start).format("ddd, MMM D - h:mm A")}
-                  </p>
-                  <span className="mt-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                    {event.status}
-                  </span>
-                </div>
-              ))}
+              {vendorUpcomingLoading ? (
+                <Loader />
+              ) : (
+                upcomingEvents?.map((event, index) => (
+                  <div
+                    key={`${event.title}-${index}`}
+                    className="rounded-xl border border-gray-100 p-3"
+                  >
+                    <p className="text-sm font-semibold text-gray-900">
+                      {event.title}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {moment(event.start).format("ddd, MMM D - h:mm A")}
+                    </p>
+                    <span className="mt-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                      {event.status}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
