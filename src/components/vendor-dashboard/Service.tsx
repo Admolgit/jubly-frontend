@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "../ui/Modal";
 import Input from "../ui/Input";
 import { useGetVendorServicesQuery } from "../../features/services/servicesAPI";
