@@ -43,10 +43,17 @@ export const userApi = api.injectEndpoints({
 
     getClientsVendorStats: builder.query({
       query: () => ({
-        url: '/booking/clients/stats',
-        method: 'GET',
-      })
-    })
+        url: "/booking/clients/stats",
+        method: "GET",
+      }),
+    }),
+
+    getVendorUpcomingBookings: builder.query({
+      query: () => ({
+        url: "/booking/upcoming-bookings",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -58,4 +65,5 @@ export const {
   useGetServicesCountsQuery,
   useGetBookingsQuery,
   useGetClientsVendorStatsQuery,
+  useGetVendorUpcomingBookingsQuery,
 } = userApi;

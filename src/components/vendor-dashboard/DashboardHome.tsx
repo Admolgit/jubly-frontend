@@ -97,7 +97,7 @@ function DashboardHome() {
   console.log({ transationsList });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-0">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-[20px] font-semibold">Dashboard</h1>
@@ -121,24 +121,26 @@ function DashboardHome() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
-        {vendorByUserIdLoading ? (
-          <Loader />
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="text-[16px]">
-              Welcome,{" "}
-              <span className="text-[#C271AC]">
-                {vendorData?.data?.vendor?.businessName || "Vendor"}
+      <div className="py-6 ">
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          {vendorByUserIdLoading ? (
+            <Loader />
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="text-[16px]">
+                Welcome,{" "}
+                <span className="text-[#C271AC]">
+                  {vendorData?.data?.vendor?.businessName || "Vendor"}
+                </span>
+              </div>
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+                {vendorData?.data?.vendor?.kycStatus === "APPROVED"
+                  ? "Verified"
+                  : "Pending Verification"}
               </span>
             </div>
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-              {vendorData?.data?.vendor?.kycStatus === "APPROVED"
-                ? "Verified"
-                : "Pending Verification"}
-            </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -178,7 +180,7 @@ function DashboardHome() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="rounded-2xl bg-white p-5 shadow-sm mt-6">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Today&apos;s Schedule</h3>
               <span className="text-xs text-gray-400">
@@ -273,7 +275,7 @@ function DashboardHome() {
               Cancel
             </button>
             <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">
-              Save Service
+              Create Service
             </button>
           </div>
         </div>
@@ -300,7 +302,7 @@ function DashboardHome() {
               Cancel
             </button>
             <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">
-              Save Booking
+              Create Booking
             </button>
           </div>
         </div>

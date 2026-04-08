@@ -35,15 +35,11 @@ export default function Modal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm">
-      {/* Overlay click */}
       <div className="absolute inset-0" onClick={onClose} />
-
-      {/* Modal container */}
-      <div className="relative flex min-h-full items-start justify-center px-4 py-10 overflow-y-auto">
+      <div className="relative flex min-h-full items-center justify-center px-4 py-10 overflow-y-auto">
         <div
           className={`w-full ${sizeClass} rounded-2xl bg-white shadow-2xl transform transition-all duration-200 scale-100`}
         >
-          {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
             {title ? (
               <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -58,8 +54,6 @@ export default function Modal({
               <X size={18} />
             </button>
           </div>
-
-          {/* Body */}
           <div className="px-6 py-5">{children}</div>
         </div>
       </div>
