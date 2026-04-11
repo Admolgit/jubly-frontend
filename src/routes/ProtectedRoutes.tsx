@@ -1,19 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Navigate, Outlet } from "react-router-dom";
+
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export default function ProtectedRoute() {
-  const token = useSelector(
-    (state: { auth: { token: string } }) => state.auth.token,
-  );
-  const user = useSelector(
+const ProtectedRoutes = () => {
+  const user = useSelector((state: any) => state.auth.user);
+  const vendor = useSelector(
     (state: { vendor: { vendor: any } }) => state.vendor.vendor,
   );
 
-  console.log({ user });
+  const location = useLocation();
 
-  if (!token || (user && user?.kycStatus !== "APPROVED"))
+  if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  const isVendorRoute = location.pathname.startsWith("/dashboard");
+  const isClientRoute = location.pathname.startsWith("/client-dashboard");
+
+  // 🚨 ROLE CHECK
+  if (user.role === "VENDOR" && isClientRoute) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (user.role === "CLIENT" && isVendorRoute) {
+    return <Navigate to="/client-dashboard" replace />;
+  }
 
   return <Outlet />;
-}
+};
+
+export default ProtectedRoutes;

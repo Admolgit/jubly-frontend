@@ -1,4 +1,4 @@
-import { api } from "../../app/api";
+﻿import { api } from "../../app/api";
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -41,6 +41,13 @@ export const userApi = api.injectEndpoints({
       }),
     }),
 
+    getClientsBookings: builder.query({
+      query: (data) => ({
+        url: `/booking/clients?email=${data.email}&page=${data.page}&limit=${data.limit}&search=${data.search ?? ""}&dateFilter=${data.dateFilter ?? ""}&status=${data.status ?? ""}&date=${data.date ?? ""}`,
+        method: "GET",
+      }),
+    }),
+
     getClientsVendorStats: builder.query({
       query: () => ({
         url: "/booking/clients/stats",
@@ -54,6 +61,34 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getClientUpcomingBookings: builder.query({
+      query: () => ({
+        url: "/booking/client/upcoming-bookings",
+        method: "GET",
+      }),
+    }),
+    cancelBooking: builder.mutation({
+      query: (bookingId: string) => ({
+        url: `/booking/${bookingId}/cancel`,
+        method: "PATCH",
+      }),
+    }),
+    rescheduleBooking: builder.mutation({
+      query: (data: {
+        bookingId: string;
+        date: string;
+        startTime: string;
+        endTime?: string;
+      }) => ({
+        url: `/booking/${data.bookingId}/reschedule`,
+        method: "PATCH",
+        body: {
+          date: data.date,
+          startTime: data.startTime,
+          endTime: data.endTime,
+        },
+      }),
+    }),
   }),
 });
 
@@ -64,6 +99,10 @@ export const {
   useGetUpcomingBookingsQuery,
   useGetServicesCountsQuery,
   useGetBookingsQuery,
+  useGetClientsBookingsQuery,
   useGetClientsVendorStatsQuery,
   useGetVendorUpcomingBookingsQuery,
+  useCancelBookingMutation,
+  useRescheduleBookingMutation,
+  useGetClientUpcomingBookingsQuery,
 } = userApi;

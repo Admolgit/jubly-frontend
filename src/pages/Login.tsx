@@ -3,9 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
-import {
-  useLoginMutation,
-} from "../features/auth/authApi";
+import { useLoginMutation } from "../features/auth/authApi";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import LoginImage from "../assets/login-image.jpg";
@@ -60,7 +58,16 @@ export default function LoginPage() {
         }),
       );
 
-      if (res.status === 200) {
+      console.log("Logged in user:", res);
+
+      // if (res.status === 200 && res.data.user.role === "VENDOR") {
+      
+      // }
+
+      if (res.status === 200 && res.data.user.role === "CLIENT") {
+        toast.success("Login successful");
+        navigate("/client-dashboard");
+      } else {
         toast.success("Login successful");
         navigate("/dashboard");
       }
@@ -91,11 +98,17 @@ export default function LoginPage() {
   useEffect(() => {
     const token = searchParams.get("token");
     const refreshToken = searchParams.get("refreshToken");
+    const role = searchParams.get("role");
 
     if (token) {
       localStorage.setItem("accessToken", token);
       localStorage.setItem("refreshToken", refreshToken ?? "");
-      navigate("/dashboard");
+
+      if (role === "CLIENT") {
+        navigate("/client-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     }
   }, [searchParams, navigate]);
 

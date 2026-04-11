@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+﻿import { createBrowserRouter } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../pages/Login";
 import RootLayout from "../layouts/RootLayout";
@@ -23,8 +23,12 @@ import PaymentSuccessPage from "../pages/paymentSuccess";
 import SearchBookingPage from "../pages/SearchBookingPage";
 import DashboardHome from "../components/vendor-dashboard/DashboardHome";
 import ClientLayout from "../layouts/ClientLayout";
-
-
+import ClientDashboardLayout from "../pages/client-dashboard/Dashboard";
+import { ClientDashboardHome } from "../components/client-dashboard/ClientDashboardHome";
+import { ClientBookings } from "../components/client-dashboard/ClientBookings";
+import { ClientCalendar } from "../components/client-dashboard/ClientCalendar";
+import { ClientVendors } from "../components/client-dashboard/ClientVendors";
+import { ClientSettings } from "../components/client-dashboard/ClientSettings";
 
 export const router = createBrowserRouter([
   {
@@ -83,6 +87,24 @@ export const router = createBrowserRouter([
           { path: "clients", element: <Clients /> },
           { path: "wallet", element: <Wallet /> },
           { path: "settings", element: <Settings /> },
+        ],
+      },
+    ],
+  },
+
+  {
+    path: "",
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "client-dashboard",
+        element: <ClientDashboardLayout />,
+        children: [
+          { index: true, element: <ClientDashboardHome /> },
+          { path: "bookings", element: <ClientBookings /> },
+          { path: "calendar", element: <ClientCalendar /> },
+          { path: "vendors", element: <ClientVendors /> },
+          { path: "settings", element: <ClientSettings /> },
         ],
       },
     ],
