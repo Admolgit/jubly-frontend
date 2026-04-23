@@ -51,15 +51,6 @@ export const router = createBrowserRouter([
       { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
       { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
       { path: "/verify-payment", element: <PaymentSuccessPage /> },
-    ],
-  },
-
-  {
-    path: "",
-    element: <AuthLayout />,
-    children: [
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <RegisterPage /> },
       { path: "/onboarding", element: <Onboarding /> },
       { path: "/verify-email", element: <VerifyOtpPage /> },
       {
@@ -69,6 +60,15 @@ export const router = createBrowserRouter([
       { path: "/vendor-availability", element: <VendorAvailability /> },
       { path: "/vendor-sync", element: <GoogleSync /> },
       { path: "/booking", element: <SearchBookingPage /> },
+    ],
+  },
+
+  {
+    path: "",
+    element: <AuthLayout />,
+    children: [
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <RegisterPage /> },
     ],
   },
 
@@ -105,8 +105,8 @@ export const router = createBrowserRouter([
           { path: "bookings", element: <ClientBookings /> },
           { path: "calendar", element: <ClientCalendar /> },
           { path: "vendors", element: <ClientVendors /> },
-          { path: "settings", element: <ClientSettings />, },
-          { path: "settings/profile", element: <ClientProfile />, },
+          { path: "settings", element: <ClientSettings /> },
+          { path: "settings/profile", element: <ClientProfile /> },
         ],
       },
     ],
