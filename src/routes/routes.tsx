@@ -29,6 +29,7 @@ import { ClientBookings } from "../components/client-dashboard/ClientBookings";
 import { ClientCalendar } from "../components/client-dashboard/ClientCalendar";
 import { ClientVendors } from "../components/client-dashboard/ClientVendors";
 import { ClientSettings } from "../components/client-dashboard/ClientSettings";
+import { ClientProfile } from "../components/client-dashboard/ClientProfile";
 
 export const router = createBrowserRouter([
   {
@@ -104,7 +105,8 @@ export const router = createBrowserRouter([
           { path: "bookings", element: <ClientBookings /> },
           { path: "calendar", element: <ClientCalendar /> },
           { path: "vendors", element: <ClientVendors /> },
-          { path: "settings", element: <ClientSettings /> },
+          { path: "settings", element: <ClientSettings />, },
+          { path: "settings/profile", element: <ClientProfile />, },
         ],
       },
     ],

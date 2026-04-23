@@ -47,8 +47,8 @@ export function ClientDashboardHome() {
   }, [bookings, bookingsData?.meta?.total]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="py-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold">Client Dashboard</h1>
           <p className="text-sm text-gray-500">
@@ -58,20 +58,20 @@ export function ClientDashboardHome() {
         <div className="flex flex-wrap gap-3">
           <Link
             to="/client-dashboard/vendors"
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
             Find Vendors
           </Link>
           <Link
             to="/booking"
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
           >
-            Book a Service
+            + Book a Service
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
         <StatCard
           title="Total Bookings"
           value={stats.total.toString()}

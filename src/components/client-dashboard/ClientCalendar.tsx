@@ -41,7 +41,7 @@ export function ClientCalendar() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div>
         <h1 className="text-2xl font-semibold">Booking Calendar</h1>
         <p className="text-sm text-gray-500">

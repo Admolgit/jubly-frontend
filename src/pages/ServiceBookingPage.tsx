@@ -59,7 +59,7 @@ export default function ServiceBookingPage() {
       </div>
 
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 p-6">
-        <div className="space-y-6">
+        <div className="py-6">
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-2xl font-semibold">{service?.name}</h2>
 

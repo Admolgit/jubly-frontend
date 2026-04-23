@@ -4,7 +4,7 @@ import { useConnectCalenderMutation } from "../../features/auth/authApi";
 import Loader from "../ui/Loader";
 
 export function CalendarSyncStatus({ data, isLoading }: { data: any; isLoading: boolean }) {
-  const connected = data?.data?.linked.linked || false;
+  const connected = data?.data?.linked?.linked || false;
   const [connectCalender] = useConnectCalenderMutation();
 
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);

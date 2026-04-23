@@ -9,7 +9,7 @@ export default function ClientDashboardLayout() {
     <div className="flex min-h-screen w-full md:h-screen md:overflow-hidden">
       <ClientSidebar open={open} setOpen={setOpen} />
 
-      <main className="flex-1 bg-gray-50 px-4 py-6 pt-20 sm:px-6 md:pt-6 md:ml-4 overflow-y-auto">
+      <main className="flex-1  bg-gray-50 px-4 py-6 pt-20 sm:px-6 md:pt-6 md:ml-64 overflow-y-auto">
         <Outlet />
       </main>
     </div>

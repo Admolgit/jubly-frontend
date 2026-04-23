@@ -58,13 +58,22 @@ export default function LoginPage() {
         }),
       );
 
-      console.log("Logged in user:", res);
-
-      // if (res.status === 200 && res.data.user.role === "VENDOR") {
-      
-      // }
-
-      if (res.status === 200 && res.data.user.role === "CLIENT") {
+      if (res.status === 404 && res.data.user.role === "VENDOR") {
+        const user = res.data.user;
+        const token = res.data.token;
+        localStorage.setItem("email", user.email);
+        dispatch(setCredentials({ user, token }));
+        navigate("/onboarding");
+      } else if (res.status === 400 && res.data.user.role === "VENDOR") {
+        const user = res.data.user;
+        const token = res.data.token;
+        localStorage.setItem("email", user.email);
+        dispatch(setCredentials({ user, token }));
+        toast.success(
+          `A verification code has been sent to you email ${data.email}.`,
+        );
+        navigate("/verify-email");
+      } else if (res.status === 200 && res.data.user.role === "CLIENT") {
         toast.success("Login successful");
         navigate("/client-dashboard");
       } else {

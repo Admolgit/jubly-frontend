@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import {
   useCancelBookingMutation,
   useGetClientsBookingsQuery,
+  useGetClientsBookingStatsQuery,
+  useMarkBookingAsCompletedMutation,
   useRescheduleBookingMutation,
 } from "../../features/booking/bookingApi";
 import { formatDate } from "../utils/dateFormatter";
@@ -17,6 +19,7 @@ import Input from "../ui/Input";
 import { useSelector } from "react-redux";
 import { LinkActions } from "../ui/LinkActions";
 import ViewModal from "../ui/viewModal";
+import BookingFilters from "../utils/BookingFilters";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -53,12 +56,13 @@ export function ClientBookings() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [openMark, setOpenMark] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [rescheduleStartTime, setRescheduleStartTime] = useState("");
   const [rescheduleEndTime, setRescheduleEndTime] = useState("");
   const [viewVendorOpen, setViewVendorOpen] = useState(false);
-  const [ selectedView, setSelectedView] = useState(null);
+  const [selectedView, setSelectedView] = useState(null);
 
   const { data: getBookingsData, isLoading: getBookingsDataLoading } =
     useGetClientsBookingsQuery({
@@ -75,6 +79,10 @@ export function ClientBookings() {
     useCancelBookingMutation();
   const [rescheduleBooking, { isLoading: rescheduleLoading }] =
     useRescheduleBookingMutation();
+  const [markBookingAsCompleted, { isLoading: markingLoading }] =
+    useMarkBookingAsCompletedMutation();
+  const { data: bookingStats, isLoading: bookingStatsIsLoading } =
+    useGetClientsBookingStatsQuery({})
 
   const totalPages = Math.ceil(
     (getBookingsData?.meta?.total || 0) / itemsPerPage,
@@ -96,6 +104,11 @@ export function ClientBookings() {
   const openCancel = (booking: any) => {
     setSelectedBooking(booking);
     setCancelOpen(true);
+  };
+
+  const onMarking = (booking: any) => {
+    setSelectedBooking(booking);
+    setOpenMark(true);
   };
 
   const openReschedule = (booking: any) => {
@@ -150,7 +163,20 @@ export function ClientBookings() {
       setRescheduleOpen(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to reschedule booking");
+      toast.error(error?.message || "Failed to reschedule booking");
+    }
+  };
+
+  const handleMarkAsCompleted = async () => {
+    if (!selectedBooking?.id) return;
+
+    try {
+      await markBookingAsCompleted(selectedBooking.id).unwrap();
+      toast.success("Booking mark as completed successfully");
+      setOpenMark(false);
+      setSelectedBooking(null);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to cancel booking");
     }
   };
 
@@ -159,229 +185,244 @@ export function ClientBookings() {
     [getBookingsData],
   );
 
-  return (
-    <div className="space-y-0">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Your Bookings</h1>
-          <p className="text-sm text-gray-500">
-            Track, reschedule, or cancel your appointments.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
-            onClick={() => navigate("/booking")}
-          >
-            Book a Service
-          </button>
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {statusOptions.map((option) => (
-              <button
-                key={option.value}
-                className={
-                  "rounded-full px-4 py-1 text-xs font-semibold " +
-                  option.style +
-                  (statusFilter === option.value ? " ring-2 ring-blue-500" : "")
-                }
-                onClick={() => setStatusFilter(option.value)}
-              >
-                {option.label}
-              </button>
-            ))}
+  if (bookingStatsIsLoading || getBookingsDataLoading) {
+    return <Loader />
+  }
+    return (
+      <div className="py-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-semibold">Your Bookings</h1>
+            <p className="text-sm text-gray-500">
+              Manage your appointments, track vendor status, and schedule new
+              beauty sessions.
+            </p>
           </div>
-          <input
-            placeholder="Search bookings"
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm md:w-64"
-            value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
-          />
+          <div className="flex flex-wrap gap-3">
+            <button
+              className="bg-blue-700 px-4 rounded-[10px] py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+              onClick={() => navigate("/booking")}
+            >
+              + Book a Service
+            </button>
+          </div>
         </div>
 
-        <div className="mt-4 overflow-x-auto">
-          {getBookingsDataLoading ? (
-            <Loader />
-          ) : (
-            <table className="w-full min-w-[900px] text-left">
-              <thead className="text-xs uppercase text-gray-400">
-                <tr className="border-b">
-                  <th className="px-3 py-3">Vendor</th>
-                  <th className="px-3 py-3">Service</th>
-                  <th className="px-3 py-3">Date</th>
-                  <th className="px-3 py-3">Time</th>
-                  <th className="px-3 py-3">Amount</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {bookingRows.map((b: any) => (
-                  <tr key={b.id} className="border-b last:border-b-0">
-                    <td className="px-3 py-4 font-medium text-gray-900">
-                      {b.vendor?.businessName || b.vendorName || "Vendor"}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {b.services?.name || "Service"}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {formatDate(b.date, "DD/MM/YYYY")}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {formatTimeFromISO(b.startTime as string)}
-                    </td>
-                    <td className="px-3 py-4 font-semibold text-gray-900">
-                      N{" "}
-                      {Number(
-                        b.services?.price || b.amount || 0,
-                      ).toLocaleString()}
-                    </td>
-                    <td className="px-3 py-4">
-                      <span
-                        className={
-                          "rounded-full px-3 py-1 text-xs font-semibold " +
-                          (statusStyles[b.status] ||
-                            "bg-gray-100 text-gray-600")
-                        }
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-4">
-                      <LinkActions
-                        link={b}
-                        onReschedule={openReschedule}
-                        setViewVendorOpen={setViewVendorOpen}
-                        onCancle={openCancel}
-                        setSelectedView={setSelectedView}
-                      />
-                      {/* <div className="flex flex-wrap gap-2">
-                        <button
-                          className="text-sm font-semibold text-blue-700 hover:underline"
-                          onClick={() => handleViewVendor(b)}
-                        >
-                          View Vendor
-                        </button>
-                        <button
-                          className="text-sm font-semibold text-amber-700 hover:underline"
-                          onClick={() => openReschedule(b)}
-                          disabled={b.status === "CANCELLED" || b.status === "COMPLETED"}
-                        >
-                          Reschedule
-                        </button>
-                        <button
-                          className="text-sm font-semibold text-red-600 hover:underline"
-                          onClick={() => openCancel(b)}
-                          disabled={b.status === "CANCELLED" || b.status === "COMPLETED"}
-                        >
-                          Cancel
-                        </button>
-                      </div> */}
-                    </td>
+        <div className="grid md:grid-cols-3 gap-4 pb-6">
+          <div className="p-4 border bg-white rounded-xl">
+            <p className="text-sm text-[#7F55E0]">Total Spent</p>
+            <h2 className="text-xl font-bold">
+              {`₦ ${bookingStats?.data?.total?.toLocaleString() || "0"}`}
+            </h2>
+          </div>
+          <div className="p-4 border bg-white rounded-xl">
+            <p className="text-sm text-[#E86992]">Active Sessions</p>
+            <h2 className="text-xl font-bold">
+              {bookingStats?.data?.activeBooking ?? "0"} Bookings
+            </h2>
+          </div>
+          <div className="p-4 border bg-white rounded-xl">
+            <p className="text-sm text-[#45D4BE]">Loyalty Points</p>
+            <h2 className="text-xl font-bold">1,450 pts</h2>
+          </div>
+        </div>
+
+        <div className="rounded-2xl p-4 shadow-sm">
+          <BookingFilters
+            statusFilter={statusFilter}
+            statusOptions={statusOptions}
+            setStatusFilter={setStatusFilter}
+            searchFilter={searchFilter}
+            setSearchFilter={setSearchFilter}
+          />
+
+          <div className="mt-4 z-10 overflow-x-auto">
+            {getBookingsDataLoading ? (
+              <Loader />
+            ) : (
+              <table className="w-full min-w-[900px] text-left bg-white">
+                <thead className="text-xs uppercase text-gray-400">
+                  <tr className="border-b">
+                    <th className="px-3 py-3">Vendor</th>
+                    <th className="px-3 py-3">Service</th>
+                    <th className="px-3 py-3">Date</th>
+                    <th className="px-3 py-3">Time</th>
+                    <th className="px-3 py-3">Amount</th>
+                    <th className="px-3 py-3">Status</th>
+                    <th className="px-3 py-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-sm">
+                  {bookingRows.map((b: any) => (
+                    <tr key={b.id} className="border-b last:border-b-0">
+                      <td className="px-3 py-4 font-medium text-gray-900">
+                        {b.vendor?.businessName || b.vendorName || "Vendor"}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600">
+                        {b.services?.name || "Service"}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600">
+                        {formatDate(b.date, "DD/MM/YYYY")}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600">
+                        {formatTimeFromISO(b.startTime as string)}
+                      </td>
+                      <td className="px-3 py-4 font-semibold text-gray-900">
+                        ₦{" "}
+                        {Number(
+                          b.services?.price || b.amount || 0,
+                        ).toLocaleString()}
+                      </td>
+                      <td className="px-3 py-4">
+                        <span
+                          className={
+                            "rounded-full px-3 py-1 text-xs font-semibold " +
+                            (statusStyles[b.status] ||
+                              "bg-gray-100 text-gray-600")
+                          }
+                        >
+                          {b.status}
+                        </span>
+                      </td>
+                      <td className="px-3 py-4">
+                        <LinkActions
+                          link={b}
+                          onReschedule={openReschedule}
+                          setViewVendorOpen={setViewVendorOpen}
+                          onCancle={openCancel}
+                          onMarking={onMarking}
+                          setSelectedView={setSelectedView}
+                          setOpenMark={setOpenMark}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+          {bookingRows.length > 0 && (
+            <div className="mt-4 bg-[#F8F8FE] flex items-center align-center justify-between">
+              <SelectLimit
+                ITEMS_OPTIONS={[5, 10, 20, 50]}
+                itemsPerPage={itemsPerPage}
+                handleItemsChange={handleItemsChange}
+                text="Bookings"
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           )}
         </div>
-        {bookingRows.length > 0 && (
-          <div className="mt-4 flex items-center align-center justify-between">
-            <SelectLimit
-              ITEMS_OPTIONS={[5, 10, 20, 50]}
-              itemsPerPage={itemsPerPage}
-              handleItemsChange={handleItemsChange}
-              text="Bookings"
-            />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+
+        <ViewModal
+          setViewVendorOpen={setViewVendorOpen}
+          viewVendorOpen={viewVendorOpen}
+          booking={selectedView}
+        />
+
+        <Modal
+          open={cancelOpen}
+          onClose={() => setCancelOpen(false)}
+          title="Cancel Booking"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Are you sure you want to cancel this booking? This action cannot
+              be undone.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                onClick={() => setCancelOpen(false)}
+              >
+                Keep Booking
+              </button>
+              <button
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                onClick={handleCancel}
+                disabled={cancelLoading}
+              >
+                {cancelLoading ? "Cancelling..." : "Cancel Booking"}
+              </button>
+            </div>
           </div>
-        )}
+        </Modal>
+
+        <Modal
+          open={openMark}
+          onClose={() => setOpenMark(false)}
+          title="Mark Booking as Complete"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Are you sure you want to mark this booking as completed? This
+              action cannot be undone.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                onClick={() => setOpenMark(false)}
+              >
+                No I am not
+              </button>
+              <button
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                onClick={handleMarkAsCompleted}
+                disabled={markingLoading}
+              >
+                {markingLoading ? "Marking..." : "Mark Booking"}
+              </button>
+            </div>
+          </div>
+        </Modal>
+
+        <Modal
+          open={rescheduleOpen}
+          onClose={() => setRescheduleOpen(false)}
+          title="Reschedule Booking"
+        >
+          <div className="space-y-4">
+            <Input
+              label="New Date"
+              type="date"
+              value={rescheduleDate}
+              onChange={(e) => setRescheduleDate(e.target.value)}
+            />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Start Time"
+                type="time"
+                value={rescheduleStartTime}
+                onChange={(e) => setRescheduleStartTime(e.target.value)}
+              />
+              <Input
+                label="End Time (optional)"
+                type="time"
+                value={rescheduleEndTime}
+                onChange={(e) => setRescheduleEndTime(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <button
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                onClick={() => setRescheduleOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800`}
+                onClick={handleReschedule}
+                disabled={!rescheduleDate && !rescheduleStartTime}
+              >
+                {rescheduleLoading ? "Rescheduling..." : "Confirm Reschedule"}
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
-
-      <ViewModal
-        setViewVendorOpen={setViewVendorOpen}
-        viewVendorOpen={viewVendorOpen}
-        booking={selectedView}
-      />
-
-      <Modal
-        open={cancelOpen}
-        onClose={() => setCancelOpen(false)}
-        title="Cancel Booking"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Are you sure you want to cancel this booking? This action cannot be
-            undone.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setCancelOpen(false)}
-            >
-              Keep Booking
-            </button>
-            <button
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-              onClick={handleCancel}
-              disabled={cancelLoading}
-            >
-              {cancelLoading ? "Cancelling..." : "Cancel Booking"}
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        open={rescheduleOpen}
-        onClose={() => setRescheduleOpen(false)}
-        title="Reschedule Booking"
-      >
-        <div className="space-y-4">
-          <Input
-            label="New Date"
-            type="date"
-            value={rescheduleDate}
-            onChange={(e) => setRescheduleDate(e.target.value)}
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input
-              label="Start Time"
-              type="time"
-              value={rescheduleStartTime}
-              onChange={(e) => setRescheduleStartTime(e.target.value)}
-            />
-            <Input
-              label="End Time (optional)"
-              type="time"
-              value={rescheduleEndTime}
-              onChange={(e) => setRescheduleEndTime(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setRescheduleOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
-              onClick={handleReschedule}
-              disabled={rescheduleLoading}
-            >
-              {rescheduleLoading ? "Rescheduling..." : "Confirm Reschedule"}
-            </button>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  );
+    );
 }

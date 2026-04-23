@@ -1,5 +1,4 @@
-﻿
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { useGetSearchedVendorMutation } from "../../features/vendor/vendorApi";
@@ -93,7 +92,7 @@ export function ClientVendors() {
   }, [searchName, searchLocation, searchType, page, limit]);
 
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div>
         <h1 className="text-2xl font-semibold">Find Vendors</h1>
         <p className="text-sm text-gray-500">
@@ -149,7 +148,9 @@ export function ClientVendors() {
       <div className="rounded-2xl bg-white p-5 shadow-sm">
         {isLoading ? (
           <Loader />
-        ) : !isSearched || vendors.length === 0 ? (
+        ) : !isSearched ? (
+          <p>Please enter your search on the search bar.</p>
+        ) : vendors.length === 0 ? (
           <p className="text-gray-500">No vendors found.</p>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">

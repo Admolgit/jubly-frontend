@@ -55,10 +55,9 @@ export function Bookings() {
       search: searchValue || undefined,
       date: undefined,
     });
-  const { data: dashboardStats } =
-    useGetDashboardStartsQuery(vendor?.id, {
-      skip: !vendor?.id,
-    });
+  const { data: dashboardStats } = useGetDashboardStartsQuery(vendor?.id, {
+    skip: !vendor?.id,
+  });
   const { data: getTransactionsHistoryByVendor } =
     useGetTransactionAmountByVendorQuery(vendor?.id, {
       skip: !vendor?.id,
@@ -85,7 +84,7 @@ export function Bookings() {
   }, [searchFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Bookings</h1>

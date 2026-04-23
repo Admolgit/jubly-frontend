@@ -8,6 +8,7 @@ export const LinkActions = ({
   setViewVendorOpen,
   onCancle,
   setSelectedView,
+  onMarking,
 }: any) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ export const LinkActions = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-[9999] ">
           <button
             onClick={() => {
               setSelectedView(link);
@@ -48,51 +49,41 @@ export const LinkActions = ({
             View
           </button>
 
-          <button
-            onClick={() => {
-              onReschedule();
-              setOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-          >
-            Reschedule
-          </button>
-
-          <button
-            onClick={() => {
-              onCancle();
-              setOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-
-          {/* <button
-            onClick={() => {
-              if (link.status === "CONFIRMED") {
-                onDeactivate(link.id);
-              } else {
-                onReactivate(link.id);
-              }
-              setOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-          >
-            {link.status === "CONFIRMED" ? "Deactivate" : "Reactivate"}
-          </button> */}
-
-          {/* {link.status !== "PENDING" && (
+          {link.status !== "CANCELLED" && (
             <button
               onClick={() => {
-                onDelete();
+                onReschedule(link);
                 setOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
             >
-              Delete
+              Reschedule
             </button>
-          )} */}
+          )}
+
+          {link.status !== "CANCELLED" && (
+            <button
+              onClick={() => {
+                onCancle(link);
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+          )}
+
+          {link.status !== "CANCELLED" && (
+            <button
+              onClick={() => {
+                onMarking(link)
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            >
+              {link.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
+            </button>
+          )}
         </div>
       )}
     </div>
