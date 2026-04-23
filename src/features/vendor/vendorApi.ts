@@ -71,6 +71,12 @@ export const vendorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    searchVendors: builder.mutation({
+      query: (data) => ({
+        url: `search-vendor?name=${data.name}&location=${data.location}&type=${data.type}&page=${data.page}&limit=${data.limit}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -86,4 +92,5 @@ export const {
   useGetDashboardServicesQuery,
   useGetDashboardWalletQuery,
   useGetDashboardClientsQuery,
+  useSearchVendorsMutation,
 } = vendorApi;

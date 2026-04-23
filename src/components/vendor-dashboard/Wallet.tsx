@@ -4,9 +4,7 @@ import { StatCard } from "./StatCard";
 import SelectLimit from "../utils/selectLimit";
 import Pagination from "../utils/pagination";
 import { useEffect, useState } from "react";
-import {
-  useGetTransactionHistoryByVendorQuery,
-} from "../../features/transactions/transactionAPI";
+import { useGetTransactionHistoryByVendorQuery } from "../../features/transactions/transactionAPI";
 import Loader from "../ui/Loader";
 
 const statusStyles: Record<string, string> = {
@@ -30,17 +28,18 @@ export function Wallet() {
   const [searchFilter, setSearchFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: transactionsList, isLoading } = useGetTransactionHistoryByVendorQuery(
-    {
-      vendorId: vendor?.id,
-      page: currentPage,
-      limit: itemsPerPage,
-      searchValue,
-    },
-    {
-      skip: !vendor?.id,
-    },
-  );
+  const { data: transactionsList, isLoading } =
+    useGetTransactionHistoryByVendorQuery(
+      {
+        vendorId: vendor?.id,
+        page: currentPage,
+        limit: itemsPerPage,
+        searchValue,
+      },
+      {
+        skip: !vendor?.id,
+      },
+    );
 
   const transactions = transactionsList?.data?.transactions || [];
 
@@ -85,7 +84,7 @@ export function Wallet() {
   }, [searchFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Wallet</h1>

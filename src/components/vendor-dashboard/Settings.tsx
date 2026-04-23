@@ -4,10 +4,10 @@ import { CopyDiv } from "./UrlCopy";
 
 export function Settings() {
   const slug = useSelector(
-    (state: { auth: { user: { slug: string}} }) => state.auth.user.slug,
+    (state: { auth: { user: { slug: string } } }) => state.auth.user.slug,
   );
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div>
         <h1 className="text-2xl font-semibold">Settings</h1>
         <p className="text-sm text-gray-500">
@@ -16,7 +16,7 @@ export function Settings() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.7fr_0.3fr]">
-        <div className="space-y-6">
+        <div className="py-6">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Business Information</h3>
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -46,7 +46,7 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="py-6">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h3 className="font-semibold">Profile Photo</h3>
             <div className="mt-4 flex flex-col items-center gap-3">

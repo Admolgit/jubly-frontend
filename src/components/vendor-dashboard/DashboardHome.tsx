@@ -97,7 +97,7 @@ function DashboardHome() {
   console.log({ transationsList });
 
   return (
-    <div className="space-y-0">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-[20px] font-semibold">Dashboard</h1>
@@ -107,16 +107,16 @@ function DashboardHome() {
         </div>
         <div className="flex flex-wrap gap-3">
           <button
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
             onClick={() => setServiceOpen(true)}
           >
-            Add Service
+            + Add Service
           </button>
           <button
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
             onClick={() => setBookingOpen(true)}
           >
-            Create Booking
+            + Create Booking
           </button>
         </div>
       </div>
@@ -167,7 +167,7 @@ function DashboardHome() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="space-y-6 xl:col-span-2">
+        <div className="py-6 xl:col-span-2">
           <CalendarSyncStatus
             data={calendarLinkedData}
             isLoading={calendarLinkedLoading}
@@ -179,7 +179,7 @@ function DashboardHome() {
           />
         </div>
 
-        <div className="space-y-6">
+        <div className="py-6">
           <div className="rounded-2xl bg-white p-5 shadow-sm mt-6">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Today&apos;s Schedule</h3>

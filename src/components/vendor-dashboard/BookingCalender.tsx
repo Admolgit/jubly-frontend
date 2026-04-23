@@ -76,7 +76,7 @@ export function BookingCalendar() {
     return <Loader />;
   }
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Booking Calendar</h1>

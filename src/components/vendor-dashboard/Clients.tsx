@@ -27,7 +27,7 @@ export function Clients() {
   console.log({ clients, vendor });
 
   return (
-    <div className="space-y-6">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Clients</h1>

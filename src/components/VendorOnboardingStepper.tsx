@@ -53,8 +53,7 @@ export const VendorOnboardingStepper = () => {
     completeVendorOnboarding,
     { isLoading: completeVendorOnboardingIsLoading },
   ] = useCompleteVendorOnboardingMutation();
-  const [createVendorProfile] =
-    useCreateVendorProfieMutation();
+  const [createVendorProfile] = useCreateVendorProfieMutation();
 
   const [step, setStep] = useState(0);
   const {
@@ -320,7 +319,7 @@ export const VendorOnboardingStepper = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="py-6">
         {/* Step 0: Profile & Services */}
         {step === 0 && (
           <div className="space-y-4 p-4 w-full bg-white shadow rounded">

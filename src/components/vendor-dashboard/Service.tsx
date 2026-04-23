@@ -58,10 +58,10 @@ export function Services() {
     // }
   };
 
-  console.log({editForm})
+  console.log({ editForm });
 
   return (
-    <div className="space-y-0">
+    <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between relative">
         <div>
           <h1 className="text-2xl font-semibold">Services</h1>

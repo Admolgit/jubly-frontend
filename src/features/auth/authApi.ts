@@ -9,6 +9,13 @@ export const authApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    changePassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/change-password",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
     registerVendor: builder.mutation({
       query: (data) => ({
         url: "/auth/register",
@@ -60,6 +67,7 @@ export const authApi = api.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useChangePasswordMutation,
   useRegisterVendorMutation,
   useVerifyOtpMutation,
   useResendOtpMutation,

@@ -52,7 +52,6 @@ export default function RegisterPage() {
   }, [animatedTexts]);
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    console.log(data);
     try {
       if (data.password !== data.confirmPassword) {
         toast.error("Password must be same as confirm password.");

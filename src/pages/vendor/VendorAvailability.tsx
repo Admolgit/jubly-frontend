@@ -72,7 +72,7 @@ export default function VendorAvailability() {
     <div className="w-full max-w-xl mx-auto bg-white p-8 rounded-xl shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Set Your Availability</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="py-6">
         {/* Days */}
         <div>
           <p className="font-medium mb-3">Select Available Days</p>

@@ -84,12 +84,12 @@ export function Sidebar({
                 key={item.name}
                 to={item.path}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
-                ${
-                  active
+                className={
+                  "flex items-center gap-3 px-3 py-2 rounded-[12px] transition " +
+                  (active
                     ? "bg-blue-800 text-white font-semibold"
-                    : "hover:bg-blue-800"
-                }`}
+                    : "hover:bg-blue-800")
+                }
               >
                 <Icon size={18} />
                 {item.name}

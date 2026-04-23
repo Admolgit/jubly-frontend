@@ -1,4 +1,4 @@
-import { api } from "../../app/api";
+﻿import { api } from "../../app/api";
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -39,6 +39,15 @@ export const userApi = api.injectEndpoints({
         url: `/booking?page=${data.page}&limit=${data.limit}&search=${data.search ?? ""}&dateFilter=${data.dateFilter ?? ""}&status=${data.status ?? ""}&date=${data.date ?? ""}`,
         method: "GET",
       }),
+      providesTags: () => [{ type: "Booking" }],
+    }),
+
+    getClientsBookings: builder.query({
+      query: (data) => ({
+        url: `/booking/clients?email=${data.email}&page=${data.page}&limit=${data.limit}&search=${data.search ?? ""}&dateFilter=${data.dateFilter ?? ""}&status=${data.status ?? ""}&date=${data.date ?? ""}`,
+        method: "GET",
+      }),
+      providesTags: ["Booking"],
     }),
 
     getClientsVendorStats: builder.query({
@@ -48,11 +57,55 @@ export const userApi = api.injectEndpoints({
       }),
     }),
 
+    getClientsBookingStats: builder.query({
+      query: () => ({
+        url: "/booking/clients/booking-stats",
+        method: "GET",
+      }),
+    }),
+
     getVendorUpcomingBookings: builder.query({
       query: () => ({
         url: "/booking/upcoming-bookings",
         method: "GET",
       }),
+    }),
+    getClientUpcomingBookings: builder.query({
+      query: () => ({
+        url: "/booking/client/upcoming-bookings",
+        method: "GET",
+      }),
+    }),
+    cancelBooking: builder.mutation({
+      query: (bookingId: string) => ({
+        url: `/booking/${bookingId}/cancel`,
+        method: "PATCH",
+      }),
+      invalidatesTags: () => [{ type: "Booking" }],
+    }),
+    markBookingAsCompleted: builder.mutation({
+      query: (bookingId: string) => ({
+        url: `/booking/${bookingId}/mark-as-completed`,
+        method: "PATCH",
+      }),
+      invalidatesTags: () => [{ type: "Booking" }],
+    }),
+    rescheduleBooking: builder.mutation({
+      query: (data: {
+        bookingId: string;
+        date: string;
+        startTime: string;
+        endTime?: string;
+      }) => ({
+        url: `/booking/reschedule/${data.bookingId}`,
+        method: "PATCH",
+        body: {
+          date: data.date,
+          startTime: data.startTime,
+          endTime: data.endTime,
+        },
+      }),
+      invalidatesTags: () => [{ type: "Booking" }],
     }),
   }),
 });
@@ -64,6 +117,12 @@ export const {
   useGetUpcomingBookingsQuery,
   useGetServicesCountsQuery,
   useGetBookingsQuery,
+  useGetClientsBookingsQuery,
   useGetClientsVendorStatsQuery,
+  useGetClientsBookingStatsQuery,
   useGetVendorUpcomingBookingsQuery,
+  useCancelBookingMutation,
+  useMarkBookingAsCompletedMutation,
+  useRescheduleBookingMutation,
+  useGetClientUpcomingBookingsQuery,
 } = userApi;
