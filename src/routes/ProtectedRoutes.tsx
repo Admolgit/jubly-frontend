@@ -5,9 +5,9 @@ import { useSelector } from "react-redux";
 
 const ProtectedRoutes = () => {
   const user = useSelector((state: any) => state.auth.user);
-  const vendor = useSelector(
-    (state: { vendor: { vendor: any } }) => state.vendor.vendor,
-  );
+  // const vendor = useSelector(
+  //   (state: { vendor: { vendor: any } }) => state.vendor.vendor,
+  // );
 
   const location = useLocation();
 
