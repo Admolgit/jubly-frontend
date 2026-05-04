@@ -1,7 +1,7 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
-import { StatCard } from "../vendor-dashboard/StatCard";
+import { StatCard } from "../vendor-dashboard/dashboard/StatCard";
 import Loader from "../ui/Loader";
 import { formatDate } from "../utils/dateFormatter";
 import { formatTimeFromISO } from "../utils/timeFormatter";

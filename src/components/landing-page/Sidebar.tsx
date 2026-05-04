@@ -50,7 +50,7 @@ export function Sidebar({
         <button
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
-          className="text-xl"
+          className="text-2xl"
         >
           <Menu size={20} />
         </button>
@@ -63,12 +63,11 @@ export function Sidebar({
           onClick={() => setOpen(false)}
         />
       )}
-      
+
       <aside
-        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 sm:w-2 md:w-64 bg-white text-black p-6 relative
-        transform transition-transform duration-300 z-40
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 overflow-y-auto`}
+        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 bg-white text-black p-6 transform transition-transform duration-300 z-40 
+          ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 overflow-y-auto
+        `}
       >
         <div className="my-6 ">
           <Logo />
@@ -85,7 +84,7 @@ export function Sidebar({
                 to={item.path}
                 onClick={() => setOpen(false)}
                 className={
-                  "flex items-center gap-3 px-3 py-2 rounded-[12px] transition " +
+                  "flex items-center gap-3 px-3 py-2 rounded-[12px] transition text-md " +
                   (active
                     ? "bg-blue-800 text-white font-semibold"
                     : "hover:bg-blue-800")
@@ -98,7 +97,7 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="bg-gray-800 rounded-2xl p-4 flex items-center justify-between shadow-lg mt-10">
+        <div className="bg-[#F7F7FA] rounded-2xl p-4 flex items-center justify-between shadow-lg mt-10">
           <div className="flex items-center gap-3">
             <img
               src={vendor?.profileImage}
@@ -106,18 +105,20 @@ export function Sidebar({
               className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
             />
             <div className="leading-tight">
-              <p className="text-sm font-semibold text-white">{vendor?.businessName}</p>
-              <p className="text-xs text-gray-400">{vendor?.category}</p>
+              <p className="text-md text-gray-900 font-semibold">
+                {vendor?.businessName}
+              </p>
+              <p className="text-sm text-gray-600">{vendor?.category}</p>
             </div>
           </div>
-          
+
           <div className="absolute bottom-6 left-6 right-6">
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
             >
               <LogOut size={18} />
-              <span className="text-sm font-medium">Logout</span>
+              <span className="text-md font-medium">Logout</span>
             </button>
           </div>
         </div>

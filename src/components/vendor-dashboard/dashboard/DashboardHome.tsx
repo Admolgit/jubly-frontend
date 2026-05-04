@@ -1,28 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDispatch } from "react-redux";
-import { CalendarSyncStatus } from "./CalenderSyncStatus";
-import { EarningsChart } from "./EarningsChart";
+import { CalendarSyncStatus } from "../CalenderSyncStatus";
+import { EarningsChart } from "../EarningsChart";
 import { StatCard } from "./StatCard";
-import { useGetVendorProfileByIdQuery } from "../../features/vendor/vendorApi";
+import { useGetVendorProfileByIdQuery } from "../../../features/vendor/vendorApi";
 import {
+  // useCreateBookingMutation,
   useGetDashboardStartsQuery,
   useGetServicesCountsQuery,
   useGetUpcomingBookingsQuery,
-} from "../../features/booking/bookingApi";
+} from "../../../features/booking/bookingApi";
 import { useEffect, useState } from "react";
-import { setVendorCredentials } from "../../features/vendor/vendorSlice";
-import Modal from "../ui/Modal";
-import Input from "../ui/Input";
-import Loader from "../ui/Loader";
-import { useGetCalendarLinkedQuery } from "../../features/calendar/calendarAPI";
-import { formatTimeFromISO } from "../utils/timeFormatter";
+import { setVendorCredentials } from "../../../features/vendor/vendorSlice";
+import Modal from "../../ui/Modal";
+import Loader from "../../ui/Loader";
+import { useGetCalendarLinkedQuery } from "../../../features/calendar/calendarAPI";
+import { formatTimeFromISO } from "../../utils/timeFormatter";
 import {
   useGetTransactionAmountByVendorQuery,
   useGetTransactionAnalyticsQuery,
   useGetTransactionHistoryByVendorQuery,
-} from "../../features/transactions/transactionAPI";
-import { setTransactions } from "../../features/transactions/transactionSlice";
-import { setTransactionsList } from "../../features/transactions/transactionsSlice";
+} from "../../../features/transactions/transactionAPI";
+import { setTransactions } from "../../../features/transactions/transactionSlice";
+import { setTransactionsList } from "../../../features/transactions/transactionsSlice";
+import ServiceForm from "../ServiceCreationForm";
+import BookingForm from "../BookingCreationForm";
+import toast from "react-hot-toast";
+import { useCreateServiceMutation } from "../../../features/services/servicesAPI";
+import DashboardHeader from "./DashboardHeader";
+import { CalendarCheck, ClipboardList, Eye, Wallet } from "lucide-react";
+import { TodaySchedule } from "./TodaySchedule";
 
 export interface IUser {
   firstName: string;
@@ -74,6 +81,32 @@ function DashboardHome() {
     },
   );
 
+  const [createService, { isLoading: createServiceIsLoading }] =
+    useCreateServiceMutation();
+
+  const handleCreateService = async (data: any) => {
+    try {
+      const response = await createService({
+        services: [
+          {
+            category: data.category,
+            description: data.description,
+            durationMins: Number(data.durationMins),
+            name: data.name,
+          },
+        ],
+      }).unwrap();
+
+      if (response.status === 201) {
+        toast.success("Service created.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCreateBooking = async (data: any) => {};
+
   useEffect(() => {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
     dispatch(
@@ -94,80 +127,71 @@ function DashboardHome() {
     dispatch,
   ]);
 
-  console.log({ transationsList });
-
+  if (
+    vendorByUserIdLoading ||
+    dashboardStatsLoading ||
+    loadingTransactionsAnalyics
+  ) {
+    return <Loader />;
+  }
   return (
     <div className="py-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-[20px] font-semibold">Dashboard</h1>
-          <p className="text-sm text-gray-500">
-            Overview of your bookings, earnings, and clients.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-            onClick={() => setServiceOpen(true)}
-          >
-            + Add Service
-          </button>
-          <button
-            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
-            onClick={() => setBookingOpen(true)}
-          >
-            + Create Booking
-          </button>
-        </div>
+      <div>
+        <DashboardHeader
+          setServiceOpen={setServiceOpen}
+          setBookingOpen={setBookingOpen}
+          vendorData={vendorData}
+        />
       </div>
 
-      <div className="py-6 ">
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          {vendorByUserIdLoading ? (
-            <Loader />
-          ) : (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-[16px]">
-                Welcome,{" "}
-                <span className="text-[#C271AC]">
-                  {vendorData?.data?.vendor?.businessName || "Vendor"}
-                </span>
-              </div>
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-                {vendorData?.data?.vendor?.kycStatus === "APPROVED"
-                  ? "Verified"
-                  : "Pending Verification"}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-6">
         <StatCard
           title="Total Bookings"
           value={dashboardStats?.data?.bookingCount?.toString() || "0"}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<ClipboardList className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
         />
+
         <StatCard
           title="Upcoming"
           value={dashboardStats?.data?.upcomingBooking?.toString() || "0"}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<CalendarCheck className="w-5 h-5" />}
+          color="green"
+          change="3 this week"
         />
+
         <StatCard
           title="Earnings"
           value={`₦ ${getTransactionsHistoryByVendor?.data?.total?.toLocaleString() || "0"}`}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<Wallet className="w-5 h-5" />}
+          color="orange"
+          change="18% from last month"
         />
+
         <StatCard
           title="Profile Views"
           value={dashboardStats?.data?.profileViews?.toString() || "0"}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<Eye className="w-5 h-5" />}
+          color="blue"
+          change="8% from last month"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="py-6 xl:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <CalendarSyncStatus
+          data={calendarLinkedData}
+          isLoading={calendarLinkedLoading}
+        />
+
+        <TodaySchedule
+          upcomingBookingsData={upcomingBookingsData}
+          upcomingIsLoading={upcomingIsLoading}
+        />
+      </div>
+
+      {/* <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="xl:col-span-2 flex flex-col gap-6">
           <CalendarSyncStatus
             data={calendarLinkedData}
             isLoading={calendarLinkedLoading}
@@ -179,15 +203,15 @@ function DashboardHome() {
           />
         </div>
 
-        <div className="py-6">
+        <div className="flex flex-col gap-6 ">
           <div className="rounded-2xl bg-white p-5 shadow-sm mt-6">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Today&apos;s Schedule</h3>
-              <span className="text-xs text-gray-400">
+              <h3 className="text-lg font-semibold">Today&apos;s Schedule</h3>
+              <span className="text-sm text-gray-400">
                 {upcomingBookingsData?.data?.length || 0} bookings
               </span>
             </div>
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-3 ">
               {upcomingIsLoading ? (
                 <Loader />
               ) : (
@@ -203,14 +227,14 @@ function DashboardHome() {
                       className="flex items-center justify-between rounded-xl border border-gray-100 p-3"
                     >
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-md font-semibold text-gray-900">
                           {item.clientName ?? "Client Name"}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-md text-gray-500">
                           {item.services?.name || "Service Name"}
                         </p>
                       </div>
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-md font-medium text-gray-700">
                         {formatTimeFromISO(item.startTime as string)}
                       </span>
                     </div>
@@ -221,7 +245,7 @@ function DashboardHome() {
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <h3 className="font-semibold">Top Services</h3>
+            <h3 className="text-lg font-semibold">Top Services</h3>
             <div className="mt-4 space-y-3">
               {loadingServicesCounts ? (
                 <Loader />
@@ -234,7 +258,7 @@ function DashboardHome() {
                     <p className="text-sm font-medium text-gray-900">
                       {service.serviceName}
                     </p>
-                    <span className="text-xs font-semibold text-gray-600">
+                    <span className="text-sm font-semibold text-gray-600">
                       {service.count} bookings
                     </span>
                   </div>
@@ -243,42 +267,18 @@ function DashboardHome() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Modal
         open={serviceOpen}
         onClose={() => setServiceOpen(false)}
         title="Add Service"
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input label="Service Name" placeholder="Bridal Makeup" />
-            <Input label="Price" placeholder="NGN 10,000" />
-            <Input label="Duration" placeholder="90 min" />
-            <Input label="Category" placeholder="Makeup" />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Description
-            </label>
-            <textarea
-              placeholder="Describe the service"
-              className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={4}
-            />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setServiceOpen(false)}
-            >
-              Cancel
-            </button>
-            <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">
-              Create Service
-            </button>
-          </div>
-        </div>
+        <ServiceForm
+          setServiceOpen={setServiceOpen}
+          handleCreateService={handleCreateService}
+          createServiceIsLoading={createServiceIsLoading}
+        />
       </Modal>
 
       <Modal
@@ -286,26 +286,10 @@ function DashboardHome() {
         onClose={() => setBookingOpen(false)}
         title="Create Booking"
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input label="Client Name" placeholder="Jane Doe" />
-            <Input label="Service" placeholder="Bridal Makeup" />
-            <Input label="Date" placeholder="May 24, 2026" />
-            <Input label="Time" placeholder="10:00 AM" />
-          </div>
-          <Input label="Notes" placeholder="Add extra notes" />
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setBookingOpen(false)}
-            >
-              Cancel
-            </button>
-            <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">
-              Create Booking
-            </button>
-          </div>
-        </div>
+        <BookingForm
+          setBookingOpen={setBookingOpen}
+          handleCreateBooking={handleCreateBooking}
+        />
       </Modal>
     </div>
   );

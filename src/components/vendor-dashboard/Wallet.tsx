@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSelector } from "react-redux";
-import { StatCard } from "./StatCard";
+import { StatCard } from "./dashboard/StatCard";
 import SelectLimit from "../utils/selectLimit";
 import Pagination from "../utils/pagination";
 import { useEffect, useState } from "react";

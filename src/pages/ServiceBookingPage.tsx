@@ -2,37 +2,34 @@
 import { useParams } from "react-router-dom";
 import { useGetServiceByIdQuery } from "../features/vendor/vendorApi";
 import { useEffect, useState } from "react";
-import { useGetVendorAvailabilitySlotsMutation } from "../features/availability/availability";
+import { useGetVendorAvailabilitySlotsQuery } from "../features/availability/availability";
 import { BookingFormModal } from "../components/vendor-dashboard/BookingForm";
 import Loader from "../components/ui/Loader";
 
 export default function ServiceBookingPage() {
   const { serviceId } = useParams();
+  const { data, isLoading } = useGetServiceByIdQuery(serviceId as string);
 
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
-  const [slotsData, setSlotsData] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<any>(null);
   const [openBooking, setOpenBooking] = useState(false);
-
-  const { data, isLoading } = useGetServiceByIdQuery(serviceId as string);
-  const [getVendorAvailabilitySlots, { isLoading: slotsIsLoading }] =
-    useGetVendorAvailabilitySlotsMutation();
   const service = data?.data?.service;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await getVendorAvailabilitySlots({
-        vendorId: data?.data?.service?.vendorId,
+  const shouldSkip =
+    !selectedDate || !service?.id || !data?.data?.service?.userId;
+
+  const { data: slotsData, isLoading: slotsIsLoading } =
+    useGetVendorAvailabilitySlotsQuery(
+      {
+        vendorId: data?.data?.service?.userId,
         serviceId: service?.id,
         date: selectedDate,
-      }).unwrap();
-
-      if (res) {
-        setSlotsData(res.data.availableSlots);
-      }
-    };
-    fetchData();
-  }, [selectedDate, data, getVendorAvailabilitySlots, service]);
+      },
+      {
+        skip: shouldSkip,
+        refetchOnMountOrArgChange: true,
+      },
+    );
 
   const handleBooking = async () => {
     setOpenBooking(true);
@@ -45,6 +42,8 @@ export default function ServiceBookingPage() {
       </div>
     );
   }
+
+  console.log({ slotsData })
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -106,7 +105,7 @@ export default function ServiceBookingPage() {
           <div className="grid grid-cols-3 gap-3">
             {slotsIsLoading
               ? "Loading"
-              : slotsData?.map((slot: any) => {
+              : slotsData?.data?.availableSlots?.map((slot: any) => {
                   const start = new Date(slot.startTime);
 
                   const formatted = start.toLocaleTimeString([], {

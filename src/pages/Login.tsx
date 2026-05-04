@@ -58,12 +58,26 @@ export default function LoginPage() {
         }),
       );
 
-      if (res.status === 404 && res.data.user.role === "VENDOR") {
+      if (
+        res?.data.user.role === "VENDOR" &&
+        res?.message === "Onboarding not completed"
+      ) {
+        const user = res.data.user;
+        const token = res.data.token;
+        localStorage.setItem("email", user.email);
+        dispatch(setCredentials({ user, token }));
+        navigate("/vendor-availability");
+        toast.success("Please set your availability.");
+      } else if (
+        (res.status === 404 && res.data.user.role === "VENDOR") ||
+        res?.message === "Complete your onboarding"
+      ) {
         const user = res.data.user;
         const token = res.data.token;
         localStorage.setItem("email", user.email);
         dispatch(setCredentials({ user, token }));
         navigate("/onboarding");
+        toast.success("Please complete your onboarding.");
       } else if (res.status === 400 && res.data.user.role === "VENDOR") {
         const user = res.data.user;
         const token = res.data.token;

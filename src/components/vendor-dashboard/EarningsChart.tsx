@@ -13,11 +13,17 @@ export function EarningsChart({
   transactionsAnalytics,
   loadingTransactionsAnalyics,
   setChangeView,
-}: any) {
-  const data = transactionsAnalytics?.data?.data?.map((item: any) => ({
-    month: item.label,
-    earnings: item.amount,
-  }));
+}: {
+  transactionsAnalytics: any;
+  loadingTransactionsAnalyics: boolean;
+  setChangeView: (value: any) => void;
+}) {
+  const data = transactionsAnalytics?.data?.data?.map(
+    (item: { label: string; amount: number }) => ({
+      month: item.label,
+      earnings: item.amount,
+    }),
+  );
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
@@ -25,7 +31,7 @@ export function EarningsChart({
         <div>
           <h3 className="font-semibold">Earnings</h3>
           <select
-            className="text-xs text-gray-500 border border-gray-300 rounded-md px-2 py-1"
+            className="text-sm text-gray-500 border border-gray-300 rounded-md px-2 py-1"
             defaultValue={"month"}
             onChange={(e) => {
               setChangeView(e.target.value);
@@ -39,7 +45,7 @@ export function EarningsChart({
         </div>
         <div className="text-right">
           <p className="text-xs text-gray-500">Total</p>
-          <p className="text-lg font-semibold text-gray-900">
+          <p className="text-xl font-semibold text-gray-900">
             NGN {transactionsAnalytics?.data?.total?.toLocaleString() || "0"}
           </p>
         </div>
@@ -47,6 +53,8 @@ export function EarningsChart({
       <div className="mt-4">
         {loadingTransactionsAnalyics ? (
           <Loader />
+        ) : transactionsAnalytics?.data?.total === 0 ? (
+          <p>No analytics to display yet.</p>
         ) : (
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={data}>

@@ -2,9 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import debounce from "lodash.debounce";
 import Pagination from "../components/Pagination";
-import {
-  useGetSearchedVendorMutation,
-} from "../features/vendor/vendorApi";
+import { useGetSearchedVendorMutation } from "../features/vendor/vendorApi";
 import { useGetUserByIdMutation } from "../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
 
@@ -79,7 +77,7 @@ const SearchBookingPage: React.FC = () => {
 
   const handleVendorClick = async (userId: string) => {
     try {
-      const res = await getUserById({userId});
+      const res = await getUserById({ userId });
 
       if (res?.data?.status === 200) {
         const slug = res.data.data.user.slug;
@@ -102,7 +100,7 @@ const SearchBookingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
         Find Your Vendor
       </h1>
 

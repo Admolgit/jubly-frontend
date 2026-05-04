@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../components/booking/Footer";
 import { useGetUserBySlugMutation } from "../features/vendor/vendorApi";
-import Loader from "../components/ui/Loader"
+import Loader from "../components/ui/Loader";
 
 export default function VendorBookingPage() {
   const slug = useParams().slug;
@@ -57,7 +57,6 @@ export default function VendorBookingPage() {
           backgroundPosition: "center",
         }}
       >
-
         <div className="absolute -bottom-12 left-10">
           <img
             src={vendor?.profileImage || "/default-avatar.png"}
@@ -67,7 +66,9 @@ export default function VendorBookingPage() {
       </div>
 
       <div className="max-w-6xl mx-auto mt-16 px-6">
-        <h1 className="text-3xl font-bold">{vendor?.businessName}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">
+          {vendor?.businessName}
+        </h1>
 
         <p className="text-gray-500">{vendor?.category}</p>
 
@@ -114,7 +115,7 @@ export default function VendorBookingPage() {
               {services?.map((service: any) => (
                 <div
                   key={service?.id}
-                  className="border rounded-lg p-4"
+                  className="border rounded-lg p-4 cursor-pointer"
                   onClick={() =>
                     window.open(`/${slug}/${service?.id}`, "_blank")
                   }
@@ -146,7 +147,7 @@ export default function VendorBookingPage() {
 
             {/* Close Button */}
             <button
-              className="absolute top-6 right-6 text-white text-3xl"
+              className="absolute top-6 right-6 text-white text-2xl md:text-3xl"
               onClick={() => setSelectedImage(null)}
             >
               ✕

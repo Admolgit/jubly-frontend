@@ -26,7 +26,7 @@ export const LinkActions = ({
   }, []);
 
   return (
-    <div className="relative inline-block" ref={menuRef}>
+    <div className="relative inline-block" ref={menuRef}> 
       {/* Trigger */}
       <button
         onClick={() => setOpen((prev) => !prev)}
@@ -37,7 +37,7 @@ export const LinkActions = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-[9999] ">
+        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50 ">
           <button
             onClick={() => {
               setSelectedView(link);

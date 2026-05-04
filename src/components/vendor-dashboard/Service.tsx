@@ -6,6 +6,7 @@ import Input from "../ui/Input";
 import { useGetVendorServicesQuery } from "../../features/services/servicesAPI";
 import Loader from "../ui/Loader";
 import Pagination from "../utils/pagination";
+import { SearchIcon } from "lucide-react";
 
 const DEFAULT_ITEMS_PER_PAGE = 6;
 
@@ -64,17 +65,17 @@ export function Services() {
     <div className="py-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between relative">
         <div>
-          <h1 className="text-2xl font-semibold">Services</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold">Services</h1>
           <p className="text-sm text-gray-500">
             Manage your service catalog and pricing.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+          <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
             Import
           </button>
           <button
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
             onClick={() => {
               setServiceOpen(true);
             }}
@@ -88,26 +89,34 @@ export function Services() {
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap gap-2">
-              <button className="rounded-full bg-blue-50 px-4 py-1 text-xs font-semibold text-blue-700">
+              <button className="rounded-full bg-blue-50 px-4 py-1 text-sm font-medium tracking-tight text-blue-700">
                 All
               </button>
               <button
-                className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
+                className="rounded-full bg-gray-100 px-4 py-1 text-sm font-medium tracking-tight text-gray-600"
                 onClick={() => setActiveView("true")}
               >
                 Active
               </button>
               <button
-                className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600"
+                className="rounded-full bg-gray-100 px-4 py-1 text-sm font-medium tracking-tight text-gray-600"
                 onClick={() => setActiveView("false")}
               >
                 Paused
               </button>
             </div>
-            <input
-              placeholder="Search services"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm md:w-64"
-            />
+            <div className="flex gap-2 items-center">
+              <input
+                placeholder="Search services"
+                className="w-full rounded-[10px] border border-gray-200 px-3 py-2 text-sm md:w-64"
+                // value={searchFilter}
+                // onChange={(e) => setSearchFilter(e.target.value)}
+              />
+              <SearchIcon
+                size={30}
+                className="border border-gray-200 p-2 text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -145,7 +154,7 @@ export function Services() {
                 <div>
                   <p className="text-xs text-gray-500">Price</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {service.price}
+                    {Number(service.price)?.toLocaleString()}
                   </p>
                 </div>
                 <div>
