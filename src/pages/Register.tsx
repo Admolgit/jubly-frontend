@@ -72,7 +72,7 @@ export default function RegisterPage() {
       }
     } catch (err: any) {
       console.log({ err });
-      if (err?.error.includes("Email already in use")) {
+      if (err?.error?.includes("Email already in use")) {
         toast.error("Email already in use");
       }
       toast.error(err?.data?.message || "Register failed");

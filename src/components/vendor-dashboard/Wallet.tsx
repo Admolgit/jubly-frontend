@@ -6,6 +6,7 @@ import Pagination from "../utils/pagination";
 import { useEffect, useState } from "react";
 import { useGetTransactionHistoryByVendorQuery } from "../../features/transactions/transactionAPI";
 import Loader from "../ui/Loader";
+import { CurrencyIcon, StampIcon, Wallet2Icon } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -84,7 +85,7 @@ export function Wallet() {
   }, [searchFilter]);
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Wallet</h1>
@@ -92,21 +93,36 @@ export function Wallet() {
             Track balances, payouts, and earnings.
           </p>
         </div>
-        <button className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
+        <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
           Withdraw to Bank
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
         <StatCard
           title="Total Earned"
           value={Number(totalEarned).toLocaleString()}
+          icon={<Wallet2Icon className="w-5 h-5" />}
+          color="green"
+          change="12% from last month"
         />
-        <StatCard title="Available" value="NGN 140,000" />
-        <StatCard title="Pending" value="NGN 20,000" />
+        <StatCard
+          title="Available"
+          value="NGN 140,000"
+          icon={<CurrencyIcon className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
+        />
+        <StatCard
+          title="Pending"
+          value="NGN 20,000"
+          icon={<StampIcon className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr] my-6">
         <div className="rounded-2xl bg-white p-5 shadow-sm">
           <h3 className="font-semibold">Recent Payouts</h3>
           <div className="mt-4 space-y-3">

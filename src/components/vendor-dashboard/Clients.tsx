@@ -41,7 +41,7 @@ export function Clients() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50">
             Export
           </button>
           <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
@@ -77,8 +77,8 @@ export function Clients() {
       <div className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <BookingSearch
-            // value={searchFilter}
-            // setSearchFilter={setSearchFilter}
+          // value={searchFilter}
+          // setSearchFilter={setSearchFilter}
           />
           <div className="flex flex-wrap gap-2">
             <button className="rounded-full bg-blue-50 px-4 py-1 text-xs font-semibold text-blue-700">

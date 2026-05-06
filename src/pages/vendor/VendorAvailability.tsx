@@ -35,7 +35,7 @@ export default function VendorAvailability() {
 
   const toggleDay = (day: number) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
+      prev?.includes(day) ? prev?.filter((d) => d !== day) : [...prev, day],
     );
   };
 
@@ -84,7 +84,7 @@ export default function VendorAvailability() {
                 key={day.value}
                 onClick={() => toggleDay(day.value)}
                 className={`p-3 rounded-lg border transition ${
-                  selectedDays.includes(day.value)
+                  selectedDays?.includes(day.value)
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
