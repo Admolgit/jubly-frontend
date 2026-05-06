@@ -4,6 +4,7 @@ import {
   useCancelBookingMutation,
   useGetBookingsQuery,
   useGetDashboardStartsQuery,
+  useGetStatusFilterCountQuery,
   useMarkBookingAsCompletedMutation,
   useRescheduleBookingMutation,
 } from "../../../features/booking/bookingApi";
@@ -14,37 +15,63 @@ import { formatTimeFromISO } from "../../utils/timeFormatter";
 import Loader from "../../ui/Loader";
 import { useSelector } from "react-redux";
 import { useGetTransactionAmountByVendorQuery } from "../../../features/transactions/transactionAPI";
-import { SearchIcon } from "lucide-react";
+import {
+  CalendarCheck,
+  ClipboardList,
+  Wallet,
+  Calendar,
+  Clock,
+  CheckCircle,
+  CheckSquare,
+  XCircle,
+} from "lucide-react";
 import { LinkActions } from "../../ui/LinkActions";
 import toast from "react-hot-toast";
 import Modal from "../../ui/Modal";
 import Input from "../../ui/Input";
 import ViewBookingModal from "./BookingViewModal";
 import { StatCard } from "../dashboard/StatCard";
+import BookingSearch from "./BookingSearch";
 
-const statusStyles: Record<string, string> = {
-  CONFIRMED: "bg-green-100 text-green-700",
-  PENDING: "bg-amber-100 text-amber-700",
-  CANCELLED: "bg-red-100 text-red-700",
+const statusStyles = {
+  CONFIRMED: {
+    pill: "bg-green-100 text-green-700",
+    dot: "bg-green-500",
+  },
+  PENDING: {
+    pill: "bg-amber-100 text-amber-700",
+    dot: "bg-amber-500",
+  },
+  CANCELLED: {
+    pill: "bg-red-100 text-red-700",
+    dot: "bg-red-500",
+  },
 };
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
-const statusOptions = [
-  { label: "All", value: "ALL", style: "bg-blue-50 text-blue-700" },
-  { label: "Upcoming", value: "PENDING", style: "bg-amber-100 text-amber-700" },
-  {
-    label: "Confirmed",
-    value: "CONFIRMED",
-    style: "bg-green-100 text-green-700",
+const statusConfig = {
+  ALL: {
+    icon: <Calendar size={16} />,
+    active: "bg-blue-50 text-blue-600 border-blue-200",
   },
-  {
-    label: "Completed",
-    value: "COMPLETED",
-    style: "bg-gray-100 text-gray-600",
+  PENDING: {
+    icon: <Clock size={16} />,
+    active: "bg-yellow-50 text-yellow-600 border-yellow-200",
   },
-  { label: "Cancelled", value: "CANCELLED", style: "bg-red-100 text-red-700" },
-];
+  CONFIRMED: {
+    icon: <CheckCircle size={16} />,
+    active: "bg-green-50 text-green-600 border-green-200",
+  },
+  COMPLETED: {
+    icon: <CheckSquare size={16} />,
+    active: "bg-gray-100 text-gray-700 border-gray-200",
+  },
+  CANCELLED: {
+    icon: <XCircle size={16} />,
+    active: "bg-red-50 text-red-600 border-red-200",
+  },
+};
 
 export function Bookings() {
   const vendor = useSelector(
@@ -88,6 +115,40 @@ export function Bookings() {
     useRescheduleBookingMutation();
   const [markBookingAsCompleted, { isLoading: markingLoading }] =
     useMarkBookingAsCompletedMutation();
+  const { data: statusFilterData } = useGetStatusFilterCountQuery({});
+
+  const statusOptions = [
+    {
+      label: "All",
+      value: "ALL",
+      style: "bg-blue-50 text-blue-700",
+      count: statusFilterData?.data?.all,
+    },
+    {
+      label: "Upcoming",
+      value: "PENDING",
+      style: "bg-amber-100 text-amber-700",
+      count: statusFilterData?.data?.pending,
+    },
+    {
+      label: "Confirmed",
+      value: "CONFIRMED",
+      style: "bg-green-100 text-green-700",
+      count: statusFilterData?.data?.confirmed,
+    },
+    {
+      label: "Completed",
+      value: "COMPLETED",
+      style: "bg-gray-100 text-gray-600",
+      count: statusFilterData?.data?.completed,
+    },
+    {
+      label: "Cancelled",
+      value: "CANCELLED",
+      style: "bg-red-100 text-red-700",
+      count: statusFilterData?.data?.cancelled,
+    },
+  ];
 
   const totalPages = Math.ceil(getBookingsData?.meta?.total / itemsPerPage);
 
@@ -187,12 +248,12 @@ export function Bookings() {
     return () => clearTimeout(handler);
   }, [searchFilter]);
 
-  if (getBookingsDataLoading) {
+  if (getBookingsDataLoading || dashboardStatsLoading) {
     return <Loader />;
   }
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">Bookings</h1>
@@ -204,7 +265,7 @@ export function Bookings() {
           <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
             Export
           </button>
-          <button className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
+          <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
             New Booking
           </button>
         </div>
@@ -213,54 +274,67 @@ export function Bookings() {
         <StatCard
           title="Total Bookings"
           value={dashboardStats?.data?.bookingCount?.toString() || "0"}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<ClipboardList className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
         />
         <StatCard
           title="Upcoming"
           value={dashboardStats?.data?.upcomingBooking?.toString() || "0"}
-          isLoadingStats={dashboardStatsLoading}
+          icon={<CalendarCheck className="w-5 h-5" />}
+          color="green"
+          change="3 this week"
         />
         <StatCard
           title="This Month Revenue"
           value={`₦ ${getTransactionsHistoryByVendor?.data?.total?.toLocaleString() || "0"}`}
           isLoadingStats={dashboardStatsLoading}
+          icon={<Wallet className="w-5 h-5" />}
+          color="orange"
+          change="18% from last month"
         />
       </div>
       <div className="rounded-2xl bg-white p-4 shadow-sm mt-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {statusOptions.map((option) => (
-              <button
-                key={option.value}
-                className={`rounded-full px-4 py-1 text-sm font-medium tracking-tight ${option.style} ${
-                  statusFilter === option.value ? "ring-2 ring-blue-500" : ""
-                }`}
-                onClick={() => setStatusFilter(option.value)}
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-3">
+            {statusOptions.map((option) => {
+              const isActive = statusFilter === option.value;
+              const config = statusConfig[option.value];
+
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => setStatusFilter(option.value)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition 
+                    ${isActive ? config.active + " shadow-sm" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}
+                  `}
+                >
+                  <span className="opacity-90">{config.icon}</span>
+                  <span>{option.label}</span>
+                  <span
+                    className={`
+                      ml-1 rounded-full px-2 py-0.5 text-xs font-semibold
+                      ${isActive ? "bg-white/70" : "bg-gray-100 text-gray-600"}
+                    `}
+                  >
+                    {option.count ?? 0}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <div className="flex gap-2 items-center">
-            <input
-              placeholder="Search bookings"
-              className="w-full rounded-[10px] border border-gray-200 px-3 py-2 text-sm md:w-64"
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-            />
-            <SearchIcon
-              size={30}
-              className="border border-gray-200 p-2 text-sm"
-            />
-          </div>
+          <BookingSearch
+            value={searchFilter}
+            setSearchFilter={setSearchFilter}
+          />
         </div>
 
         <div className="mt-4 overflow-visible">
           {getBookingsDataLoading ? (
             <Loader />
           ) : (
-            <table className="w-full min-w-[700px] text-left">
-              <thead className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
+              <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
                 <tr className="border-b">
                   <th className="px-3 py-3">Client</th>
                   <th className="px-3 py-3">Service</th>
@@ -274,16 +348,19 @@ export function Bookings() {
               <tbody className="text-sm text-gray-700">
                 {getBookingsData?.data?.map((b: any) => (
                   <tr className="border-b last:border-b-0 relative">
-                    <td className="px-3 py-4 font-medium text-gray-900">
+                    <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
+                        AS
+                      </div>
                       {b.clientName || "Client Name"}
                     </td>
-                    <td className="px-3 py-4 text-gray-600">
+                    <td className="px-3 py-4 text-gray-600 font-semibold">
                       {b.services?.name}
                     </td>
-                    <td className="px-3 py-4 text-gray-600">
+                    <td className="px-3 py-4 text-gray-600 font-semibold">
                       {formatDate(b.date, "DD/MM/YYYY")}
                     </td>
-                    <td className="px-3 py-4 text-gray-600">
+                    <td className="px-3 py-4 text-gray-600 font-semibold">
                       {formatTimeFromISO(b.startTime as string)}
                     </td>
                     <td className="px-3 py-4 font-semibold text-gray-900 tracking-tight">
@@ -291,10 +368,17 @@ export function Bookings() {
                     </td>
                     <td className="px-3 py-4">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          statusStyles[b.status] || "bg-gray-100 text-gray-600"
+                        className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-full ${
+                          statusStyles[b.status]?.pill ||
+                          "bg-gray-100 text-gray-600"
                         }`}
                       >
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            statusStyles[b.status]?.dot || "bg-gray-400"
+                          }`}
+                        ></span>
+
                         {b.status}
                       </span>
                     </td>

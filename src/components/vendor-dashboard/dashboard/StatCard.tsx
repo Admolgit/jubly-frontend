@@ -38,10 +38,16 @@ export function StatCard({
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-2xl p-5 border hover:shadow-md transition">
-      {/* TOP ROW */}
-      <div className="flex items-start justify-between">
-        {/* TEXT */}
+    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+      <div className="flex items-center gap-4">
+        {icon && (
+          <div
+            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${colors[color].bg} ${colors[color].text}`}
+          >
+            {icon}
+          </div>
+        )}
+
         <div>
           <p className="text-sm text-gray-500">{title}</p>
 
@@ -50,17 +56,8 @@ export function StatCard({
           </h2>
         </div>
 
-        {/* ICON */}
-        {icon && (
-          <div
-            className={`w-10 h-10 flex items-center justify-center rounded-xl ${colors[color].bg} ${colors[color].text}`}
-          >
-            {icon}
-          </div>
-        )}
       </div>
 
-      {/* CHANGE TEXT */}
       {change && !isLoadingStats && (
         <p className="text-sm text-green-600 mt-4 flex items-center gap-1">
           <ArrowUp className="w-4 h-4" />

@@ -76,7 +76,7 @@ export function BookingCalendar() {
     return <Loader />;
   }
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">
@@ -89,7 +89,7 @@ export function BookingCalendar() {
         {calendarLinkedLoading ? (
           <Loader />
         ) : calendarLinkedData?.data?.linked?.linked ? (
-          <button className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
+          <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
             Calendar Synced
           </button>
         ) : (

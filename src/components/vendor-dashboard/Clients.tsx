@@ -6,6 +6,9 @@ import { useLazyGetVendorClientsQuery } from "../../features/users/userApi";
 import Loader from "../ui/Loader";
 import { useEffect } from "react";
 import { formatDate } from "../utils/dateFormatter";
+import { StatCard } from "./dashboard/StatCard";
+import { ReplaceAll, ShieldHalfIcon, UserPlus2Icon } from "lucide-react";
+import BookingSearch from "./booking/BookingSearch";
 
 export function Clients() {
   const vendor = useSelector(
@@ -24,71 +27,58 @@ export function Clients() {
 
   const clients = clientsData?.data?.clients;
 
-  console.log({ clients, vendor });
+  if (clientsStatsLoading) {
+    return <Loader />;
+  }
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Clients</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold">Clients</h1>
           <p className="text-sm text-gray-500">
             Stay in touch with your regulars and leads.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+          <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
             Export
           </button>
-          <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
+          <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
             Add Client
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Total Clients</p>
-          <p className="mt-2 text-xl font-semibold">
-            {clientsStatsLoading ? (
-              <Loader />
-            ) : clientsStatsData?.data?.totalClients ? (
-              clientsStatsData?.data?.totalClients.toString()
-            ) : (
-              "0"
-            )}
-          </p>
-        </div>
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Repeat Clients</p>
-          <p className="mt-2 text-xl font-semibold">
-            {clientsStatsLoading ? (
-              <Loader />
-            ) : clientsStatsData?.data?.repeatRate ? (
-              `${clientsStatsData?.data?.repeatRate}%`
-            ) : (
-              "0%"
-            )}
-          </p>
-        </div>
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Avg. Booking Value</p>
-          <p className="mt-2 text-xl font-semibold">
-            {clientsStatsLoading ? (
-              <Loader />
-            ) : clientsStatsData?.data?.avgBookingValue ? (
-              `₦ ${clientsStatsData?.data?.avgBookingValue?.toLocaleString()}`
-            ) : (
-              "0"
-            )}
-          </p>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 my-6">
+        <StatCard
+          title="Total Clients"
+          value={clientsStatsData?.data?.totalClients.toString() || "0"}
+          icon={<UserPlus2Icon className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
+        />
+        <StatCard
+          title="Repeat Clients"
+          value={`${clientsStatsData?.data?.repeatRate || "0"}%`}
+          icon={<ReplaceAll className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
+        />
+        <StatCard
+          title="Avg. Booking Value"
+          value={`${clientsStatsData?.data?.avgBookingValue?.toLocaleString() || "0"}`}
+          icon={<ShieldHalfIcon className="w-5 h-5" />}
+          color="purple"
+          change="12% from last month"
+        />
       </div>
 
       <div className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <input
-            placeholder="Search clients"
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm md:w-64"
+          <BookingSearch
+            // value={searchFilter}
+            // setSearchFilter={setSearchFilter}
           />
           <div className="flex flex-wrap gap-2">
             <button className="rounded-full bg-blue-50 px-4 py-1 text-xs font-semibold text-blue-700">

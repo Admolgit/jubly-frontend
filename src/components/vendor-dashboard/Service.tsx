@@ -75,7 +75,7 @@ export function Services() {
             Import
           </button>
           <button
-            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="rounded-[10px] px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 shadow-sm transition hover:opacity-90"
             onClick={() => {
               setServiceOpen(true);
             }}

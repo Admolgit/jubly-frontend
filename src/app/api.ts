@@ -58,7 +58,7 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithErrorHandling,
   endpoints: () => ({}),
-  tagTypes: ["User", "Vendor", "Service", "Booking"],
+  tagTypes: ["User", "Vendor", "Service", "Booking", "DashboardStats"],
   // Persist rehydration support
   extractRehydrationInfo(action: UnknownAction, { reducerPath }) {
     if (action.type === "persist/REHYDRATE") {

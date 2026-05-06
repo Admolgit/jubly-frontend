@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import { useGetServiceByIdQuery } from "../features/vendor/vendorApi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetVendorAvailabilitySlotsQuery } from "../features/availability/availability";
 import { BookingFormModal } from "../components/vendor-dashboard/BookingForm";
 import Loader from "../components/ui/Loader";

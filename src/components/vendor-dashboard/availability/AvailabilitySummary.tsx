@@ -2,6 +2,7 @@ import { CalendarDays } from "lucide-react";
 
 // components/availability/AvailabilitySummary.tsx
 export default function AvailabilitySummary() {
+  
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center justify-between">
       <div className="flex items-center gap-6">

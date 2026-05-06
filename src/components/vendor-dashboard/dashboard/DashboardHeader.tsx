@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Bell } from "lucide-react";
+import { Bell, CheckCircle2, Plus } from "lucide-react";
 
 export default function DashboardHeader({
   setServiceOpen,
@@ -12,61 +12,54 @@ export default function DashboardHeader({
 }) {
   return (
     <div className="space-y-6">
-      {/* TOP HEADER */}
-      <div className="flex items-start justify-between">
-        {/* LEFT */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-3xl font-bold text-gray-950">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
             Overview of your bookings, earnings, and clients.
           </p>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-3">
-          {/* Notification */}
-          <button className="relative p-2 rounded-full hover:bg-gray-100">
-            <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-purple-600 rounded-full"></span>
+        <div className="flex flex-wrap items-center gap-3">
+          <button className="relative rounded-full p-2.5 hover:bg-gray-100">
+            <Bell className="h-5 w-5 text-gray-900" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-purple-600" />
           </button>
 
-          {/* Add Service */}
           <button
             onClick={() => setServiceOpen(true)}
-            className="px-4 py-2 rounded-lg border text-sm font-medium text-purple-600 border-purple-200 hover:bg-purple-50 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50"
           >
-            + Add Service
+            <Plus className="h-4 w-4" />
+            Add Service
           </button>
 
-          {/* Create Booking */}
           <button
             onClick={() => setBookingOpen(true)}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
-            + Create Booking
+            <Plus className="h-4 w-4" />
+            Create Booking
           </button>
         </div>
       </div>
 
-      {/* WELCOME CARD */}
-      <div className="bg-white rounded-2xl border p-5 flex items-center justify-between shadow-sm">
-        {/* LEFT */}
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">
             Welcome back,{" "}
-            <span className="text-purple-600 font-semibold">
+            <span className="font-semibold text-purple-600">
               {vendorData?.data?.vendor?.businessName || "Vendor"}
             </span>{" "}
             👋
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Here’s what’s happening with your business today.
+          <p className="mt-1 text-sm text-gray-500">
+            Here's what's happening with your business today.
           </p>
         </div>
 
-        {/* RIGHT (Verified Badge) */}
-        <div className="flex items-center gap-2 bg-purple-50 text-purple-600 px-3 py-1 rounded-full text-sm font-medium">
-          <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+        <div className="hidden shrink-0 items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-medium text-purple-600 sm:flex">
+          <CheckCircle2 className="h-4 w-4 fill-purple-600 text-white" />
           {vendorData?.data?.vendor?.kycStatus === "APPROVED"
             ? "Verified"
             : "Pending Verification"}

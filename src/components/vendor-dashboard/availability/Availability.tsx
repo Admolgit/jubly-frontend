@@ -1,12 +1,23 @@
+import { useForm } from "react-hook-form";
 import AvailabilitySummary from "./AvailabilitySummary";
 import AvailabilityPreview from "./AvilabilityPreview";
 import BookingPreferences from "./BookingPreference";
 import SaveBar from "./SaveBar";
 import WeeklySchedule from "./WeeklySchedule";
+import { useState } from "react";
+import HelpCard from "./HelpCard";
 
 export default function AvailabilityPage() {
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const {
+    // register,
+    // handleSubmit,
+    setValue,
+    // formState: { errors },
+  } = useForm();
+  console.log({ selectedDays });
   return (
-    <div className=" px-6 py-8">
+    <div className="">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -23,13 +34,17 @@ export default function AvailabilityPage() {
         {/* LEFT */}
         <div className="lg:col-span-2 space-y-6">
           <AvailabilitySummary />
-          <WeeklySchedule />
+          <WeeklySchedule
+            onValue={setValue}
+            setSelectedDays={setSelectedDays}
+          />
         </div>
 
         {/* RIGHT */}
         <div className="space-y-6">
           <AvailabilityPreview />
           <BookingPreferences />
+          <HelpCard />
         </div>
       </div>
     </div>

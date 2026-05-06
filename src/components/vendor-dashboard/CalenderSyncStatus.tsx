@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 import { useConnectCalenderMutation } from "../../features/auth/authApi";
 import Loader from "../ui/Loader";
-import { CalendarCheck } from "lucide-react";
+import { CalendarCheck, CheckCircle2 } from "lucide-react";
 
 export function CalendarSyncStatus({
   data,
@@ -27,16 +27,13 @@ export function CalendarSyncStatus({
   };
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between">
-      {/* LEFT */}
-      <div className="flex items-center gap-4">
-        {/* ICON */}
-        <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-100">
-          <CalendarCheck className="text-blue-600 w-6 h-6" />
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-yellow-400 to-green-500 text-white">
+          <CalendarCheck className="h-6 w-6" />
         </div>
 
-        {/* TEXT */}
-        <div>
+        <div className="min-w-0">
           <h3 className="text-lg font-semibold text-gray-900">
             Google Calendar
           </h3>
@@ -50,18 +47,17 @@ export function CalendarSyncStatus({
         </div>
       </div>
 
-      {/* RIGHT */}
       {isLoading ? (
         <Loader />
       ) : connected ? (
-        <span className="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+        <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+          <CheckCircle2 className="h-4 w-4 fill-green-600 text-white" />
           Connected
         </span>
       ) : (
         <button
           onClick={handleConnect}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+          className="shrink-0 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
         >
           Connect
         </button>

@@ -1,5 +1,5 @@
 // components/availability/DayRow.tsx
-import { DeleteIcon } from "lucide-react";
+import { DeleteIcon, GripVertical } from "lucide-react";
 import { useState } from "react";
 
 export default function DayRow({ day }: { day: string }) {
@@ -13,6 +13,7 @@ export default function DayRow({ day }: { day: string }) {
     <div className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition">
       {/* LEFT */}
       <div className="flex items-center gap-3">
+        <GripVertical size={18} />
         <input
           type="checkbox"
           checked={enabled}
