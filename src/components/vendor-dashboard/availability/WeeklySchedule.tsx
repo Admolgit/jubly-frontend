@@ -13,8 +13,9 @@ const days = [
   "Sunday",
 ];
 
-export default function WeeklySchedule({ onValue, setSelectedDays }: any) {
+export default function WeeklySchedule({ onValue, setSelectedDays, selectedDays }: any) {
   const [activePreset, setActivePreset] = useState<string | null>(null);
+  console.log(setActivePreset);
 
   const applyPreset = (type: "weekday" | "weekPlusSaturday") => {
     if (type === "weekday") {
@@ -40,7 +41,7 @@ export default function WeeklySchedule({ onValue, setSelectedDays }: any) {
 
   const toggleDay = (day: number) => {
     setSelectedDays((prev: any) =>
-      prev.includes(day) ? prev.filter((d: any) => d !== day) : [...prev, day],
+      prev?.includes(day) ? prev?.filter((d: any) => d !== day) : [...prev, day],
     );
   };
 
@@ -49,8 +50,14 @@ export default function WeeklySchedule({ onValue, setSelectedDays }: any) {
       <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
         <h2 className="text-sm font-medium text-gray-700">Weekly Schedule</h2>
 
-        {days.map((day) => (
-          <DayRow key={day} day={day} />
+        {days?.map((day, index) => (
+          <DayRow
+            key={day}
+            day={day}
+            dayIndex={index + 1} // 1 = Monday, etc.
+            onToggle={toggleDay}
+            selectedDays={selectedDays}
+          />
         ))}
 
         {/* Quick presets */}

@@ -71,7 +71,7 @@ export function Services() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50">
             Import
           </button>
           <button

@@ -33,7 +33,22 @@ import ViewBookingModal from "./BookingViewModal";
 import { StatCard } from "../dashboard/StatCard";
 import BookingSearch from "./BookingSearch";
 
+type BookingStatus =
+  | "ALL"
+  | "PENDING"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED";
+
 const statusStyles = {
+  ALL: {
+    pill: "",
+    dot: "",
+  },
+  COMPLETED: {
+    pill: "bg-grey-100 text-grey-700",
+    dot: "bg-grey-500",
+  },
   CONFIRMED: {
     pill: "bg-green-100 text-green-700",
     dot: "bg-green-500",
@@ -50,7 +65,10 @@ const statusStyles = {
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
-const statusConfig = {
+const statusConfig: Record<
+  BookingStatus,
+  { icon: JSX.Element; active: string }
+> = {
   ALL: {
     icon: <Calendar size={16} />,
     active: "bg-blue-50 text-blue-600 border-blue-200",
@@ -262,7 +280,7 @@ export function Bookings() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50">
             Export
           </button>
           <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
@@ -299,7 +317,7 @@ export function Bookings() {
           <div className="flex flex-wrap gap-3">
             {statusOptions.map((option) => {
               const isActive = statusFilter === option.value;
-              const config = statusConfig[option.value];
+              const config = statusConfig[option.value as BookingStatus];
 
               return (
                 <button
@@ -369,13 +387,14 @@ export function Bookings() {
                     <td className="px-3 py-4">
                       <span
                         className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-full ${
-                          statusStyles[b.status]?.pill ||
+                          statusStyles[b.status as BookingStatus]?.pill ||
                           "bg-gray-100 text-gray-600"
                         }`}
                       >
                         <span
                           className={`w-2 h-2 rounded-full ${
-                            statusStyles[b.status]?.dot || "bg-gray-400"
+                            statusStyles[b.status as BookingStatus]?.dot ||
+                            "bg-gray-400"
                           }`}
                         ></span>
 

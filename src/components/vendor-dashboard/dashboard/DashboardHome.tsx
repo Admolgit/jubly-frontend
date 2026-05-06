@@ -60,30 +60,6 @@ export interface IUser {
 export const lightPurple = "#C271AC";
 export const darkPurple = "#77467D";
 
-const insightCards = [
-  {
-    label: "Best Day",
-    value: "Saturday",
-    detail: "28% of bookings",
-    icon: TrendingUp,
-    color: "purple",
-  },
-  {
-    label: "Average Booking",
-    value: "₦12,500",
-    detail: "Per booking",
-    icon: Wallet,
-    color: "green",
-  },
-  {
-    label: "Repeat Clients",
-    value: "34",
-    detail: "Returning clients",
-    icon: Repeat,
-    color: "pink",
-  },
-] as const;
-
 const serviceIcons = [
   HeartHandshake,
   Camera,
@@ -196,7 +172,9 @@ function DashboardHome() {
     }
   };
 
-  const handleCreateBooking = async (data: any) => {};
+  const handleCreateBooking = async (data: any) => {
+    console.log(data);
+  };
 
   const totalEarnings =
     Number(
@@ -204,7 +182,6 @@ function DashboardHome() {
     )?.toLocaleString() || "0";
   const topServices = servicesCountsData?.data || [];
   const recentBooking = upcomingBookingsData?.data?.[0];
-  console.log(getTransactionsHistoryByVendor?.data?.total, "TOTAL");
 
   useEffect(() => {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
