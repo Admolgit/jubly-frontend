@@ -9,7 +9,7 @@ export const availabilityApi = api.injectEndpoints({
         body: data,
       }),
     }),
-    getVendorAvailabilitySlots: builder.mutation({
+    getVendorAvailabilitySlots: builder.query({
       query: (data) => ({
         url: `/availability/slots/${data.vendorId}/${data.date}/${data.serviceId}`,
         method: "GET",
@@ -20,5 +20,5 @@ export const availabilityApi = api.injectEndpoints({
 
 export const {
   useSetVendorAvailabilityMutation,
-  useGetVendorAvailabilitySlotsMutation,
+  useGetVendorAvailabilitySlotsQuery,
 } = availabilityApi;

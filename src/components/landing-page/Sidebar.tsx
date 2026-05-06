@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   Menu,
+  ChevronDown,
 } from "lucide-react";
 import Logo from "../logo";
 import { useSelector } from "react-redux";
@@ -46,11 +47,11 @@ export function Sidebar({
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between bg-black text-white p-4 z-50">
+      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50">
         <button
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
-          className="text-xl"
+          className="rounded-lg border border-gray-200 p-2"
         >
           <Menu size={20} />
         </button>
@@ -63,18 +64,17 @@ export function Sidebar({
           onClick={() => setOpen(false)}
         />
       )}
-      
+
       <aside
-        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 sm:w-2 md:w-64 bg-white text-black p-6 relative
-        transform transition-transform duration-300 z-40
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 overflow-y-auto`}
+        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 
+          ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 overflow-y-auto
+        `}
       >
-        <div className="my-6 ">
+        <div className="mb-10 mt-2">
           <Logo />
         </div>
 
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-3">
           {menu.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
@@ -85,41 +85,46 @@ export function Sidebar({
                 to={item.path}
                 onClick={() => setOpen(false)}
                 className={
-                  "flex items-center gap-3 px-3 py-2 rounded-[12px] transition " +
+                  "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition " +
                   (active
-                    ? "bg-blue-800 text-white font-semibold"
-                    : "hover:bg-blue-800")
+                    ? "bg-gradient-to-r from-purple-700 to-indigo-600 text-white shadow-sm"
+                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700")
                 }
               >
-                <Icon size={18} />
+                <Icon size={18} strokeWidth={active ? 2.4 : 2} />
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        <div className="bg-gray-800 rounded-2xl p-4 flex items-center justify-between shadow-lg mt-10">
-          <div className="flex items-center gap-3">
+        <div className="mt-16 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="flex min-w-0 items-center gap-3">
             <img
               src={vendor?.profileImage}
               alt="profile"
-              className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
+              className="h-12 w-12 shrink-0 rounded-full border border-gray-100 object-cover"
             />
-            <div className="leading-tight">
-              <p className="text-sm font-semibold text-white">{vendor?.businessName}</p>
-              <p className="text-xs text-gray-400">{vendor?.category}</p>
+            <div className="min-w-0 leading-tight">
+              <p className="truncate text-sm font-semibold text-gray-900">
+                {vendor?.businessName || "Vendor"}
+              </p>
+              <p className="truncate text-sm text-gray-500">
+                {vendor?.category || "Service Provider"}
+              </p>
             </div>
+            <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-gray-500" />
           </div>
-          
-          <div className="absolute bottom-6 left-6 right-6">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition"
-            >
-              <LogOut size={18} />
-              <span className="text-sm font-medium">Logout</span>
-            </button>
-          </div>
+        </div>
+
+        <div className="absolute bottom-6 left-6 right-6">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
         </div>
       </aside>
     </>

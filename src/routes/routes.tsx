@@ -11,7 +11,7 @@ import VendorOnboardingSuccessPage from "../pages/OnboardingVerification";
 import VendorAvailability from "../pages/vendor/VendorAvailability";
 import GoogleSync from "../pages/vendor/GoogleSync";
 import { BookingCalendar } from "../components/vendor-dashboard/BookingCalender";
-import { Bookings } from "../components/vendor-dashboard/Booking";
+import { Bookings } from "../components/vendor-dashboard/booking/Booking";
 import { Clients } from "../components/vendor-dashboard/Clients";
 import { Wallet } from "../components/vendor-dashboard/Wallet";
 import { Settings } from "../components/vendor-dashboard/Settings";
@@ -21,7 +21,7 @@ import VendorBookingPage from "../pages/VendorBookingPage";
 import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";
 import SearchBookingPage from "../pages/SearchBookingPage";
-import DashboardHome from "../components/vendor-dashboard/DashboardHome";
+import DashboardHome from "../components/vendor-dashboard/dashboard/DashboardHome";
 import ClientLayout from "../layouts/ClientLayout";
 import ClientDashboardLayout from "../pages/client-dashboard/Dashboard";
 import { ClientDashboardHome } from "../components/client-dashboard/ClientDashboardHome";
@@ -30,6 +30,7 @@ import { ClientCalendar } from "../components/client-dashboard/ClientCalendar";
 import { ClientVendors } from "../components/client-dashboard/ClientVendors";
 import { ClientSettings } from "../components/client-dashboard/ClientSettings";
 import { ClientProfile } from "../components/client-dashboard/ClientProfile";
+import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
 
 export const router = createBrowserRouter([
   {
@@ -83,7 +84,7 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardHome /> },
           { path: "calendar", element: <BookingCalendar /> },
           { path: "bookings", element: <Bookings /> },
-          { path: "availability", element: <VendorAvailability /> },
+          { path: "availability", element: <AvailabilityPage /> },
           { path: "services", element: <Services /> },
           { path: "clients", element: <Clients /> },
           { path: "wallet", element: <Wallet /> },

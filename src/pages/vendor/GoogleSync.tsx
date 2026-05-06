@@ -1,9 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useSelector } from "react-redux";
 import Button from "../../components/ui/Button";
+import { useConnectCalenderMutation } from "../../features/auth/authApi";
 
 export default function GoogleSync() {
-  const connectGoogle = () => {
-    window.location.href = "http://localhost:4001/api/v1/google/calendar";
-  };
+    const [connectCalender] = useConnectCalenderMutation();
+  
+    const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
+  
+    const handleConnect = async () => {
+      const response = await connectCalender({
+        userId: user?.id,
+      }).unwrap();
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md mt-6">
@@ -14,7 +26,7 @@ export default function GoogleSync() {
       </p>
 
       <Button
-        onClick={connectGoogle}
+        onClick={handleConnect}
         className="bg-blue-600 text-white px-5 py-3 rounded-lg"
       >
         Connect Google Calendar

@@ -25,7 +25,7 @@ export function BookingCalendar() {
     useGetCalendarListQuery({
       year: now.getFullYear(),
       month: now.getMonth() + 1,
-      vendorId: vendor.id,
+      vendorId: vendor?.id,
     });
   const { data: vendorUpcomingData, isLoading: vendorUpcomingLoading } =
     useGetVendorUpcomingBookingsQuery({});
@@ -76,10 +76,12 @@ export function BookingCalendar() {
     return <Loader />;
   }
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Booking Calendar</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold">
+            Booking Calendar
+          </h1>
           <p className="text-sm text-gray-500">
             View your schedule and manage availability.
           </p>
@@ -87,12 +89,12 @@ export function BookingCalendar() {
         {calendarLinkedLoading ? (
           <Loader />
         ) : calendarLinkedData?.data?.linked?.linked ? (
-          <button className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800">
+          <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
             Calendar Synced
           </button>
         ) : (
           <button
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
             onClick={handleConnect}
           >
             Sync Calendar
@@ -100,7 +102,7 @@ export function BookingCalendar() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.6fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.6fr] mt-6">
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <Calendar
             localizer={localizer}
@@ -112,8 +114,8 @@ export function BookingCalendar() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <h3 className="font-semibold">Upcoming Bookings</h3>
+          <div className="rounded-xl bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold">Upcoming Bookings</h3>
             <div className="mt-4 space-y-3">
               {vendorUpcomingLoading ? (
                 <Loader />
@@ -126,10 +128,10 @@ export function BookingCalendar() {
                     <p className="text-sm font-semibold text-gray-900">
                       {event.title}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-500">
                       {moment(event.start).format("ddd, MMM D - h:mm A")}
                     </p>
-                    <span className="mt-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                    <span className="mt-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
                       {event.status}
                     </span>
                   </div>
@@ -139,8 +141,8 @@ export function BookingCalendar() {
           </div>
 
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <h3 className="font-semibold">Legend</h3>
-            <div className="mt-3 space-y-2 text-sm text-gray-600">
+            <h3 className="text-lg font-semibold">Legend</h3>
+            <div className="mt-3 space-y-2 text-md text-gray-600">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-green-500" />
                 Confirmed

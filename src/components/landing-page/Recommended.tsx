@@ -61,7 +61,9 @@ export default function RecommendedSection() {
           <p className="text-sm tracking-widest text-purple-700 uppercase">
             Services
           </p>
-          <h2 className="text-3xl font-semibold text-gray-800">Recommended</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
+            Recommended
+          </h2>
           <p className="text-gray-500 mt-2 max-w-md mx-auto">
             Discover thoughtfully crafted services designed to meet your needs
             with excellence and attention to detail.

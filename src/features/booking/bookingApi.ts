@@ -21,6 +21,7 @@ export const userApi = api.injectEndpoints({
         url: `/booking/dashboard-stats/${vendorId}`,
         method: "GET",
       }),
+      providesTags: () => [{ type: "DashboardStats" }],
     }),
     getUpcomingBookings: builder.query({
       query: () => ({
@@ -56,14 +57,12 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
-
     getClientsBookingStats: builder.query({
       query: () => ({
         url: "/booking/clients/booking-stats",
         method: "GET",
       }),
     }),
-
     getVendorUpcomingBookings: builder.query({
       query: () => ({
         url: "/booking/upcoming-bookings",
@@ -81,14 +80,14 @@ export const userApi = api.injectEndpoints({
         url: `/booking/${bookingId}/cancel`,
         method: "PATCH",
       }),
-      invalidatesTags: () => [{ type: "Booking" }],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     markBookingAsCompleted: builder.mutation({
       query: (bookingId: string) => ({
         url: `/booking/${bookingId}/mark-as-completed`,
         method: "PATCH",
       }),
-      invalidatesTags: () => [{ type: "Booking" }],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     rescheduleBooking: builder.mutation({
       query: (data: {
@@ -105,12 +104,26 @@ export const userApi = api.injectEndpoints({
           endTime: data.endTime,
         },
       }),
-      invalidatesTags: () => [{ type: "Booking" }],
+      invalidatesTags: ["Booking", "DashboardStats"],
+    }),
+    getStatusFilterCount: builder.query({
+      query: () => ({
+        url: `/booking/status/filter`,
+        method: "GET",
+      }),
+    }),
+    getBusinessInsight: builder.query({
+      query: () => ({
+        url: `/booking/insights`,
+        method: "GET",
+      }),
     }),
   }),
 });
 
 export const {
+  useGetStatusFilterCountQuery,
+  useGetBusinessInsightQuery,
   useCreateBookingMutation,
   useCreateBookingPaymentMutation,
   useGetDashboardStartsQuery,

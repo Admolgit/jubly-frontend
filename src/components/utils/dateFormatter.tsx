@@ -1,6 +1,10 @@
 export function formatDate(
   date?: Date | string,
-  format: "YYYY-MM-DD" | "DD/MM/YYYY" | "MM-DD-YYYY" = "YYYY-MM-DD",
+  format:
+    | "YYYY-MM-DD"
+    | "DD/MM/YYYY"
+    | "DD MMM, YYYY"
+    | "MM-DD-YYYY" = "YYYY-MM-DD",
 ): string {
   if (!date) return "";
 

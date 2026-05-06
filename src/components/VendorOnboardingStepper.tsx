@@ -243,9 +243,6 @@ export const VendorOnboardingStepper = () => {
 
       navigate("/onboarding-verification");
     } catch (error: any) {
-      console.log("FULL ERROR:", error);
-      console.log("ERROR DATA:", error?.data);
-      console.log("ERROR STATUS:", error?.status);
 
       toast.error(
         error?.data?.message || "Something went wrong during onboarding",

@@ -5,10 +5,17 @@ export const servicesAPI = api.injectEndpoints({
     getVendorServices: builder.query({
       query: () => ({
         url: `/services`,
-        method: "GET"
+        method: "GET",
+      }),
+    }),
+    createService: builder.mutation({
+      query: (data) => ({
+        url: `/vendor/onboarding/services`,
+        method: "POST",
+        body: data
       }),
     }),
   }),
 });
 
-export const { useGetVendorServicesQuery } = servicesAPI;
+export const { useGetVendorServicesQuery, useCreateServiceMutation } = servicesAPI;
