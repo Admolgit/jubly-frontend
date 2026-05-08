@@ -101,21 +101,21 @@ export function Wallet() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
         <StatCard
           title="Total Earned"
-          value={Number(totalEarned).toLocaleString()}
+          value={`₦${Number(totalEarned / 100).toLocaleString()}`}
           icon={<Wallet2Icon className="w-5 h-5" />}
           color="green"
           change="12% from last month"
         />
         <StatCard
           title="Available"
-          value="NGN 140,000"
+          value="₦140,000"
           icon={<CurrencyIcon className="w-5 h-5" />}
           color="purple"
           change="12% from last month"
         />
         <StatCard
           title="Pending"
-          value="NGN 20,000"
+          value="₦20,000"
           icon={<StampIcon className="w-5 h-5" />}
           color="purple"
           change="12% from last month"

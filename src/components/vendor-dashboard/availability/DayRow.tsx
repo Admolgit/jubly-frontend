@@ -23,19 +23,31 @@ export default function DayRow({
   const [start, setStart] = useState("09:00");
   const [end, setEnd] = useState("17:00");
 
-  // Sync time with parent if needed
+  const handleStartChange = (value: string) => {
+    setStart(value);
+    onTimeChange?.(dayIndex, value, end);
+  };
+
+  const handleEndChange = (value: string) => {
+    setEnd(value);
+    onTimeChange?.(dayIndex, start, value);
+  };
+
   useEffect(() => {
-    if (isActive && onTimeChange) {
-      onTimeChange(dayIndex, start, end);
-    }
-  }, [start, end, isActive]);
+    if (!isActive) return;
+
+    onTimeChange?.(dayIndex, start, end);
+  }, [isActive, start, end]);
 
   const handleToggle = () => {
     onToggle(dayIndex);
+
+    if (!isActive) {
+      onTimeChange?.(dayIndex, start, end);
+    }
   };
 
   const handleDelete = () => {
-    // remove the day completely
     if (isActive) {
       onToggle(dayIndex);
     }
@@ -51,7 +63,12 @@ export default function DayRow({
       <div className="flex items-center gap-3">
         <GripVertical size={16} className="text-gray-400" />
 
-        <input type="checkbox" checked={isActive} onChange={handleToggle} />
+        <input
+          type="checkbox"
+          checked={isActive}
+          onChange={handleToggle}
+          className="pt-2"
+        />
 
         <span className="text-sm font-medium text-gray-900">{day}</span>
       </div>
@@ -62,7 +79,7 @@ export default function DayRow({
           <input
             type="time"
             value={start}
-            onChange={(e) => setStart(e.target.value)}
+            onChange={(e) => handleStartChange(e.target.value)}
             className="border rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
@@ -71,7 +88,7 @@ export default function DayRow({
           <input
             type="time"
             value={end}
-            onChange={(e) => setEnd(e.target.value)}
+            onChange={(e) => handleEndChange(e.target.value)}
             className="border rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           />
 

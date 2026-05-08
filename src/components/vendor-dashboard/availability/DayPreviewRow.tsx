@@ -1,32 +1,38 @@
-// components/availability/DayPreviewRow.tsx
-export function DayPreviewRow({
-  label,
-  active,
-}: {
+type Props = {
   label: string;
   active: boolean;
-}) {
+  slots?: {
+    startTime: string;
+    endTime: string;
+  }[];
+};
+
+export function DayPreviewRow({ label, active, slots = [] }: Props) {
   return (
-    <div className="flex items-center justify-between text-sm">
-      {/* LEFT */}
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        {/* Status dot */}
-        <span
-          className={`w-2.5 h-2.5 rounded-full ${
+        <div
+          className={`h-2.5 w-2.5 rounded-full ${
             active ? "bg-green-500" : "bg-gray-300"
           }`}
         />
 
-        {/* Day */}
-        <span className="text-gray-700 font-medium">{label}</span>
+        <span className="text-sm font-medium text-gray-800">{label}</span>
       </div>
 
-      {/* RIGHT */}
-      {active ? (
-        <span className="text-gray-900 font-medium">9:00 AM – 5:00 PM</span>
-      ) : (
-        <span className="text-gray-400">Unavailable</span>
-      )}
+      <div className="text-sm text-gray-500">
+        {active ? (
+          <div className="flex flex-col items-end">
+            {slots.map((slot, index) => (
+              <span key={index}>
+                {slot.startTime} - {slot.endTime}
+              </span>
+            ))}
+          </div>
+        ) : (
+          "Unavailable"
+        )}
+      </div>
     </div>
   );
 }

@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CalendarDays } from "lucide-react";
+import { formatGroupedAvailability } from "./FormatAvailability";
 
 // components/availability/AvailabilitySummary.tsx
-export default function AvailabilitySummary() {
-  
+export default function AvailabilitySummary({ grouped }: any) {
+  const formattedAvailability = formatGroupedAvailability(grouped);
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center justify-between">
       <div className="flex items-center gap-6">
@@ -14,7 +16,11 @@ export default function AvailabilitySummary() {
             Current Availability
           </p>
           <p className="text-md font-semibold text-gray-900 mt-1">
-            Mon – Fri: 9:00 AM – 5:00 PM
+            {formattedAvailability.map((item, index) => (
+              <p key={index}>
+                {item}
+              </p>
+            ))}
           </p>
           <p className="text-sm text-gray-400 mt-1">
             Clients can only book during these hours
