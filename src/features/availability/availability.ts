@@ -15,10 +15,17 @@ export const availabilityApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getVendorAvailability: builder.query({
+      query: () => ({
+        url: `/availability/grouped-availability`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
 export const {
   useSetVendorAvailabilityMutation,
   useGetVendorAvailabilitySlotsQuery,
+  useGetVendorAvailabilityQuery
 } = availabilityApi;
