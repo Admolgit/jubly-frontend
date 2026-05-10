@@ -4,11 +4,29 @@ import { useSelector } from "react-redux";
 import { useGetClientsVendorStatsQuery } from "../../features/booking/bookingApi";
 import { useLazyGetVendorClientsQuery } from "../../features/users/userApi";
 import Loader from "../ui/Loader";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatDate } from "../utils/dateFormatter";
 import { StatCard } from "./dashboard/StatCard";
-import { ReplaceAll, ShieldHalfIcon, UserPlus2Icon } from "lucide-react";
+import { Calendar, CheckCircle, Clock, ReplaceAll, ShieldHalfIcon, UserPlus2Icon } from "lucide-react";
 import BookingSearch from "./booking/BookingSearch";
+
+const statusConfig: Record<
+  any,
+  { icon: JSX.Element; active: string }
+> = {
+  ALL: {
+    icon: <Calendar size={16} />,
+    active: "bg-blue-50 text-blue-600 border-blue-200",
+  },
+  REPEAT: {
+    icon: <Clock size={16} />,
+    active: "bg-yellow-50 text-yellow-600 border-yellow-200",
+  },
+  NEW: {
+    icon: <CheckCircle size={16} />,
+    active: "bg-green-50 text-green-600 border-green-200",
+  },
+};
 
 export function Clients() {
   const vendor = useSelector(
@@ -19,6 +37,8 @@ export function Clients() {
   const [getClients, { data: clientsData, isLoading }] =
     useLazyGetVendorClientsQuery();
 
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
   useEffect(() => {
     if (vendor?.id) {
       getClients(vendor.id);
@@ -26,6 +46,27 @@ export function Clients() {
   }, [vendor?.id]);
 
   const clients = clientsData?.data?.clients;
+
+  const statusOptions = [
+    {
+      label: "All",
+      value: "ALL",
+      style: "bg-blue-50 text-blue-700",
+      // count: statusFilterData?.data?.all,
+    },
+    {
+      label: "Repeat",
+      value: "REPEAT",
+      style: "bg-amber-100 text-amber-700",
+      // count: statusFilterData?.data?.pending,
+    },
+    {
+      label: "New",
+      value: "NEW",
+      style: "bg-green-100 text-green-700",
+      // count: statusFilterData?.data?.confirmed,
+    },
+  ];
 
   if (clientsStatsLoading) {
     return <Loader />;
@@ -45,7 +86,7 @@ export function Clients() {
             Export
           </button>
           <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
-            Add Client
+            + Add Client
           </button>
         </div>
       </div>
@@ -80,16 +121,32 @@ export function Clients() {
           // value={searchFilter}
           // setSearchFilter={setSearchFilter}
           />
-          <div className="flex flex-wrap gap-2">
-            <button className="rounded-full bg-blue-50 px-4 py-1 text-xs font-semibold text-blue-700">
-              All
-            </button>
-            <button className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600">
-              Repeat
-            </button>
-            <button className="rounded-full bg-gray-100 px-4 py-1 text-xs font-semibold text-gray-600">
-              New
-            </button>
+          <div className="flex flex-wrap gap-3">
+            {statusOptions.map((option) => {
+              const isActive = statusFilter === option.value;
+              const config = statusConfig[option.value as any];
+
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => setStatusFilter(option.value)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition 
+                    ${isActive ? config.active + " shadow-sm" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}
+                  `}
+                >
+                  <span className="opacity-90">{config.icon}</span>
+                  <span>{option.label}</span>
+                  {/* <span
+                    className={`
+                      ml-1 rounded-full px-2 py-0.5 text-xs font-semibold
+                      ${isActive ? "bg-white/70" : "bg-gray-100 text-gray-600"}
+                    `}
+                  >
+                    {option.count ?? 0}
+                  </span> */}
+                </button>
+              );
+            })}
           </div>
         </div>
 

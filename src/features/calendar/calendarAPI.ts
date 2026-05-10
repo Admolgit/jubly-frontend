@@ -10,7 +10,7 @@ export const calendarApi = api.injectEndpoints({
     }),
     getCalendarList: builder.query({
       query: (data) => ({
-        url: `/google/calendar-list/${data.vendorId}/?view=month&year=2026&month=4`,
+        url: `/google/calendar-list/${data.vendorId}/?view=${data?.view}&year=${data?.year}&month=${data?.month}`,
         method: "GET",
       }),
     }),

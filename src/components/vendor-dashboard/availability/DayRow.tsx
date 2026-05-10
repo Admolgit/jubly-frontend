@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-// components/availability/DayRow.tsx
 import { Trash2, GripVertical } from "lucide-react";
-import { useEffect, useState } from "react";
 
 type Props = {
   day: string;
@@ -9,6 +8,10 @@ type Props = {
   onToggle: (day: number) => void;
   selectedDays: number[];
   onTimeChange?: (day: number, start: string, end: string) => void;
+  setStartTime?: any;
+  setEndTime?: any;
+  startTime: string;
+  endTime: string;
 };
 
 export default function DayRow({
@@ -17,85 +20,64 @@ export default function DayRow({
   onToggle,
   selectedDays,
   onTimeChange,
+  startTime,
+  endTime,
 }: Props) {
   const isActive = selectedDays?.includes(dayIndex);
 
-  const [start, setStart] = useState("09:00");
-  const [end, setEnd] = useState("17:00");
-
   const handleStartChange = (value: string) => {
-    setStart(value);
-    onTimeChange?.(dayIndex, value, end);
+    onTimeChange?.(dayIndex, value, endTime);
   };
 
   const handleEndChange = (value: string) => {
-    setEnd(value);
-    onTimeChange?.(dayIndex, start, value);
+    onTimeChange?.(dayIndex, startTime, value);
   };
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    onTimeChange?.(dayIndex, start, end);
-  }, [isActive, start, end]);
 
   const handleToggle = () => {
     onToggle(dayIndex);
 
     if (!isActive) {
-      onTimeChange?.(dayIndex, start, end);
+      onTimeChange?.(dayIndex, startTime, endTime);
     }
   };
 
   const handleDelete = () => {
-    if (isActive) {
-      onToggle(dayIndex);
-    }
+    if (isActive) onToggle(dayIndex);
   };
 
   return (
     <div
       className={`flex items-center justify-between p-4 rounded-xl border transition cursor-pointer
-        ${isActive ? "bg-blue-50 border-blue-300" : "border-gray-200 hover:bg-gray-50"}
-      `}
+      ${isActive ? "bg-blue-50 border-blue-300" : "border-gray-200 hover:bg-gray-50"}
+    `}
     >
-      {/* LEFT */}
       <div className="flex items-center gap-3">
         <GripVertical size={16} className="text-gray-400" />
 
-        <input
-          type="checkbox"
-          checked={isActive}
-          onChange={handleToggle}
-          className="pt-2"
-        />
+        <input type="checkbox" checked={isActive} onChange={handleToggle} />
 
         <span className="text-sm font-medium text-gray-900">{day}</span>
       </div>
 
-      {/* RIGHT */}
       {isActive ? (
         <div className="flex items-center gap-2">
           <input
             type="time"
-            value={start}
+            value={startTime}
             onChange={(e) => handleStartChange(e.target.value)}
-            className="border rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="border rounded-lg px-2 py-1 text-sm"
           />
 
-          <span className="text-gray-400">—</span>
+          <span>—</span>
 
           <input
             type="time"
-            value={end}
+            value={endTime}
             onChange={(e) => handleEndChange(e.target.value)}
-            className="border rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="border rounded-lg px-2 py-1 text-sm"
           />
 
-          <button
-            onClick={handleDelete}
-            className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition"
-          >
+          <button onClick={handleDelete}>
             <Trash2 size={16} />
           </button>
         </div>

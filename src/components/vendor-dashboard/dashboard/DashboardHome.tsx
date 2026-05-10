@@ -177,9 +177,8 @@ function DashboardHome() {
   };
 
   const totalEarnings =
-    Number(
-      getTransactionsHistoryByVendor?.data?.total / 100,
-    )?.toLocaleString() || "0";
+    Number(dashboardStats?.data?.earnings?.total / 100)?.toLocaleString() ||
+    0;
   const topServices = servicesCountsData?.data || [];
   const recentBooking = upcomingBookingsData?.data?.[0];
 
@@ -187,7 +186,7 @@ function DashboardHome() {
     dispatch(setVendorCredentials({ vendor: vendorData?.data?.vendor }));
     dispatch(
       setTransactions({
-        transactions: getTransactionsHistoryByVendor?.data?.total,
+        transactions: dashboardStats?.data?.earnings?.total,
       }),
     );
     dispatch(
@@ -223,18 +222,20 @@ function DashboardHome() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-6">
         <StatCard
           title="Total Bookings"
-          value={dashboardStats?.data?.bookingCount?.toString() || "0"}
+          value={dashboardStats?.data?.bookingCount?.total?.toString() || "0"}
           icon={<ClipboardList className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${dashboardStats?.data?.bookingCount?.growth}% from last month`}
         />
 
         <StatCard
           title="Upcoming"
-          value={dashboardStats?.data?.upcomingBooking?.toString() || "0"}
+          value={
+            dashboardStats?.data?.upcomingBooking?.total?.toString() || "0"
+          }
           icon={<CalendarCheck className="w-5 h-5" />}
           color="green"
-          change="3 this week"
+          change={`${dashboardStats?.data?.upcomingBooking?.growth} this week`}
         />
 
         <StatCard
@@ -242,15 +243,15 @@ function DashboardHome() {
           value={`₦${totalEarnings}`}
           icon={<Wallet className="w-5 h-5" />}
           color="orange"
-          change="18% from last month"
+          change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
 
         <StatCard
           title="Profile Views"
-          value={dashboardStats?.data?.profileViews?.toString() || "0"}
+          value={dashboardStats?.data?.views?.total?.toString() || "0"}
           icon={<Eye className="w-5 h-5" />}
           color="blue"
-          change="8% from last month"
+          change={`${dashboardStats?.data?.views?.growth}% from last month`}
         />
       </div>
 
