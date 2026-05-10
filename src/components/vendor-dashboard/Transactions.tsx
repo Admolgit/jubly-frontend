@@ -34,6 +34,8 @@ export default function TransactionsPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
+  console.log(setSearchFilter)
+
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
       {
