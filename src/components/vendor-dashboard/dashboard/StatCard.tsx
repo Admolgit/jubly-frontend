@@ -1,5 +1,5 @@
 import Loader from "../../ui/Loader";
-import { ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 type StatCardProps = {
   title: string;
@@ -55,12 +55,15 @@ export function StatCard({
             {isLoadingStats ? <Loader /> : value}
           </h2>
         </div>
-
       </div>
 
       {change && !isLoadingStats && (
-        <p className="text-sm text-green-600 mt-4 flex items-center gap-1">
-          <ArrowUp className="w-4 h-4" />
+        <p className="text-sm mt-4 flex items-center gap-1">
+          {change.toString().includes("-") ? (
+            <ArrowDown className="w-4 h-4 text-red-600" />
+          ) : (
+            <ArrowUp className="w-4 h-4 text-green-600" />
+          )}
           {change}
         </p>
       )}

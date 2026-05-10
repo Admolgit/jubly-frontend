@@ -1,6 +1,6 @@
 import { api } from "../../app/api";
 
-export const calendarApi = api.injectEndpoints({
+export const transactionsAPI = api.injectEndpoints({
   endpoints: (builder) => ({
     getTransactionHistoryByVendor: builder.query({
       query: (data) => ({
@@ -17,7 +17,14 @@ export const calendarApi = api.injectEndpoints({
 
     getTransactionAnalytics: builder.query({
       query: (data) => ({
-        url: `/transactions/analytics/earnings?vendorId=${data?.vendorId}&view=${data?.view || 'month'}`,
+        url: `/transactions/analytics/earnings?vendorId=${data?.vendorId}&view=${data?.view || "month"}`,
+        method: "GET",
+      }),
+    }),
+
+    getTransactionDashStats: builder.query({
+      query: () => ({
+        url: `/transactions/transactions-stats`,
         method: "GET",
       }),
     }),
@@ -28,4 +35,5 @@ export const {
   useGetTransactionHistoryByVendorQuery,
   useGetTransactionAmountByVendorQuery,
   useGetTransactionAnalyticsQuery,
-} = calendarApi;
+  useGetTransactionDashStatsQuery,
+} = transactionsAPI;

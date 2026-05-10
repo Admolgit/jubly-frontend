@@ -12,14 +12,16 @@ import {
   LogOut,
   Menu,
   ChevronDown,
+  DollarSign,
 } from "lucide-react";
 import Logo from "../logo";
 import { useSelector } from "react-redux";
 
 const menu = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Calendar", path: "/dashboard/calendar", icon: Calendar },
   { name: "Bookings", path: "/dashboard/bookings", icon: BookOpen },
+  { name: "Calendar", path: "/dashboard/calendar", icon: Calendar },
+  { name: "transactions", path: "/dashboard/transactions", icon: DollarSign },
   { name: "Availability", path: "/dashboard/availability", icon: Clock },
   { name: "Services", path: "/dashboard/services", icon: Briefcase },
   { name: "Clients", path: "/dashboard/clients", icon: Users },
@@ -74,7 +76,7 @@ export function Sidebar({
           <Logo />
         </div>
 
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col gap-1">
           {menu.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
@@ -85,7 +87,7 @@ export function Sidebar({
                 to={item.path}
                 onClick={() => setOpen(false)}
                 className={
-                  "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition " +
+                  "flex items-center gap-3 rounded-xl px-4 py-3 text-md font-medium transition " +
                   (active
                     ? "bg-gradient-to-r from-purple-700 to-indigo-600 text-white shadow-sm"
                     : "text-gray-900 hover:bg-purple-50 hover:text-purple-700")

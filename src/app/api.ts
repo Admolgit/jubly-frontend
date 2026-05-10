@@ -43,9 +43,11 @@ const baseQueryWithErrorHandling = async (
     return {
       error: {
         status,
-        message:
-          (result.error.data as any)?.message ||
-          "Something went wrong. Please try again.",
+        data: {
+          message:
+            (result.error.data as any)?.message ||
+            "Something went wrong. Please try again.",
+        },
       },
     };
   }
@@ -58,7 +60,14 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithErrorHandling,
   endpoints: () => ({}),
-  tagTypes: ["User", "Vendor", "Service", "Booking", "DashboardStats"],
+  tagTypes: [
+    "User",
+    "Vendor",
+    "Service",
+    "Booking",
+    "DashboardStats",
+    "Availabilities",
+  ],
   // Persist rehydration support
   extractRehydrationInfo(action: UnknownAction, { reducerPath }) {
     if (action.type === "persist/REHYDRATE") {

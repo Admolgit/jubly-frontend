@@ -14,7 +14,7 @@ import SelectLimit from "../../utils/selectLimit";
 import { formatTimeFromISO } from "../../utils/timeFormatter";
 import Loader from "../../ui/Loader";
 import { useSelector } from "react-redux";
-import { useGetTransactionAmountByVendorQuery } from "../../../features/transactions/transactionAPI";
+// import { useGetTransactionAmountByVendorQuery } from "../../../features/transactions/transactionAPI";
 import {
   CalendarCheck,
   ClipboardList,
@@ -123,10 +123,10 @@ export function Bookings() {
     useGetDashboardStartsQuery(vendor?.id, {
       skip: !vendor?.id,
     });
-  const { data: getTransactionsHistoryByVendor } =
-    useGetTransactionAmountByVendorQuery(vendor?.id, {
-      skip: !vendor?.id,
-    });
+  // const { data: getTransactionsHistoryByVendor } =
+  //   useGetTransactionAmountByVendorQuery(vendor?.id, {
+  //     skip: !vendor?.id,
+  //   });
   const [cancelBooking, { isLoading: cancelLoading }] =
     useCancelBookingMutation();
   const [rescheduleBooking, { isLoading: rescheduleLoading }] =
@@ -284,32 +284,34 @@ export function Bookings() {
             Export
           </button>
           <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
-            New Booking
+            + New Booking
           </button>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-6">
         <StatCard
           title="Total Bookings"
-          value={dashboardStats?.data?.bookingCount?.toString() || "0"}
+          value={dashboardStats?.data?.bookingCount?.total?.toString() || "0"}
           icon={<ClipboardList className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${dashboardStats?.data?.bookingCount?.growth}% from last month`}
         />
         <StatCard
           title="Upcoming"
-          value={dashboardStats?.data?.upcomingBooking?.toString() || "0"}
+          value={
+            dashboardStats?.data?.upcomingBooking?.total?.toString() || "0"
+          }
           icon={<CalendarCheck className="w-5 h-5" />}
           color="green"
-          change="3 this week"
+          change={`${dashboardStats?.data?.upcomingBooking?.growth} this week`}
         />
         <StatCard
           title="This Month Revenue"
-          value={`₦ ${getTransactionsHistoryByVendor?.data?.total?.toLocaleString() || "0"}`}
+          value={`₦${Number(dashboardStats?.data?.earnings?.total / 100)?.toLocaleString()}`}
           isLoadingStats={dashboardStatsLoading}
           icon={<Wallet className="w-5 h-5" />}
           color="orange"
-          change="18% from last month"
+          change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
       </div>
       <div className="rounded-2xl bg-white p-4 shadow-sm mt-6">

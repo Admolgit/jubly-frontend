@@ -13,7 +13,7 @@ import GoogleSync from "../pages/vendor/GoogleSync";
 import { BookingCalendar } from "../components/vendor-dashboard/BookingCalender";
 import { Bookings } from "../components/vendor-dashboard/booking/Booking";
 import { Clients } from "../components/vendor-dashboard/Clients";
-import { Wallet } from "../components/vendor-dashboard/Wallet";
+import { Wallet } from "../components/vendor-dashboard/wallet/Wallet";
 import { Settings } from "../components/vendor-dashboard/Settings";
 import DashboardLayout from "../pages/vendor-dashboard/Dashboard";
 import { Services } from "../components/vendor-dashboard/Service";
@@ -31,6 +31,7 @@ import { ClientVendors } from "../components/client-dashboard/ClientVendors";
 import { ClientSettings } from "../components/client-dashboard/ClientSettings";
 import { ClientProfile } from "../components/client-dashboard/ClientProfile";
 import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
+import TransactionsPage from "../components/vendor-dashboard/Transactions";
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +90,7 @@ export const router = createBrowserRouter([
           { path: "clients", element: <Clients /> },
           { path: "wallet", element: <Wallet /> },
           { path: "settings", element: <Settings /> },
+          { path: "transactions", element: <TransactionsPage /> },
         ],
       },
     ],
