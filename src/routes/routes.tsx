@@ -16,7 +16,7 @@ import { Clients } from "../components/vendor-dashboard/Clients";
 import { Wallet } from "../components/vendor-dashboard/wallet/Wallet";
 import { Settings } from "../components/vendor-dashboard/Settings";
 import DashboardLayout from "../pages/vendor-dashboard/Dashboard";
-import { Services } from "../components/vendor-dashboard/Service";
+import { Services } from "../components/vendor-dashboard/services/Service";
 import VendorBookingPage from "../pages/VendorBookingPage";
 import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";

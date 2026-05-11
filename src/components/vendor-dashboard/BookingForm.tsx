@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import Input from "../ui/Input";
 import { useCreateBookingPaymentMutation } from "../../features/booking/bookingApi";
 import toast from "react-hot-toast";
+import { X } from "lucide-react";
 
 type FormValues = {
   name: string;
@@ -75,18 +76,20 @@ export function BookingFormModal({
         <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Complete Booking</h3>
+            <h3 className="text-xl font-bold text-[#111827] md:text-2xl">
+              Complete Booking
+            </h3>
 
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-black"
             >
-              ✕
+              <X className="" />
             </button>
           </div>
 
           {/* Slot Info */}
-          <div className="bg-gray-50 p-3 rounded mb-4 text-sm">
+          <div className="bg-[#f5eeff] p-3 rounded mb-4 text-md">
             Selected time:{" "}
             <strong>
               {start} - {end}
@@ -101,7 +104,7 @@ export function BookingFormModal({
               type="text"
               label="Name"
               placeholder="Your Name"
-              className="border p-3 rounded w-full mb-1"
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               {...register("name", { required: "Name is required" })}
             />
             {errors.name && (
@@ -147,7 +150,7 @@ export function BookingFormModal({
               type="button"
               onClick={handleSubmit(onSubmit)}
               disabled={isLoading}
-              className="bg-blue-600 text-white w-full py-3 rounded-lg disabled:opacity-50"
+              className="mt-10 flex h-10 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7c3aed] to-[#9333ea] font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isLoading ? "Redirecting to payment..." : "Confirm Booking"}
             </button>

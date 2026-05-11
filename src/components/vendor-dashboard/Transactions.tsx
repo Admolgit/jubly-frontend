@@ -109,7 +109,7 @@ export default function TransactionsPage() {
         <StatCard
           title="Total Payouts"
           value={Number(
-            transactionDashStats.totalPayouts / 100,
+            transactionDashStats.totalPayouts,
           ).toLocaleString()}
           icon={<Download className="w-5 h-5" />}
           color="purple"
@@ -117,21 +117,21 @@ export default function TransactionsPage() {
         />
         <StatCard
           title="Completed"
-          value={Number(transactionDashStats.completed / 100).toLocaleString()}
+          value={Number(transactionDashStats.completed).toLocaleString()}
           icon={<Check className="w-5 h-5" />}
           color="green"
           change={`${transactionDashStats.completedGrowth}% from last month`}
         />
         <StatCard
           title="Processing"
-          value={Number(transactionDashStats.processing / 100).toLocaleString()}
+          value={Number(transactionDashStats.processing).toLocaleString()}
           icon={<Clock3 className="w-5 h-5" />}
           color="blue"
           change={`${transactionDashStats.processingGrowth}% from last month`}
         />
         <StatCard
           title="Failed"
-          value={Number(transactionDashStats.failed / 100).toLocaleString()}
+          value={Number(transactionDashStats.failed).toLocaleString()}
           icon={<X className="w-5 h-5" />}
           color="orange"
           change={`${transactionDashStats.failedGrowth}% from last month`}
@@ -234,7 +234,7 @@ export default function TransactionsPage() {
 
                 {/* AMOUNT */}
                 <td className="px-6 py-4 text-sm font-semibold text-[#101828]">
-                  ₦{Number(item.amount / 100).toLocaleString()}
+                  ₦{Number(item.amount).toLocaleString()}
                 </td>
 
                 {/* STATUS */}

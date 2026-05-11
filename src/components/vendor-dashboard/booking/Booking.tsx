@@ -307,7 +307,7 @@ export function Bookings() {
         />
         <StatCard
           title="This Month Revenue"
-          value={`₦${Number(dashboardStats?.data?.earnings?.total / 100)?.toLocaleString()}`}
+          value={`₦${Number(dashboardStats?.data?.earnings?.total)?.toLocaleString()}`}
           isLoadingStats={dashboardStatsLoading}
           icon={<Wallet className="w-5 h-5" />}
           color="orange"

@@ -1,15 +1,21 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import Modal from "../ui/Modal";
-import Input from "../ui/Input";
-import { useCreateServiceMutation, useGetVendorServicesQuery } from "../../features/services/servicesAPI";
-import Loader from "../ui/Loader";
-import Pagination from "../utils/pagination";
+import Modal from "../../ui/Modal";
+import {
+  useCreateServiceMutation,
+  useGetVendorServicesQuery,
+  useUpdateActiveStatusMutation,
+} from "../../../features/services/servicesAPI";
+import Loader from "../../ui/Loader";
+import Pagination from "../../utils/pagination";
 import { Calendar, CheckCircle, Clock } from "lucide-react";
-import BookingSearch from "./booking/BookingSearch";
+import BookingSearch from "../booking/BookingSearch";
 import ServiceForm from "./ServiceCreationForm";
 import toast from "react-hot-toast";
+import EditServiceForm from "./ServiceEditForm";
+import { useSelector } from "react-redux";
+import { ServiceActions } from "../../ui/ServiceActions";
+import ConfirmationModal from "../../utils/ConfirmationModal";
 
 const DEFAULT_ITEMS_PER_PAGE = 6;
 
@@ -29,31 +35,40 @@ const statusConfig: Record<any, { icon: JSX.Element; active: string }> = {
 };
 
 export function Services() {
+  const vendor = useSelector(
+    (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
+  );
   const [serviceOpen, setServiceOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [reactivationOpen, setReactivationOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     name: "",
     price: "",
     durationMins: "",
-    category: "",
     description: "",
   });
   const [searchFilter, setSearchFilter] = useState("");
-  // const [activeView, setActiveView] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedService, setSelectedService] = useState<any>(null);
 
-  // const [updateService, { isLoading: updating }] = useUpdateServiceMutation();
+  const [updateService, { isLoading: updating }] = useCreateServiceMutation();
 
-  const { data: servicesData, isLoading: servicesLoading } =
-    useGetVendorServicesQuery({
-      page: currentPage,
-      limit: DEFAULT_ITEMS_PER_PAGE,
-      search: searchFilter,
-    });
+  const {
+    data: servicesData,
+    isLoading: servicesLoading,
+    refetch,
+  } = useGetVendorServicesQuery({
+    page: currentPage,
+    limit: DEFAULT_ITEMS_PER_PAGE,
+    search: searchFilter,
+  });
 
   const [createService, { isLoading: createServiceIsLoading }] =
-      useCreateServiceMutation();
+    useCreateServiceMutation();
+
+  const [updateActiveStatus, { isLoading: activeUpdating }] = useUpdateActiveStatusMutation();
 
   const servicesList = servicesData?.data || [];
 
@@ -68,7 +83,9 @@ export function Services() {
     }));
   };
 
-  const active = servicesData?.data?.filter((data: { active: boolean }) => data.active).length;
+  const active = servicesData?.data?.filter(
+    (data: { active: boolean }) => data.active,
+  ).length;
   const inactive = servicesData?.data?.filter(
     (data: { active: boolean }) => data.active !== true,
   ).length;
@@ -95,44 +112,89 @@ export function Services() {
   ];
 
   const handleCreateService = async (data: any) => {
-      try {
-        const response = await createService({
-          services: [
-            {
-              category: data.category,
-              description: data.description,
-              durationMins: Number(data.durationMins),
-              name: data.name,
-            },
-          ],
-        }).unwrap();
-  
-        if (response.status === 201) {
-          toast.success("Service created.");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    try {
+      const response = await createService({
+        services: [
+          {
+            price: Number(data.price),
+            description: data.description,
+            durationMins: Number(data.durationMins),
+            name: data.name,
+          },
+        ],
+      }).unwrap();
 
-  const handleUpdateService = async () => {
-    // try {
-    //   await updateService({
-    //     id: editData.id,
-    //     ...editForm,
-    //     price: Number(editForm.price),
-    //     durationMins: Number(editForm.durationMins),
-    //   }).unwrap();
-    //   setOpenEdit(false);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+      if (response.status === 201) {
+        toast.success("Service created.");
+        refetch();
+      }
+
+      setServiceOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  console.log({ editForm });
+  const handleUpdateService = async () => {
+    const payload = {
+      services: [
+        {
+          ...editForm,
+          price: Number(editForm.price),
+          durationMins: Number(editForm.durationMins),
+        },
+      ],
+    };
+    try {
+      const res = await updateService(payload).unwrap();
+
+      if (res.status === 201) {
+        toast.success("Service updated successfully");
+        refetch();
+      }
+      setOpenEdit(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReactivation = async () => {
+    try {
+      const res = await updateActiveStatus({
+        serviceId: selectedService?.id,
+        active: "true",
+      }).unwrap();
+
+      if (res.status === 200) {
+        toast.success(res.message);
+        refetch();
+      }
+
+      setReactivationOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleDeactivation = async () => {
+    try {
+      const res = await updateActiveStatus({
+        serviceId: selectedService?.id,
+        active: "false",
+      }).unwrap();
+
+      if (res.status === 200) {
+        toast.success(res.message);
+        refetch();
+      }
+
+      setCancelOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between relative">
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">Services</h1>
@@ -226,7 +288,7 @@ export function Services() {
                       {service.name}
                     </h3>
 
-                    <p className="mt-4 text-sm font-medium text-[#667085]">
+                    <p className="mt-2 text-sm font-medium text-[#667085]">
                       {service.durationMins} mins
                     </p>
                   </div>
@@ -244,18 +306,19 @@ export function Services() {
                     {service.active ? "Active" : "Paused"}
                   </span>
 
-                  <button className="flex h-8 w-11 items-center justify-center rounded-xl transition hover:bg-gray-100">
-                    <svg
-                      width="22"
-                      height="22"
-                      viewBox="0 0 24 24"
-                      fill="#667085"
-                    >
-                      <circle cx="5" cy="12" r="2" />
-                      <circle cx="12" cy="12" r="2" />
-                      <circle cx="19" cy="12" r="2" />
-                    </svg>
-                  </button>
+                  <div>
+                    <ServiceActions
+                      link={service}
+                      onReactivate={() => {
+                        setReactivationOpen(true);
+                        setSelectedService(service);
+                      }}
+                      onDeactivate={() => {
+                        setCancelOpen(true);
+                        setSelectedService(service);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -296,7 +359,6 @@ export function Services() {
                       name: service.name || "",
                       price: service.price || "",
                       durationMins: service.durationMins || "",
-                      category: service.category || "",
                       description: service.description || "",
                     });
                   }}
@@ -328,6 +390,7 @@ export function Services() {
           setServiceOpen={setServiceOpen}
           handleCreateService={handleCreateService}
           createServiceIsLoading={createServiceIsLoading}
+          vendor={vendor}
         />
       </Modal>
       <Modal
@@ -335,59 +398,33 @@ export function Services() {
         onClose={() => setOpenEdit(false)}
         title="Edit Service"
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input
-              label="Service Name"
-              value={editForm.name}
-              onChange={(e) => handleEditChange("name", e.target.value)}
-            />
-
-            <Input
-              label="Price"
-              value={editForm.price}
-              onChange={(e) => handleEditChange("price", e.target.value)}
-            />
-
-            <Input
-              label="Duration"
-              value={editForm.durationMins}
-              onChange={(e) => handleEditChange("durationMins", e.target.value)}
-            />
-
-            <Input
-              label="Category"
-              value={editForm.category}
-              onChange={(e) => handleEditChange("category", e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Description
-            </label>
-            <textarea
-              value={editForm.description}
-              onChange={(e) => handleEditChange("description", e.target.value)}
-              className="w-full rounded-lg border border-gray-200 p-3 text-sm"
-            />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setOpenEdit(false)}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleUpdateService}
-              // disabled={updating}
-              className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
-            >
-              Save Service
-            </button>
-          </div>
-        </div>
+        <EditServiceForm
+          editForm={editForm}
+          handleEditChange={handleEditChange}
+          handleUpdateService={handleUpdateService}
+          setOpenEdit={setOpenEdit}
+          updating={updating}
+          vendor={vendor}
+        />
       </Modal>
+      <ConfirmationModal
+        setCancelOpen={setCancelOpen}
+        cancelOpen={cancelOpen}
+        message={"Are you sure you want to deactivate this service."}
+        onSubmit={handleDeactivation}
+        onSubmitLoading={activeUpdating}
+        btnText={"Deactivate"}
+        btnTextLoading={"Deactivating..."}
+      />
+      <ConfirmationModal
+        setCancelOpen={setReactivationOpen}
+        cancelOpen={reactivationOpen}
+        message={"Are you sure you want to reactivate this service."}
+        onSubmit={handleReactivation}
+        onSubmitLoading={activeUpdating}
+        btnText={"Reactivate"}
+        btnTextLoading={"Reactivating..."}
+      />
     </div>
   );
 }

@@ -23,7 +23,7 @@ import {
 } from "../../../features/transactions/transactionAPI";
 import { setTransactions } from "../../../features/transactions/transactionSlice";
 import { setTransactionsList } from "../../../features/transactions/transactionsSlice";
-import ServiceForm from "../ServiceCreationForm";
+import ServiceForm from "../services/ServiceCreationForm";
 import BookingForm from "../BookingCreationForm";
 import toast from "react-hot-toast";
 import { useCreateServiceMutation } from "../../../features/services/servicesAPI";
@@ -125,7 +125,6 @@ function DashboardHome() {
   const [createService, { isLoading: createServiceIsLoading }] =
     useCreateServiceMutation();
   const { data: businessInsightData } = useGetBusinessInsightQuery({});
-  console.log({ businessInsightData });
 
   const insightCards = [
     {
@@ -177,8 +176,7 @@ function DashboardHome() {
   };
 
   const totalEarnings =
-    Number(dashboardStats?.data?.earnings?.total / 100)?.toLocaleString() ||
-    0;
+    Number(dashboardStats?.data?.earnings?.total)?.toLocaleString() || 0;
   const topServices = servicesCountsData?.data || [];
   const recentBooking = upcomingBookingsData?.data?.[0];
 
