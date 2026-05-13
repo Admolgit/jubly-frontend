@@ -17,7 +17,7 @@ import { CheckCircle2 } from "lucide-react";
 
 const localizer = momentLocalizer(moment);
 
-const statusStyles = {
+const statusStyles: any = {
   ALL: {
     pill: "",
     dot: "",
@@ -229,7 +229,7 @@ function BookingCalendar() {
                         {b.status !== "CONFIRMED" ? (
                           <span
                             className={`w-2 h-2 rounded-full ${
-                              statusStyles[b.status as any]?.dot ||
+                              statusStyles[b.status]?.dot ||
                               "bg-gray-400"
                             }`}
                           ></span>
