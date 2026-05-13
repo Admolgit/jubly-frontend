@@ -48,11 +48,13 @@ export default function ChangePassword({
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-        <div className="flex flex-col gap-2 mb-6 text-center">
-          <h1 className="text-2xl font-bold text-center text-blue-600">
+        <div className="flex flex-col gap-1 mb-6 text-center">
+          <h1 className="text-3xl font-bold text-center text-blue-600">
             Change Password
           </h1>
-          <p>Please proceed to change your password here.</p>
+          <p className="text-lg">
+            Please proceed to change your password here.
+          </p>
         </div>
 
         {/* PASSWORD WITH ICON */}
@@ -64,8 +66,8 @@ export default function ChangePassword({
               required: "Current password is required",
               minLength: { value: 6, message: "Min 6 characters" },
             })}
-            error={errors.currentPassword?.message as any}
-            className="pr-10"
+            error={errors?.currentPassword?.message as any}
+            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
           />
 
           <button
@@ -84,8 +86,8 @@ export default function ChangePassword({
               required: "New password is required",
               minLength: { value: 6, message: "Min 6 characters" },
             })}
-            error={errors.newPassword?.message as any}
-            className="pr-10"
+            error={errors?.newPassword?.message as any}
+            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
           />
 
           <button
@@ -104,8 +106,8 @@ export default function ChangePassword({
               required: "Confirm password is required",
               minLength: { value: 6, message: "Min 6 characters" },
             })}
-            error={errors.confirmPassword?.message as any}
-            className="pr-10"
+            error={errors?.confirmPassword?.message as any}
+            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
           />
 
           <button

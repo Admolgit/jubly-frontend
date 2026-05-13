@@ -216,7 +216,7 @@ function DashboardHome() {
           vendorData={vendorData}
         />
       </div>
-
+      
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-6">
         <StatCard
           title="Total Bookings"
@@ -225,7 +225,6 @@ function DashboardHome() {
           color="purple"
           change={`${dashboardStats?.data?.bookingCount?.growth}% from last month`}
         />
-
         <StatCard
           title="Upcoming"
           value={
@@ -235,7 +234,6 @@ function DashboardHome() {
           color="green"
           change={`${dashboardStats?.data?.upcomingBooking?.growth} this week`}
         />
-
         <StatCard
           title="Earnings"
           value={`₦${totalEarnings}`}
@@ -243,7 +241,6 @@ function DashboardHome() {
           color="orange"
           change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
-
         <StatCard
           title="Profile Views"
           value={dashboardStats?.data?.views?.total?.toString() || "0"}
@@ -258,7 +255,6 @@ function DashboardHome() {
           data={calendarLinkedData}
           isLoading={calendarLinkedLoading}
         />
-
         <TodaySchedule
           upcomingBookingsData={upcomingBookingsData}
           upcomingIsLoading={upcomingIsLoading}

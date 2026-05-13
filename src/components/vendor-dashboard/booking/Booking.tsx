@@ -24,6 +24,9 @@ import {
   CheckCircle,
   CheckSquare,
   XCircle,
+  CheckCircle2,
+  X,
+  Clock3,
 } from "lucide-react";
 import { LinkActions } from "../../ui/LinkActions";
 import toast from "react-hot-toast";
@@ -40,7 +43,7 @@ type BookingStatus =
   | "COMPLETED"
   | "CANCELLED";
 
-const statusStyles = {
+const statusStyles: any = {
   ALL: {
     pill: "",
     dot: "",
@@ -50,12 +53,12 @@ const statusStyles = {
     dot: "bg-grey-500",
   },
   CONFIRMED: {
-    pill: "bg-green-100 text-green-700",
-    dot: "bg-green-500",
+    wrapper: "bg-green-100 text-green-700",
+    icon: "fill-green-600 text-white",
   },
   PENDING: {
-    pill: "bg-amber-100 text-amber-700",
-    dot: "bg-amber-500",
+    wrapper: "bg-orange-100 text-orange-600",
+    icon: "text-orange-500",
   },
   CANCELLED: {
     pill: "bg-red-100 text-red-700",
@@ -83,7 +86,7 @@ const statusConfig: Record<
   },
   COMPLETED: {
     icon: <CheckSquare size={16} />,
-    active: "bg-gray-100 text-gray-700 border-gray-200",
+    active: "bg-gray-50 text-gray-700 border-gray-200",
   },
   CANCELLED: {
     icon: <XCircle size={16} />,
@@ -123,10 +126,6 @@ export function Bookings() {
     useGetDashboardStartsQuery(vendor?.id, {
       skip: !vendor?.id,
     });
-  // const { data: getTransactionsHistoryByVendor } =
-  //   useGetTransactionAmountByVendorQuery(vendor?.id, {
-  //     skip: !vendor?.id,
-  //   });
   const [cancelBooking, { isLoading: cancelLoading }] =
     useCancelBookingMutation();
   const [rescheduleBooking, { isLoading: rescheduleLoading }] =
@@ -354,7 +353,7 @@ export function Bookings() {
             <Loader />
           ) : (
             <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
-              <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
+              <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
                 <tr className="border-b">
                   <th className="px-3 py-3">Client</th>
                   <th className="px-3 py-3">Service</th>
@@ -365,7 +364,7 @@ export function Bookings() {
                   <th className="px-3 py-3">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-sm text-gray-700">
+              <tbody className="text-md text-gray-700">
                 {getBookingsData?.data?.map((b: any) => (
                   <tr className="border-b last:border-b-0 relative">
                     <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
@@ -386,22 +385,42 @@ export function Bookings() {
                     <td className="px-3 py-4 font-semibold text-gray-900 tracking-tight">
                       N {Number(b.services?.price)?.toLocaleString()}
                     </td>
-                    <td className="px-3 py-4">
-                      <span
-                        className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-full ${
-                          statusStyles[b.status as BookingStatus]?.pill ||
-                          "bg-gray-100 text-gray-600"
+                    <td className="px-6 py-4">
+                      <div
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                          statusStyles[b.status].wrapper
                         }`}
                       >
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            statusStyles[b.status as BookingStatus]?.dot ||
-                            "bg-gray-400"
-                          }`}
-                        ></span>
+                        {b.status === "COMPLETED" && (
+                          <CheckSquare
+                            size={14}
+                            className={statusStyles[b.status].icon}
+                          />
+                        )}
+
+                        {b.status === "CONFIRMED" && (
+                          <CheckCircle2
+                            size={14}
+                            className={statusStyles[b.status].icon}
+                          />
+                        )}
+
+                        {b.status === "PENDING" && (
+                          <Clock3
+                            size={14}
+                            className={statusStyles[b.status].icon}
+                          />
+                        )}
+
+                        {b.status === "FAILED" && (
+                          <X
+                            size={14}
+                            className={statusStyles[b.status].icon}
+                          />
+                        )}
 
                         {b.status}
-                      </span>
+                      </div>
                     </td>
                     <td className="px-3 py-4">
                       <LinkActions

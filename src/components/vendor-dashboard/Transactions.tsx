@@ -8,6 +8,7 @@ import {
   Clock3,
   X,
   Landmark,
+  CheckCircle2,
 } from "lucide-react";
 import { StatCard } from "./dashboard/StatCard";
 import { useSelector } from "react-redux";
@@ -57,7 +58,7 @@ export default function TransactionsPage() {
   const statusStyles: any = {
     CONFIRMED: {
       wrapper: "bg-green-100 text-green-700",
-      icon: "text-green-600",
+      icon: "fill-green-600 text-white",
     },
     PENDING: {
       wrapper: "bg-orange-100 text-orange-600",
@@ -108,9 +109,7 @@ export default function TransactionsPage() {
       <div className="grid grid-cols-4 gap-6 mb-10">
         <StatCard
           title="Total Payouts"
-          value={Number(
-            transactionDashStats.totalPayouts,
-          ).toLocaleString()}
+          value={Number(transactionDashStats.totalPayouts).toLocaleString()}
           icon={<Download className="w-5 h-5" />}
           color="purple"
           change={`${transactionDashStats.totalGrowth}% from last month`}
@@ -245,7 +244,7 @@ export default function TransactionsPage() {
                     }`}
                   >
                     {item.status === "CONFIRMED" && (
-                      <Check
+                      <CheckCircle2
                         size={14}
                         className={statusStyles[item.status].icon}
                       />

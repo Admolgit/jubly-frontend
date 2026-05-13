@@ -13,10 +13,34 @@ import {
 import { useConnectCalenderMutation } from "../../features/auth/authApi";
 import { useGetVendorUpcomingBookingsQuery } from "../../features/booking/bookingApi";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle2 } from "lucide-react";
 
 const localizer = momentLocalizer(moment);
 
-export function BookingCalendar() {
+const statusStyles = {
+  ALL: {
+    pill: "",
+    dot: "",
+  },
+  COMPLETED: {
+    pill: "bg-grey-100 text-grey-700",
+    dot: "bg-grey-500",
+  },
+  CONFIRMED: {
+    pill: "bg-green-100 text-green-700",
+    dot: "bg-green-500",
+  },
+  PENDING: {
+    pill: "bg-amber-100 text-amber-700",
+    dot: "bg-amber-500",
+  },
+  CANCELLED: {
+    pill: "bg-red-100 text-red-700",
+    dot: "bg-red-500",
+  },
+};
+
+function BookingCalendar() {
   const navigate = useNavigate();
   const vendor = useSelector((state: any) => state.vendor.vendor);
   const user = useSelector((state: any) => state.auth.user);
@@ -56,8 +80,6 @@ export function BookingCalendar() {
         status: b.status,
       }));
   }, [bookingCalendarData]);
-
-  console.log({ event });
 
   const upcomingEvents = React.useMemo(() => {
     if (!vendorUpcomingData?.data) return [];
@@ -196,7 +218,7 @@ export function BookingCalendar() {
                     <div className="flex justify-between items-center">
                       <p className="font-medium text-sm">{b.title}</p>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
+                        className={`text-xs px-2 py-1 rounded-full flex gap-1 ${
                           b.status === "CONFIRMED"
                             ? "bg-green-100 text-green-700"
                             : b.status === "PENDING"
@@ -204,6 +226,16 @@ export function BookingCalendar() {
                               : "bg-red-100 text-red-600"
                         }`}
                       >
+                        {b.status !== "CONFIRMED" ? (
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              statusStyles[b.status as any]?.dot ||
+                              "bg-gray-400"
+                            }`}
+                          ></span>
+                        ) : (
+                          <CheckCircle2 className="h-4 w-4 fill-green-600 text-white" />
+                        )}
                         {b.status}
                       </span>
                     </div>
@@ -242,3 +274,5 @@ export function BookingCalendar() {
     </div>
   );
 }
+
+export default BookingCalendar;

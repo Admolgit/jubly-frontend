@@ -7,6 +7,7 @@ import { formatDate } from "../utils/dateFormatter";
 import { formatTimeFromISO } from "../utils/timeFormatter";
 import { useGetClientsBookingsQuery } from "../../features/booking/bookingApi";
 import { useSelector } from "react-redux";
+import { Bell, CalendarCheck, ClipboardList, Wallet } from "lucide-react";
 
 export function ClientDashboardHome() {
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
@@ -47,24 +48,28 @@ export function ClientDashboardHome() {
   }, [bookings, bookingsData?.meta?.total]);
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Client Dashboard</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-950">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">
             Manage bookings, explore vendors, and stay on schedule.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <button className="relative rounded-full p-2.5 hover:bg-gray-100">
+            <Bell className="h-5 w-5 text-gray-900" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-purple-600" />
+          </button>
           <Link
             to="/client-dashboard/vendors"
-            className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50"
           >
             Find Vendors
           </Link>
           <Link
             to="/booking"
-            className="rounded-[10px] bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
             + Book a Service
           </Link>
@@ -75,17 +80,23 @@ export function ClientDashboardHome() {
         <StatCard
           title="Total Bookings"
           value={stats.total.toString()}
-          isLoadingStats={isLoading}
+          icon={<ClipboardList className="w-5 h-5" />}
+          color="purple"
+          // change={`${stats?.data?.bookingCount?.growth}% from last month`}
         />
         <StatCard
-          title="Upcoming Bookings"
+          title="Upcoming"
           value={stats.upcoming.toString()}
-          isLoadingStats={isLoading}
+          icon={<CalendarCheck className="w-5 h-5" />}
+          color="green"
+          // change={`${dashboardStats?.data?.upcomingBooking?.growth} this week`}
         />
         <StatCard
           title="Vendors Booked"
           value={stats.vendors.toString()}
-          isLoadingStats={isLoading}
+          icon={<Wallet className="w-5 h-5" />}
+          color="orange"
+          // change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
       </div>
 

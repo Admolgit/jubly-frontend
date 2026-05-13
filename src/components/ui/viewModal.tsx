@@ -11,7 +11,7 @@ function ViewModal({ setViewVendorOpen, viewVendorOpen, booking }: any) {
       onClose={() => setViewVendorOpen(false)}
       title="Booking Details"
     >
-      <div className="py-6">
+      <div className="py-2">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
@@ -33,7 +33,7 @@ function ViewModal({ setViewVendorOpen, viewVendorOpen, booking }: any) {
         </div>
 
         {/* Details */}
-        <div className="space-y-4">
+        <div className="space-y-2 py-4">
           {/* Vendor */}
           <div className="flex items-center gap-3">
             <div className="bg-purple-100 p-2 rounded-lg">

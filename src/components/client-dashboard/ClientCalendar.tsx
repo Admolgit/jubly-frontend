@@ -6,18 +6,22 @@ import Loader from "../ui/Loader";
 import { formatDate } from "../utils/dateFormatter";
 import { formatTimeFromISO } from "../utils/timeFormatter";
 import { useGetClientCalendarListQuery } from "../../features/calendar/calendarAPI";
-import React from "react";
+import React, { useState } from "react";
 import { useGetClientUpcomingBookingsQuery } from "../../features/booking/bookingApi";
+import { useNavigate } from "react-router-dom";
 
 const localizer = momentLocalizer(moment);
 
 const now = new Date();
 
-export function ClientCalendar() {
+function ClientCalendar() {
+  const navigate = useNavigate();
+  const [view, setView] = useState("");
   const { data: bookingCalendarData, isLoading: isBookingCalendarLoading } =
     useGetClientCalendarListQuery({
       year: now.getFullYear(),
       month: now.getMonth() + 1,
+      view: view.trim() === "" ? "month" : view,
     });
   const { data: vendorUpcomingData, isLoading: vendorUpcomingLoading } =
     useGetClientUpcomingBookingsQuery({});
@@ -36,33 +40,94 @@ export function ClientCalendar() {
       }));
   }, [bookingCalendarData]);
 
+  console.log({ bookingCalendarData, events });
+
+  const stats = {
+    confirmed: events.filter((e) => e.status === "CONFIRMED").length,
+    completed: events.filter((e) => e.status === "COMPLETED").length,
+    pending: events.filter((e) => e.status === "PENDING").length,
+    cancelled: events.filter((e) => e.status === "CANCELLED").length,
+  };
+
   if (isBookingCalendarLoading || vendorUpcomingLoading) {
     return <Loader />;
   }
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div>
-        <h1 className="text-2xl font-semibold">Booking Calendar</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-3xl font-bold text-gray-950">Booking Calendar</h1>
+        <p className="mt-1 text-sm text-gray-500">
           View all your booked sessions in one place.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.6fr]">
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_0.8fr] gap-6 pt-6">
+        {/* CALENDAR */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
           <Calendar
             localizer={localizer}
             events={events}
             startAccessor="start"
             endAccessor="end"
             style={{ height: 520 }}
+            onView={(newView) => {
+              setView(newView);
+            }}
+            onNavigate={(date) => {
+              console.log("Current date:", date);
+            }}
+            eventPropGetter={(event: any) => {
+              return {
+                style: {
+                  backgroundColor:
+                    event.status === "CONFIRMED"
+                      ? "#7c3aed"
+                      : event.status === "COMPLETED"
+                        ? "#333333"
+                        : event.status === "PENDING"
+                          ? "yellow"
+                          : "red",
+                  color: "white",
+                  borderRadius: "8px",
+                  border: "none",
+                },
+              };
+            }}
           />
+
+          {/* FOOTER STATS */}
+          <div className="flex justify-between mt-4 text-sm text-gray-600">
+            <span className="text-green-600 font-medium">
+              {stats.confirmed} Confirmed
+            </span>
+            <span className="text-grey-600 font-medium">
+              {stats.completed} Completed
+            </span>
+            <span className="text-amber-500 font-medium">
+              {stats.pending} Pending
+            </span>
+            <span className="text-red-500 font-medium">
+              {stats.cancelled} Cancelled
+            </span>
+            <span className="font-semibold text-gray-800">
+              {events.length} Total
+            </span>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <h3 className="font-semibold">Upcoming Bookings</h3>
+          {/* UPCOMING */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold">Upcoming Bookings</h3>
+              <button
+                className="text-sm text-purple-600"
+                onClick={() => navigate("/client-dashboard/bookings")}
+              >
+                View all
+              </button>
+            </div>
             <div className="mt-4 space-y-3">
               {upcomingList.length === 0 ? (
                 <p className="text-sm text-gray-500">No upcoming bookings.</p>
@@ -113,3 +178,5 @@ export function ClientCalendar() {
     </div>
   );
 }
+
+export default ClientCalendar;
