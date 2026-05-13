@@ -37,11 +37,11 @@ export function ClientSidebar({
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between bg-black text-white p-4 z-50">
+      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50">
         <button
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
-          className="text-xl"
+          className="rounded-lg border border-gray-200 p-2"
         >
           <Menu size={20} />
         </button>
@@ -56,15 +56,15 @@ export function ClientSidebar({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 bg-white text-black p-6 transform transition-transform duration-300 z-40 
+        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 
           ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 overflow-y-auto
         `}
       >
-        <div className="my-6">
+        <div className="mb-10 mt-2">
           <Logo />
         </div>
 
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-1">
           {menu.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
@@ -75,10 +75,10 @@ export function ClientSidebar({
                 to={item.path}
                 onClick={() => setOpen(false)}
                 className={
-                  "flex items-center gap-3 px-3 py-2 rounded-[12px] transition " +
+                  "flex items-center gap-3 rounded-xl px-4 py-3 text-md font-medium transition " +
                   (active
-                    ? "bg-blue-800 text-white font-semibold"
-                    : "hover:bg-blue-800")
+                    ? "bg-gradient-to-r from-purple-700 to-indigo-600 text-white shadow-sm"
+                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700")
                 }
               >
                 <Icon size={18} />

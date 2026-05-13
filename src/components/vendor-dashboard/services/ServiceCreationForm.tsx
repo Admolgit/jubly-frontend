@@ -18,9 +18,9 @@ const serviceSchema = z.object({
     .string()
     .min(1, "Price is required")
     .refine((val) => !isNaN(Number(val)), "Price must be a number"),
-  durationMins: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
-  description: z.string().optional(),
+  durationMins: z.string().min(1, "Duration required"),
+  category: z.string().optional(),
+  description: z.string().min(10, "Description required"),
 });
 
 type ServiceFormData = z.infer<typeof serviceSchema>;
@@ -29,11 +29,11 @@ export default function ServiceForm({
   setServiceOpen,
   handleCreateService,
   createServiceIsLoading,
+  vendor,
 }: any) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<ServiceFormData>({
     resolver: zodResolver(serviceSchema),
@@ -44,8 +44,6 @@ export default function ServiceForm({
       ...data,
       price: Number(data.price),
     });
-
-    reset();
   };
 
   return (
@@ -123,7 +121,7 @@ export default function ServiceForm({
             {/* Category */}
             <div>
               <label className="mb-3 block text-sm font-semibold text-[#111827]">
-                Category <span className="text-red-500">*</span>
+                Category <span className="text-red-500"></span>
               </label>
 
               <div className="flex h-12 items-center justify-between rounded-2xl border border-[#E4E7EC] bg-white px-5">
@@ -132,7 +130,8 @@ export default function ServiceForm({
 
                   <input
                     {...register("category")}
-                    placeholder="Makeup"
+                    placeholder={vendor.category}
+                    disabled={true}
                     className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
                   />
                 </div>

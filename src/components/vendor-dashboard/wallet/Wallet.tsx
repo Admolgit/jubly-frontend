@@ -3,32 +3,34 @@ import { useSelector } from "react-redux";
 import { StatCard } from "../dashboard/StatCard";
 import { CurrencyIcon, StampIcon, Wallet2Icon } from "lucide-react";
 import PayoutSummary from "./PayoutSummary";
+import { useGetTransactionHistoryByVendorQuery } from "../../../features/transactions/transactionAPI";
+import { formatDate } from "../../utils/dateFormatter";
+import Loader from "../../ui/Loader";
 
 export function Wallet() {
   const totalEarned = useSelector(
     (state: any) => state.transactions.transactions,
   );
 
-  const payouts = [
-    {
-      id: 1,
-      date: "May 12, 2026",
-      amount: "NGN 35,000",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      date: "May 05, 2026",
-      amount: "NGN 18,000",
-      status: "Processing",
-    },
-    {
-      id: 3,
-      date: "Apr 26, 2026",
-      amount: "NGN 22,000",
-      status: "Completed",
-    },
-  ];
+  const vendor = useSelector(
+    (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
+  );
+
+  const { data: transactionsList, isLoading } =
+    useGetTransactionHistoryByVendorQuery(
+      {
+        vendorId: vendor?.id,
+      },
+      {
+        skip: !vendor?.id,
+      },
+    );
+
+  const transactions = transactionsList?.data?.transactions || [];
+
+  if (isLoading) {
+    <Loader />;
+  }
 
   return (
     <div className="py-4">
@@ -47,14 +49,14 @@ export function Wallet() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
         <StatCard
           title="Total Earned"
-          value={`₦${Number(totalEarned / 100).toLocaleString()}`}
+          value={`₦${Number(totalEarned).toLocaleString()}`}
           icon={<Wallet2Icon className="w-5 h-5" />}
           color="green"
           change="12% from last month"
         />
         <StatCard
           title="Available"
-          value="₦140,000"
+          value={`₦${Number(totalEarned).toLocaleString()}`}
           icon={<CurrencyIcon className="w-5 h-5" />}
           color="purple"
           change="12% from last month"
@@ -115,73 +117,84 @@ export function Wallet() {
           </div>
 
           <div className="mt-6 space-y-4">
-            {payouts.map((payout) => (
-              <div
-                key={payout.id}
-                className="flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF]"
-              >
-                <div className="flex items-center gap-4">
+            {transactions
+              ?.slice(0, 3)
+              ?.map(
+                (payout: {
+                  id: string;
+                  amount: number;
+                  createdAt: string;
+                  status: string;
+                }) => (
                   <div
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-                      payout.status === "Completed"
-                        ? "bg-[#ECFDF3]"
-                        : "bg-[#FFF7E8]"
-                    }`}
+                    key={payout.id}
+                    className="flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF]"
                   >
-                    {payout.status === "Completed" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-[#16A34A]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+                          payout.status === "Completed"
+                            ? "bg-[#ECFDF3]"
+                            : "bg-[#FFF7E8]"
+                        }`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 10h18M7 15h.01M11 15h2m-9 4h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-[#F59E0B]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    )}
+                        {payout.status === "Completed" ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-[#16A34A]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M3 10h18M7 15h.01M11 15h2m-9 4h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-[#F59E0B]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-semibold tracking-tight text-[#111827]">
+                          ₦{Number(payout.amount).toLocaleString()}
+                        </p>
+
+                        <p className="mt-1 text-xs text-[#667085]">
+                          {formatDate(payout.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium ${
+                        payout.status === "CONFIRMED"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-[#FFF7E8] text-[#D97706]"
+                      }`}
+                    >
+                      <span className="h-2 w-2 rounded-full bg-current" />
+                      {payout.status}
+                    </span>
                   </div>
-
-                  <div>
-                    <p className="text-sm font-semibold tracking-tight text-[#111827]">
-                      {payout.amount}
-                    </p>
-
-                    <p className="mt-1 text-xs text-[#667085]">{payout.date}</p>
-                  </div>
-                </div>
-
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium ${
-                    payout.status === "Completed"
-                      ? "bg-[#ECFDF3] text-[#16A34A]"
-                      : "bg-[#FFF7E8] text-[#D97706]"
-                  }`}
-                >
-                  <span className="h-2 w-2 rounded-full bg-current" />
-                  {payout.status}
-                </span>
-              </div>
-            ))}
+                ),
+              )}
           </div>
         </div>
 

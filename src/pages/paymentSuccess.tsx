@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
+import {
+  CheckCircle2,
+  Download,
+  Printer,
+  Share2,
+  Copy,
+  ArrowLeft,
+  CreditCard,
+  ReceiptText,
+} from "lucide-react";
 import { useVerifyTransactionMutation } from "../features/paystack/paystackApi";
 
 export default function PaymentSuccessPage() {
@@ -7,10 +17,17 @@ export default function PaymentSuccessPage() {
 
   const [verifyTransaction, { isLoading }] = useVerifyTransactionMutation();
 
+  const [verifyData, setVerifyData] = useState<any>();
+
   React.useEffect(() => {
     const verifyPayment = async () => {
       try {
-        await verifyTransaction({ reference: reference });
+        const response = await verifyTransaction({ reference });
+
+        if (response.data.status === "success") {
+          console.log({ response });
+          setVerifyData(response);
+        }
       } catch (error) {
         console.error("Error verifying payment:", error);
       }
@@ -53,112 +70,264 @@ export default function PaymentSuccessPage() {
   };
 
   const handleShare = async () => {
-    // if (navigator.share && transaction) {
-    //   await navigator.share({
-    //     title: "Payment Receipt",
-    //     text: `Payment of ₦${transaction.amount / 100} was successful`,
-    //   });
-    // }
+    if (navigator.share) {
+      await navigator.share({
+        title: "Payment Receipt",
+        text: "Your payment was successful",
+      });
+    }
+  };
+
+  const transaction = {
+    receipt: `JUB-${verifyData?.data?.reference}-${new Date().toLocaleString()}`,
+    amount: verifyData?.data?.amount,
+    status: verifyData?.data?.status === "success" ? "Paid" : "Failed",
+    customer: verifyData?.customer?.first_name,
+    email: verifyData?.customer?.email,
+    service: "Payment for service",
+    date: new Date().toLocaleString(),
+    method: verifyData?.authorization?.brand,
+    txId: "txn_8F72K3L9eXJ2Pq",
+    // response.data.metadata.description
   };
 
   if (isLoading) {
-    return <p className="text-center mt-10">Verifying payment...</p>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f7fb]">
+        <div className="rounded-2xl bg-white px-6 py-5 shadow-sm border border-gray-100">
+          <p className="text-sm text-gray-500">Verifying payment...</p>
+        </div>
+      </div>
+    );
   }
 
-  // if (!transaction) {
-  //   return <p className="text-center mt-10 text-red-500">Payment not found.</p>;
-  // }
-
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white shadow rounded p-6 print:shadow-none">
-      <h1 className="text-green-600 text-2xl font-semibold text-center mb-4">
-        Payment Successful
-      </h1>
+    <div className="min-h-screen bg-[#f5f7fb] px-4 py-14">
+      <div className="mx-auto max-w-4xl">
+        {/* Success Header */}
+        <div className="rounded-[28px] border border-gray-100 bg-white px-6 py-12 shadow-sm">
+          <div className="flex flex-col items-center justify-center text-center">
+            {/* Success Icon */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 animate-ping rounded-full bg-green-100 opacity-40" />
 
-      {/* Receipt */}
-      <div className="border rounded p-4 text-sm" id="receipt">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <div>
-            {/* <h2 className="text-xl font-bold">{subaccountInfo}</h2>
-            <p className="text-gray-600">
-              {transaction?.metadata?.description}
-            </p> */}
-          </div>
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-2">Payment Receipt</h2>
-            <p className="text-gray-600 mb-4">
-              Thank you for your payment. Below are the details of your
-              transaction.
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-green-500 shadow-lg shadow-green-100">
+                <CheckCircle2 className="h-10 w-10 text-white" />
+              </div>
+            </div>
+
+            <h1 className="text-4xl font-bold tracking-tight text-[#0f172a]">
+              Payment Successful!
+            </h1>
+
+            <p className="mt-3 max-w-xl text-base text-gray-500">
+              Thank you for your payment. Your transaction has been completed
+              successfully and your receipt is ready below.
             </p>
           </div>
         </div>
-        {/* <ReceiptRow label="Reference" value={transaction.reference} /> */}
-        {/* <ReceiptRow
-          label="Amount Paid"
-          value={`₦${transaction.amount / 100}`}
-        /> */}
-        {/* <ReceiptRow label="Fees" value={`₦${transaction.fees / 100}`} />
-        <ReceiptRow label="Currency" value={transaction.currency} />
-        <ReceiptRow label="Status" value={transaction.status} />
-        <ReceiptRow label="Payment Channel" value={transaction.channel} />
-        <ReceiptRow
-          label="Card Type"
-          value={transaction.authorization?.brand}
-        />
-        <ReceiptRow
-          label="Card Last 4"
-          value={transaction.authorization?.last4}
-        />
-        <ReceiptRow label="Bank" value={transaction.authorization?.bank} />
-        <ReceiptRow
-          label="Customer Email"
-          value={transaction.customer?.email}
-        />
-        <ReceiptRow
-          label="Paid At"
-          value={new Date(transaction.paid_at).toLocaleString()}
-        /> */}
-      </div>
 
-      {/* Actions */}
-      <div className="flex justify-center gap-4 mt-6 print:hidden">
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2 bg-gray-900 text-white rounded"
+        {/* Receipt */}
+        <div
+          id="receipt"
+          className="mt-8 rounded-[28px] border border-gray-100 bg-white shadow-sm overflow-hidden"
         >
-          Print
-        </button>
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-gray-100 px-8 py-6">
+            <div>
+              <h2 className="text-2xl font-bold text-[#0f172a]">
+                Payment Receipt
+              </h2>
 
-        <button
-          onClick={handleShare}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Share
-        </button>
-        <button
-          onClick={handleDownload}
-          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-400"
-        >
-          Download
-        </button>
-        <button
-          onClick={() => {
-            window.location.href = "/";
-          }}
-          className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
-        >
-          Cancel
-        </button>
+              <p className="mt-1 text-sm text-gray-500">
+                Receipt details for your completed transaction.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-semibold text-green-600">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              {transaction.status}
+            </div>
+          </div>
+
+          {/* Receipt Top */}
+          <div className="flex flex-col gap-6 px-8 py-7 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50">
+                <ReceiptText className="h-8 w-8 text-blue-600" />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-[#0f172a]">
+                  Receipt #{transaction.receipt}
+                </h3>
+
+                <p className="mt-1 text-sm text-gray-500">{transaction.date}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Grid */}
+          <div className="grid gap-6 border-t border-gray-100 px-8 py-8 md:grid-cols-3">
+            {/* Billed To */}
+            <div>
+              <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+                Billed To
+              </p>
+
+              <div className="space-y-1">
+                <h4 className="font-semibold text-[#0f172a]">
+                  {transaction.customer}
+                </h4>
+
+                <p className="text-sm text-gray-500">{transaction.email}</p>
+
+                <p className="text-sm text-gray-500">Lagos, Nigeria</p>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div>
+              <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+                Payment Method
+              </p>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50">
+                  <CreditCard className="h-5 w-5 text-orange-500" />
+                </div>
+
+                <div>
+                  <p className="font-medium text-[#0f172a]">
+                    {transaction.method}
+                  </p>
+
+                  <p className="text-sm text-gray-500">Expires 09/29</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Transaction ID */}
+            <div>
+              <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+                Transaction ID
+              </p>
+
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-[#0f172a]">{transaction.txId}</p>
+
+                <button className="text-gray-400 transition hover:text-gray-700">
+                  <Copy className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="px-8 pb-8">
+            <div className="overflow-hidden rounded-2xl border border-gray-100">
+              {/* Table Header */}
+              <div className="grid grid-cols-12 border-b border-gray-100 bg-gray-50 px-6 py-4 text-sm font-semibold text-gray-500">
+                <div className="col-span-7">Description</div>
+                <div className="col-span-2 text-center">Qty</div>
+                <div className="col-span-3 text-right">Amount</div>
+              </div>
+
+              {/* Table Body */}
+              <div className="grid grid-cols-12 items-center border-b border-gray-100 px-6 py-5">
+                <div className="col-span-7">
+                  <h4 className="font-medium text-[#0f172a]">
+                    {transaction.service}
+                  </h4>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    Annual SaaS subscription payment
+                  </p>
+                </div>
+
+                <div className="col-span-2 text-center font-medium text-[#0f172a]">
+                  1
+                </div>
+
+                <div className="col-span-3 text-right font-semibold text-[#0f172a]">
+                  {transaction.amount}
+                </div>
+              </div>
+
+              {/* Totals */}
+              <div className="flex justify-end bg-white px-6 py-6">
+                <div className="w-full max-w-sm space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Subtotal</span>
+
+                    <span className="font-medium text-[#0f172a]">
+                      {transaction.amount}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Tax</span>
+
+                    <span className="font-medium text-[#0f172a]">₦0</span>
+                  </div>
+
+                  <div className="border-t border-dashed pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold text-[#0f172a]">
+                        Total Paid
+                      </span>
+
+                      <span className="text-2xl font-bold text-green-600">
+                        {transaction.amount}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 print:hidden">
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-2 rounded-2xl bg-[#0f172a] px-6 py-4 text-sm font-medium text-white shadow-lg shadow-slate-200 transition hover:scale-[1.02]"
+          >
+            <Printer className="h-4 w-4" />
+            Print
+          </button>
+
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-6 py-4 text-sm font-medium text-[#0f172a] transition hover:bg-gray-50"
+          >
+            <Download className="h-4 w-4" />
+            Download PDF
+          </button>
+
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 text-sm font-medium text-white shadow-lg shadow-blue-100 transition hover:bg-blue-700"
+          >
+            <Share2 className="h-4 w-4" />
+            Share Receipt
+          </button>
+        </div>
+
+        {/* Back */}
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => {
+              window.location.href = "/";
+            }}
+            className="flex items-center gap-2 text-sm font-medium text-blue-600 transition hover:text-blue-700"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Return to Dashboard
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-
-// function ReceiptRow({ label, value }: { label: string; value?: string }) {
-//   return (
-//     <div className="flex justify-between py-1 border-b last:border-b-0">
-//       <span className="text-gray-600">{label}</span>
-//       <span className="font-medium">{value || "-"}</span>
-//     </div>
-//   );
-// }

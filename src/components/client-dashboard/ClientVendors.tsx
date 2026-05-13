@@ -1,4 +1,5 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { useGetSearchedVendorMutation } from "../../features/vendor/vendorApi";
@@ -92,15 +93,15 @@ export function ClientVendors() {
   }, [searchName, searchLocation, searchType, page, limit]);
 
   return (
-    <div className="py-6">
+    <div className="py-4">
       <div>
-        <h1 className="text-2xl font-semibold">Find Vendors</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-3xl font-bold text-gray-950">Find Vendors</h1>
+        <p className="mt-1 text-sm text-gray-500">
           Search for trusted vendors and view their details.
         </p>
       </div>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="rounded-2xl bg-white p-5 shadow-sm mt-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
           <input
             type="text"
@@ -145,7 +146,7 @@ export function ClientVendors() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-5 shadow-sm">
+      <div className="rounded-2xl bg-white p-5 shadow-sm mt-6">
         {isLoading ? (
           <Loader />
         ) : !isSearched ? (

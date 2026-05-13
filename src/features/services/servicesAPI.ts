@@ -12,10 +12,22 @@ export const servicesAPI = api.injectEndpoints({
       query: (data) => ({
         url: `/vendor/onboarding/services`,
         method: "POST",
-        body: data
+        body: data,
+      }),
+    }),
+
+    updateActiveStatus: builder.mutation({
+      query: (data) => ({
+        url: `/services/update/${data.serviceId}`,
+        method: "PATCH",
+        body: data,
       }),
     }),
   }),
 });
 
-export const { useGetVendorServicesQuery, useCreateServiceMutation } = servicesAPI;
+export const {
+  useGetVendorServicesQuery,
+  useCreateServiceMutation,
+  useUpdateActiveStatusMutation,
+} = servicesAPI;

@@ -23,7 +23,7 @@ import {
 } from "../../../features/transactions/transactionAPI";
 import { setTransactions } from "../../../features/transactions/transactionSlice";
 import { setTransactionsList } from "../../../features/transactions/transactionsSlice";
-import ServiceForm from "../ServiceCreationForm";
+import ServiceForm from "../services/ServiceCreationForm";
 import BookingForm from "../BookingCreationForm";
 import toast from "react-hot-toast";
 import { useCreateServiceMutation } from "../../../features/services/servicesAPI";
@@ -125,7 +125,6 @@ function DashboardHome() {
   const [createService, { isLoading: createServiceIsLoading }] =
     useCreateServiceMutation();
   const { data: businessInsightData } = useGetBusinessInsightQuery({});
-  console.log({ businessInsightData });
 
   const insightCards = [
     {
@@ -177,8 +176,7 @@ function DashboardHome() {
   };
 
   const totalEarnings =
-    Number(dashboardStats?.data?.earnings?.total / 100)?.toLocaleString() ||
-    0;
+    Number(dashboardStats?.data?.earnings?.total)?.toLocaleString() || 0;
   const topServices = servicesCountsData?.data || [];
   const recentBooking = upcomingBookingsData?.data?.[0];
 
@@ -218,7 +216,7 @@ function DashboardHome() {
           vendorData={vendorData}
         />
       </div>
-
+      
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-6">
         <StatCard
           title="Total Bookings"
@@ -227,7 +225,6 @@ function DashboardHome() {
           color="purple"
           change={`${dashboardStats?.data?.bookingCount?.growth}% from last month`}
         />
-
         <StatCard
           title="Upcoming"
           value={
@@ -237,7 +234,6 @@ function DashboardHome() {
           color="green"
           change={`${dashboardStats?.data?.upcomingBooking?.growth} this week`}
         />
-
         <StatCard
           title="Earnings"
           value={`₦${totalEarnings}`}
@@ -245,7 +241,6 @@ function DashboardHome() {
           color="orange"
           change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
-
         <StatCard
           title="Profile Views"
           value={dashboardStats?.data?.views?.total?.toString() || "0"}
@@ -260,7 +255,6 @@ function DashboardHome() {
           data={calendarLinkedData}
           isLoading={calendarLinkedLoading}
         />
-
         <TodaySchedule
           upcomingBookingsData={upcomingBookingsData}
           upcomingIsLoading={upcomingIsLoading}

@@ -2,17 +2,10 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 
-export const LinkActions = ({
-  link,
-  onReschedule,
-  setViewVendorOpen,
-  onCancle,
-  setSelectedView,
-  onMarking,
-}: any) => {
+export const ServiceActions = ({ link, onReactivate, onDeactivate }: any) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -25,7 +18,7 @@ export const LinkActions = ({
   }, []);
 
   return (
-    <div className="relative inline-block" ref={menuRef}> 
+    <div className="relative inline-block" ref={menuRef}>
       {/* Trigger */}
       <button
         onClick={() => setOpen((prev) => !prev)}
@@ -37,42 +30,32 @@ export const LinkActions = ({
       {/* Dropdown */}
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50 ">
-          <button
-            onClick={() => {
-              setSelectedView(link);
-              setViewVendorOpen(true);
-              setOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-          >
-            View
-          </button>
 
-          {link.status !== "CANCELLED" && (
+          {link.active !== true && (
             <button
               onClick={() => {
-                onReschedule(link);
+                onReactivate(link);
                 setOpen(false);
               }}
               className="block w-full text-left px-4 py-2 hover:bg-gray-100"
             >
-              Reschedule
+              Reactivate
             </button>
           )}
 
-          {link.status !== "CANCELLED" && (
+          {link.active !== false && (
             <button
               onClick={() => {
-                onCancle(link);
+                onDeactivate(link);
                 setOpen(false);
               }}
               className="block w-full text-left px-4 py-2 hover:bg-gray-100"
             >
-              Cancel
+              Deactivate
             </button>
           )}
 
-          {link.status !== "CANCELLED" && (
+          {/* {link.status !== "CANCELLED" && (
             <button
               onClick={() => {
                 onMarking(link)
@@ -82,7 +65,7 @@ export const LinkActions = ({
             >
               {link.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
             </button>
-          )}
+          )} */}
         </div>
       )}
     </div>

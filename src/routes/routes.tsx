@@ -10,13 +10,13 @@ import VerifyOtpPage from "../pages/VerificationOtpPage";
 import VendorOnboardingSuccessPage from "../pages/OnboardingVerification";
 import VendorAvailability from "../pages/vendor/VendorAvailability";
 import GoogleSync from "../pages/vendor/GoogleSync";
-import { BookingCalendar } from "../components/vendor-dashboard/BookingCalender";
+import BookingCalendar from "../components/vendor-dashboard/BookingCalender";
 import { Bookings } from "../components/vendor-dashboard/booking/Booking";
 import { Clients } from "../components/vendor-dashboard/Clients";
 import { Wallet } from "../components/vendor-dashboard/wallet/Wallet";
 import { Settings } from "../components/vendor-dashboard/Settings";
 import DashboardLayout from "../pages/vendor-dashboard/Dashboard";
-import { Services } from "../components/vendor-dashboard/Service";
+import { Services } from "../components/vendor-dashboard/services/Service";
 import VendorBookingPage from "../pages/VendorBookingPage";
 import ServiceBookingPage from "../pages/ServiceBookingPage";
 import PaymentSuccessPage from "../pages/paymentSuccess";
@@ -25,13 +25,13 @@ import DashboardHome from "../components/vendor-dashboard/dashboard/DashboardHom
 import ClientLayout from "../layouts/ClientLayout";
 import ClientDashboardLayout from "../pages/client-dashboard/Dashboard";
 import { ClientDashboardHome } from "../components/client-dashboard/ClientDashboardHome";
-import { ClientBookings } from "../components/client-dashboard/ClientBookings";
-import { ClientCalendar } from "../components/client-dashboard/ClientCalendar";
+import ClientCalendar from "../components/client-dashboard/ClientCalendar";
 import { ClientVendors } from "../components/client-dashboard/ClientVendors";
 import { ClientSettings } from "../components/client-dashboard/ClientSettings";
 import { ClientProfile } from "../components/client-dashboard/ClientProfile";
 import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
 import TransactionsPage from "../components/vendor-dashboard/Transactions";
+import ClientBookings from "../components/client-dashboard/ClientBookings";
 
 export const router = createBrowserRouter([
   {
