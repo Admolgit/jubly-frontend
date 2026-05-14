@@ -53,7 +53,6 @@ export default function TransactionsPage() {
     useGetTransactionDashStatsQuery({});
 
   const transactions = transactionsList?.data?.transactions || [];
-  console.log({ transactionDashStats });
 
   const statusStyles: any = {
     CONFIRMED: {
