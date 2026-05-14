@@ -8,7 +8,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 
 // ✅ Use Vite env with fallback
-export const BASE = import.meta.env.VITE_API_URL || "http://localhost:4001/api/v1";
+export const BASE = import.meta.env.VITE_API_URI || "http://localhost:4001/api/v1";
 
 // --- Base Query ---
 const baseQuery = fetchBaseQuery({
