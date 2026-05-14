@@ -8,6 +8,8 @@ import { formatDate } from "../../utils/dateFormatter";
 import Loader from "../../ui/Loader";
 import { useGetUserSubAccountQuery } from "../../../features/users/userApi";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { PAYSTACK_BANKS } from "./pastackBanks";
 
 export function Wallet() {
   const navigate = useNavigate();
@@ -19,7 +21,8 @@ export function Wallet() {
     (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
   );
 
-  const { data: subAccountData, isLoading: subAccountLoading } = useGetUserSubAccountQuery({});
+  const { data: subAccountData, isLoading: subAccountLoading } =
+    useGetUserSubAccountQuery({});
 
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
@@ -33,6 +36,11 @@ export function Wallet() {
 
   const transactions = transactionsList?.data?.transactions || [];
   const subAccount = subAccountData?.data || [];
+
+  const bankMap = useMemo(
+    () => Object.fromEntries(PAYSTACK_BANKS.map((b) => [b.code, b.name])),
+    [],
+  );
 
   if (isLoading || subAccountLoading) {
     <Loader />;
@@ -236,7 +244,7 @@ export function Wallet() {
             <div>
               <p className="text-xs text-[#98A2B3]">Bank</p>
               <p className="mt-1 text-sm font-semibold tracking-tight text-[#111827]">
-                Jubly Bank
+                {bankMap[subAccount.bankName] ?? "N/A"}
               </p>
             </div>
 

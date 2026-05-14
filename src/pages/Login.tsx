@@ -112,7 +112,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = `${import.meta.env.VITE_API_URi}/auth/google/login`;
+      window.location.href = `${import.meta.env.VITE_API_URI}/auth/google/login`;
     } catch (error) {
       console.error("Google login failed:", error);
     }

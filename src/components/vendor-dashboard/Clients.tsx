@@ -7,13 +7,17 @@ import Loader from "../ui/Loader";
 import { useEffect, useState } from "react";
 import { formatDate } from "../utils/dateFormatter";
 import { StatCard } from "./dashboard/StatCard";
-import { Calendar, CheckCircle, Clock, ReplaceAll, ShieldHalfIcon, UserPlus2Icon } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  ReplaceAll,
+  ShieldHalfIcon,
+  UserPlus2Icon,
+} from "lucide-react";
 import BookingSearch from "./booking/BookingSearch";
 
-const statusConfig: Record<
-  any,
-  { icon: JSX.Element; active: string }
-> = {
+const statusConfig: Record<any, { icon: JSX.Element; active: string }> = {
   ALL: {
     icon: <Calendar size={16} />,
     active: "bg-blue-50 text-blue-600 border-blue-200",
@@ -94,24 +98,24 @@ export function Clients() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 my-6">
         <StatCard
           title="Total Clients"
-          value={clientsStatsData?.data?.totalClients.toString() || "0"}
+          value={clientsStatsData?.data?.totalClients?.value.toString() || "0"}
           icon={<UserPlus2Icon className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${clientsStatsData?.data?.totalClients?.growth.toString()} from last month`}
         />
         <StatCard
           title="Repeat Clients"
-          value={`${clientsStatsData?.data?.repeatRate || "0"}%`}
+          value={`${clientsStatsData?.data?.repeatClients?.value || "0"}`}
           icon={<ReplaceAll className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${clientsStatsData?.data?.repeatClients?.growth.toString()} from last month`}
         />
         <StatCard
           title="Avg. Booking Value"
-          value={`${clientsStatsData?.data?.avgBookingValue?.toLocaleString() || "0"}`}
+          value={`${clientsStatsData?.data?.avgBookingValue?.value?.toLocaleString() || "0"}`}
           icon={<ShieldHalfIcon className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${clientsStatsData?.data?.avgBookingValue?.growth.toString()} from last month`}
         />
       </div>
 
