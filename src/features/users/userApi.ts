@@ -11,7 +11,13 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserSubAccount: builder.query({
+      query: () => ({
+        url: `/users/me/sub-account`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useLazyGetVendorClientsQuery } = userApi;
+export const { useGetProfileQuery, useLazyGetVendorClientsQuery, useGetUserSubAccountQuery } = userApi;

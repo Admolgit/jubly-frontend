@@ -6,8 +6,11 @@ import PayoutSummary from "./PayoutSummary";
 import { useGetTransactionHistoryByVendorQuery } from "../../../features/transactions/transactionAPI";
 import { formatDate } from "../../utils/dateFormatter";
 import Loader from "../../ui/Loader";
+import { useGetUserSubAccountQuery } from "../../../features/users/userApi";
+import { useNavigate } from "react-router-dom";
 
 export function Wallet() {
+  const navigate = useNavigate();
   const totalEarned = useSelector(
     (state: any) => state.transactions.transactions,
   );
@@ -15,6 +18,8 @@ export function Wallet() {
   const vendor = useSelector(
     (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
   );
+
+  const { data: subAccountData, isLoading: subAccountLoading } = useGetUserSubAccountQuery({});
 
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
@@ -27,8 +32,9 @@ export function Wallet() {
     );
 
   const transactions = transactionsList?.data?.transactions || [];
+  const subAccount = subAccountData?.data || [];
 
-  if (isLoading) {
+  if (isLoading || subAccountLoading) {
     <Loader />;
   }
 
@@ -97,7 +103,10 @@ export function Wallet() {
               </h3>
             </div>
 
-            <button className="flex items-center gap-2 rounded-xl border border-[#E7E4FF] px-4 py-2 text-xs font-medium text-[#6D5DFB] transition hover:bg-[#F8F7FF]">
+            <button
+              className="flex items-center gap-2 rounded-xl border border-[#E7E4FF] px-4 py-2 text-xs font-medium text-[#6D5DFB] transition hover:bg-[#F8F7FF]"
+              onClick={() => navigate("/dashboard/transactions")}
+            >
               View all
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -172,18 +181,18 @@ export function Wallet() {
                       </div>
 
                       <div>
-                        <p className="text-sm font-semibold tracking-tight text-[#111827]">
+                        <p className="text-md font-semibold tracking-tight text-[#111827]">
                           ₦{Number(payout.amount).toLocaleString()}
                         </p>
 
-                        <p className="mt-1 text-xs text-[#667085]">
+                        <p className="mt-1 text-sm text-[#667085]">
                           {formatDate(payout.createdAt)}
                         </p>
                       </div>
                     </div>
 
                     <span
-                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium ${
+                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
                         payout.status === "CONFIRMED"
                           ? "bg-green-100 text-green-700"
                           : "bg-[#FFF7E8] text-[#D97706]"
@@ -235,7 +244,7 @@ export function Wallet() {
               <div>
                 <p className="text-xs text-[#98A2B3]">Account Number</p>
                 <p className="mt-1 text-md font-semibold tracking-wide text-[#111827]">
-                  0123456789
+                  {subAccount?.accountNumber || "Not Available"}
                 </p>
               </div>
 
@@ -260,7 +269,7 @@ export function Wallet() {
             <div>
               <p className="text-sm text-[#98A2B3]">Account Name</p>
               <p className="mt-1 text-md font-semibold tracking-tight text-[#111827]">
-                Jubly Beauty
+                {subAccount?.accountName || "Not Available"}
               </p>
             </div>
           </div>
