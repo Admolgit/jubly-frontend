@@ -35,7 +35,7 @@ export default function TransactionsPage() {
   const [searchFilter, setSearchFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  console.log(setSearchFilter)
+  console.log(setSearchFilter);
 
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
@@ -105,7 +105,7 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         <StatCard
           title="Total Payouts"
           value={Number(transactionDashStats.totalPayouts).toLocaleString()}
@@ -137,7 +137,7 @@ export default function TransactionsPage() {
       </div>
 
       {/* FILTERS */}
-      <div className="flex items-center justify-between mb-6 rounded-2xl bg-white p-4 shadow-sm mt-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6 rounded-2xl bg-white p-4 shadow-sm mt-6">
         <div className="flex items-center gap-4">
           <button className="h-12 px-5 bg-white border border-[#EAECF0] rounded-2xl flex items-center gap-2 text-sm font-medium text-[#344054]">
             <CalendarDays size={20} />
@@ -177,133 +177,138 @@ export default function TransactionsPage() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white border border-[#EAECF0] rounded-[28px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-        <table className="w-full">
-          <thead className="bg-[#FCFCFD] border-b border-[#EAECF0]">
-            <tr>
-              {[
-                "Client",
-                "Date",
-                "Description",
-                "Amount",
-                "Status",
-                "Method",
-                "Reference",
-                "Actions",
-              ].map((head) => (
-                <th
-                  key={head}
-                  className="px-6 py-4 text-left text-xs font-semibold text-[#667085]"
-                >
-                  {head}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {transactions.map((item: any, i: number) => (
-              <tr
-                key={i}
-                className="border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition"
-              >
-                <td className="px-6 py-4">{item.senderDetails.senderName}</td>
-                {/* DATE */}
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-[#101828] mb-1">
-                    {formatDate(item.createdAt)}
-                  </div>
-
-                  <div className="text-xs text-[#667085] font-medium">
-                    {formatTimeFromISO(item.createdAt)}
-                  </div>
-                </td>
-
-                {/* DESCRIPTION */}
-                <td className="px-6 py-4">
-                  <div className="text-sm font-semibold text-[#101828] mb-1">
-                    {item.senderDetails.senderDescription}
-                  </div>
-
-                  <div className="text-xs text-[#667085] font-medium">
-                    {item.bank || "N/A"}
-                  </div>
-                </td>
-
-                {/* AMOUNT */}
-                <td className="px-6 py-4 text-sm font-semibold text-[#101828]">
-                  ₦{Number(item.amount).toLocaleString()}
-                </td>
-
-                {/* STATUS */}
-                <td className="px-6 py-4">
-                  <div
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold ${
-                      statusStyles[item.status].wrapper
-                    }`}
+      <div className="mt-4 w-full">
+        <div className="overflow-x-auto scrollbar-thin">
+          <table className="min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm">
+            <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
+              <tr>
+                {[
+                  "Client",
+                  "Date",
+                  "Description",
+                  "Amount",
+                  "Status",
+                  "Method",
+                  "Reference",
+                  "Actions",
+                ].map((head) => (
+                  <th
+                    key={head}
+                    className="px-6 py-4 text-left text-xs font-semibold text-[#667085]"
                   >
-                    {item.status === "CONFIRMED" && (
-                      <CheckCircle2
-                        size={14}
-                        className={statusStyles[item.status].icon}
-                      />
-                    )}
+                    {head}
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
-                    {item.status === "PENDING" && (
-                      <Clock3
-                        size={14}
-                        className={statusStyles[item.status].icon}
-                      />
-                    )}
+            <tbody>
+              {transactions.map((item: any, i: number) => (
+                <tr
+                  key={i}
+                  className="border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition"
+                >
+                  <td className="px-6 py-4">{item.senderDetails.senderName}</td>
+                  {/* DATE */}
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-[#101828] mb-1">
+                      {formatDate(item.createdAt)}
+                    </div>
 
-                    {item.status === "FAILED" && (
-                      <X size={14} className={statusStyles[item.status].icon} />
-                    )}
+                    <div className="text-xs text-[#667085] font-medium">
+                      {formatTimeFromISO(item.createdAt)}
+                    </div>
+                  </td>
 
-                    {item.status}
-                  </div>
-                </td>
+                  {/* DESCRIPTION */}
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-semibold text-[#101828] mb-1">
+                      {item.senderDetails.senderDescription}
+                    </div>
 
-                {/* METHOD */}
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3 text-sm font-medium text-[#344054]">
-                    <Landmark size={18} />
-                    {item.method || "N/A"}
-                  </div>
-                </td>
+                    <div className="text-xs text-[#667085] font-medium">
+                      {item.bank || "N/A"}
+                    </div>
+                  </td>
 
-                {/* REF */}
-                <td className="px-6 py-4 text-sm font-medium text-[#475467]">
-                  {item.providerRef}
-                </td>
+                  {/* AMOUNT */}
+                  <td className="px-6 py-4 text-sm font-semibold text-[#101828]">
+                    ₦{Number(item.amount).toLocaleString()}
+                  </td>
 
-                {/* ACTION */}
-                <td className="px-6 py-4">
-                  <LinkActions />
-                  {/* <button className="text-[#667085] hover:text-[#111827] transition">
+                  {/* STATUS */}
+                  <td className="px-6 py-4">
+                    <div
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold ${
+                        statusStyles[item.status].wrapper
+                      }`}
+                    >
+                      {item.status === "CONFIRMED" && (
+                        <CheckCircle2
+                          size={14}
+                          className={statusStyles[item.status].icon}
+                        />
+                      )}
+
+                      {item.status === "PENDING" && (
+                        <Clock3
+                          size={14}
+                          className={statusStyles[item.status].icon}
+                        />
+                      )}
+
+                      {item.status === "FAILED" && (
+                        <X
+                          size={14}
+                          className={statusStyles[item.status].icon}
+                        />
+                      )}
+
+                      {item.status}
+                    </div>
+                  </td>
+
+                  {/* METHOD */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3 text-sm font-medium text-[#344054]">
+                      <Landmark size={18} />
+                      {item.method || "N/A"}
+                    </div>
+                  </td>
+
+                  {/* REF */}
+                  <td className="px-6 py-4 text-sm font-medium text-[#475467]">
+                    {item.providerRef}
+                  </td>
+
+                  {/* ACTION */}
+                  <td className="px-6 py-4">
+                    <LinkActions />
+                    {/* <button className="text-[#667085] hover:text-[#111827] transition">
                     <MoreHorizontal size={22} />
                   </button> */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {transactions.length > 0 && (
-          <div className="mt-4 px-6 flex items-center align-center justify-between">
-            <SelectLimit
-              ITEMS_OPTIONS={[5, 10, 20, 50]}
-              itemsPerPage={itemsPerPage}
-              handleItemsChange={handleItemsChange}
-              text="Transactions"
-            />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
+          {transactions.length > 0 && (
+            <div className="mt-4 px-6 flex items-center align-center justify-between">
+              <SelectLimit
+                ITEMS_OPTIONS={[5, 10, 20, 50]}
+                itemsPerPage={itemsPerPage}
+                handleItemsChange={handleItemsChange}
+                text="Transactions"
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

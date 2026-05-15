@@ -31,7 +31,7 @@ const Footer = () => {
       </div>
 
       <p className="text-center text-xs mt-10">
-        © 2025 Stylicle. All rights reserved.
+        © 2025 Jubly. All rights reserved.
       </p>
     </footer>
   );

@@ -154,48 +154,50 @@ export function Clients() {
           </div>
         </div>
 
-        <div className="mt-4 overflow-x-auto">
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <table className="w-full min-w-[640px] text-left">
-              <thead className="text-xs uppercase text-gray-400">
-                <tr className="border-b">
-                  <th className="px-3 py-3">Client</th>
-                  <th className="px-3 py-3">Contact</th>
-                  <th className="px-3 py-3">Bookings</th>
-                  <th className="px-3 py-3">Last Visit</th>
-                  <th className="px-3 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {clients?.map((client: any) => (
-                  <tr key={client.email} className="border-b last:border-b-0">
-                    <td className="px-3 py-4 font-medium text-gray-900">
-                      {client.firstName} {client.lastName}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      <div>{client.email}</div>
-                      <div className="text-xs text-gray-400">
-                        {client.phone}
-                      </div>
-                    </td>
-                    <td className="px-3 py-4 font-semibold text-gray-900">
-                      {client.bookings}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {formatDate(client.lastLogin)}
-                    </td>
-                    <td className="px-3 py-4">
-                      <button className="text-sm font-semibold text-blue-700 hover:underline">
-                        View Profile
-                      </button>
-                    </td>
+        <div className="mt-4 w-full">
+          <div className="overflow-x-auto scrollbar-thin">
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <table className="min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm">
+                <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
+                  <tr className="border-b">
+                    <th className="px-3 py-3">Client</th>
+                    <th className="px-3 py-3">Contact</th>
+                    <th className="px-3 py-3">Bookings</th>
+                    <th className="px-3 py-3">Last Visit</th>
+                    <th className="px-3 py-3">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody className="text-sm">
+                  {clients?.map((client: any) => (
+                    <tr key={client.email} className="border-b last:border-b-0">
+                      <td className="px-3 py-4 font-medium text-gray-900">
+                        {client.firstName} {client.lastName}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600">
+                        <div>{client.email}</div>
+                        <div className="text-xs text-gray-400">
+                          {client.phone}
+                        </div>
+                      </td>
+                      <td className="px-3 py-4 font-semibold text-gray-900">
+                        {client.bookings}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600">
+                        {formatDate(client.lastLogin)}
+                      </td>
+                      <td className="px-3 py-4">
+                        <button className="text-sm font-semibold text-blue-700 hover:underline">
+                          View Profile
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     </div>
