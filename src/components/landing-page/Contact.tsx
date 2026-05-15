@@ -25,7 +25,7 @@ const Contact = () => {
             </p>
 
             <p className="text-sm">📍 Lagos, Nigeria</p>
-            <p className="text-sm mt-2">📧 support@stylicle.com</p>
+            <p className="text-sm mt-2">📧 support@Jubly.com</p>
             <p className="text-sm mt-2">📞 +234 800 000 0000</p>
           </div>
 

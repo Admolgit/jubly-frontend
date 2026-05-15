@@ -243,70 +243,79 @@ function ClientBookings() {
           setSearchFilter={setSearchFilter}
         />
 
-        <div className="mt-4 z-10 overflow-x-auto">
-          {getBookingsDataLoading ? (
-            <Loader />
-          ) : (
-            <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
-              <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
-                <tr className="border-b">
-                  <th className="px-3 py-3">Vendor</th>
-                  <th className="px-3 py-3">Service</th>
-                  <th className="px-3 py-3">Date</th>
-                  <th className="px-3 py-3">Time</th>
-                  <th className="px-3 py-3">Amount</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {bookingRows.map((b: any) => (
-                  <tr key={b.id} className="border-b last:border-b-0">
-                    <td className="px-3 py-4 font-medium text-gray-900">
-                      {b.vendor?.businessName || b.vendorName || "Vendor"}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {b.services?.name || "Service"}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {formatDate(b.date, "DD/MM/YYYY")}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600">
-                      {formatTimeFromISO(b.startTime as string)}
-                    </td>
-                    <td className="px-3 py-4 font-semibold text-gray-900">
-                      ₦{" "}
-                      {Number(
-                        b.services?.price || b.amount || 0,
-                      ).toLocaleString()}
-                    </td>
-                    <td className="px-3 py-4">
-                      <span
-                        className={
-                          "rounded-full px-3 py-1 text-xs font-semibold " +
-                          (statusStyles[b.status] ||
-                            "bg-gray-100 text-gray-600")
-                        }
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-4">
-                      <LinkActions
-                        link={b}
-                        onReschedule={openReschedule}
-                        setViewVendorOpen={setViewVendorOpen}
-                        onCancle={openCancel}
-                        onMarking={onMarking}
-                        setSelectedView={setSelectedView}
-                        setOpenMark={setOpenMark}
-                      />
-                    </td>
+        <div className="mt-4 w-full">
+          <div className="overflow-x-auto scrollbar-thin">
+            {getBookingsDataLoading ? (
+              <Loader />
+            ) : (
+              <table className="min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm">
+                <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
+                  <tr className="border-b">
+                    <th className="px-3 py-3">Vendor</th>
+                    <th className="px-3 py-3">Service</th>
+                    <th className="px-3 py-3">Date</th>
+                    <th className="px-3 py-3">Time</th>
+                    <th className="px-3 py-3">Amount</th>
+                    <th className="px-3 py-3">Status</th>
+                    <th className="px-3 py-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+
+                <tbody className="text-sm">
+                  {bookingRows.map((b: any) => (
+                    <tr key={b.id} className="border-b last:border-b-0">
+                      <td className="px-3 py-4 font-medium text-gray-900">
+                        {b.vendor?.businessName || b.vendorName || "Vendor"}
+                      </td>
+
+                      <td className="px-3 py-4 text-gray-600">
+                        {b.services?.name || "Service"}
+                      </td>
+
+                      <td className="px-3 py-4 text-gray-600">
+                        {formatDate(b.date, "DD/MM/YYYY")}
+                      </td>
+
+                      <td className="px-3 py-4 text-gray-600">
+                        {formatTimeFromISO(b.startTime as string)}
+                      </td>
+
+                      <td className="px-3 py-4 font-semibold text-gray-900">
+                        ₦{" "}
+                        {Number(
+                          b.services?.price || b.amount || 0,
+                        ).toLocaleString()}
+                      </td>
+
+                      <td className="px-3 py-4">
+                        <span
+                          className={
+                            "rounded-full px-3 py-1 text-xs font-semibold " +
+                            (statusStyles[b.status] ||
+                              "bg-gray-100 text-gray-600")
+                          }
+                        >
+                          {b.status}
+                        </span>
+                      </td>
+
+                      <td className="px-3 py-4">
+                        <LinkActions
+                          link={b}
+                          onReschedule={openReschedule}
+                          setViewVendorOpen={setViewVendorOpen}
+                          onCancle={openCancel}
+                          onMarking={onMarking}
+                          setSelectedView={setSelectedView}
+                          setOpenMark={setOpenMark}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
         {bookingRows.length > 0 && (
           <div className="mt-4 bg-[#F8F8FE] flex items-center align-center justify-between">

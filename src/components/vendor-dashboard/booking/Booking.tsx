@@ -348,96 +348,98 @@ export function Bookings() {
           />
         </div>
 
-        <div className="mt-4 overflow-visible">
-          {getBookingsDataLoading ? (
-            <Loader />
-          ) : (
-            <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
-              <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
-                <tr className="border-b">
-                  <th className="px-3 py-3">Client</th>
-                  <th className="px-3 py-3">Service</th>
-                  <th className="px-3 py-3">Date</th>
-                  <th className="px-3 py-3">Time</th>
-                  <th className="px-3 py-3">Amount</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-md text-gray-700">
-                {getBookingsData?.data?.map((b: any) => (
-                  <tr className="border-b last:border-b-0 relative">
-                    <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
-                      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
-                        AS
-                      </div>
-                      {b.clientName || "Client Name"}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600 font-semibold">
-                      {b.services?.name}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600 font-semibold">
-                      {formatDate(b.date, "DD/MM/YYYY")}
-                    </td>
-                    <td className="px-3 py-4 text-gray-600 font-semibold">
-                      {formatTimeFromISO(b.startTime as string)}
-                    </td>
-                    <td className="px-3 py-4 font-semibold text-gray-900 tracking-tight">
-                      N {Number(b.services?.price)?.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div
-                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
-                          statusStyles[b.status].wrapper
-                        }`}
-                      >
-                        {b.status === "COMPLETED" && (
-                          <CheckSquare
-                            size={14}
-                            className={statusStyles[b.status].icon}
-                          />
-                        )}
-
-                        {b.status === "CONFIRMED" && (
-                          <CheckCircle2
-                            size={14}
-                            className={statusStyles[b.status].icon}
-                          />
-                        )}
-
-                        {b.status === "PENDING" && (
-                          <Clock3
-                            size={14}
-                            className={statusStyles[b.status].icon}
-                          />
-                        )}
-
-                        {b.status === "FAILED" && (
-                          <X
-                            size={14}
-                            className={statusStyles[b.status].icon}
-                          />
-                        )}
-
-                        {b.status}
-                      </div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <LinkActions
-                        link={b}
-                        onReschedule={openReschedule}
-                        setViewVendorOpen={setViewVendorOpen}
-                        onCancle={openCancel}
-                        onMarking={onMarking}
-                        setSelectedView={setSelectedView}
-                        setOpenMark={setOpenMark}
-                      />
-                    </td>
+        <div className="mt-4 w-full">
+          <div className="overflow-x-auto scrollbar-thin">
+            {getBookingsDataLoading ? (
+              <Loader />
+            ) : (
+              <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
+                <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
+                  <tr className="border-b">
+                    <th className="px-3 py-3">Client</th>
+                    <th className="px-3 py-3">Service</th>
+                    <th className="px-3 py-3">Date</th>
+                    <th className="px-3 py-3">Time</th>
+                    <th className="px-3 py-3">Amount</th>
+                    <th className="px-3 py-3">Status</th>
+                    <th className="px-3 py-3">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody className="text-md text-gray-700 relative">
+                  {getBookingsData?.data?.map((b: any) => (
+                    <tr className="border-b last:border-b-0 relative">
+                      <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
+                        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
+                          AS
+                        </div>
+                        {b.clientName || "Client Name"}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600 font-semibold">
+                        {b.services?.name}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600 font-semibold">
+                        {formatDate(b.date, "DD/MM/YYYY")}
+                      </td>
+                      <td className="px-3 py-4 text-gray-600 font-semibold">
+                        {formatTimeFromISO(b.startTime as string)}
+                      </td>
+                      <td className="px-3 py-4 font-semibold text-gray-900 tracking-tight">
+                        N {Number(b.services?.price)?.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div
+                          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                            statusStyles[b.status].wrapper
+                          }`}
+                        >
+                          {b.status === "COMPLETED" && (
+                            <CheckSquare
+                              size={14}
+                              className={statusStyles[b.status].icon}
+                            />
+                          )}
+
+                          {b.status === "CONFIRMED" && (
+                            <CheckCircle2
+                              size={14}
+                              className={statusStyles[b.status].icon}
+                            />
+                          )}
+
+                          {b.status === "PENDING" && (
+                            <Clock3
+                              size={14}
+                              className={statusStyles[b.status].icon}
+                            />
+                          )}
+
+                          {b.status === "FAILED" && (
+                            <X
+                              size={14}
+                              className={statusStyles[b.status].icon}
+                            />
+                          )}
+
+                          {b.status}
+                        </div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <LinkActions
+                          link={b}
+                          onReschedule={openReschedule}
+                          setViewVendorOpen={setViewVendorOpen}
+                          onCancle={openCancel}
+                          onMarking={onMarking}
+                          setSelectedView={setSelectedView}
+                          setOpenMark={setOpenMark}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
         {getBookingsData?.data?.length > 0 && (
           <div className="mt-4 flex items-center text-sm align-center justify-between">
