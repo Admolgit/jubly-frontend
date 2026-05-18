@@ -9,6 +9,7 @@ export const LinkActions = ({
   onCancle,
   setSelectedView,
   onMarking,
+  component,
 }: any) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -25,7 +26,7 @@ export const LinkActions = ({
   }, []);
 
   return (
-    <div className="relative inline-block" ref={menuRef}> 
+    <div className="relative inline-block" ref={menuRef}>
       {/* Trigger */}
       <button
         onClick={() => setOpen((prev) => !prev)}
@@ -48,7 +49,7 @@ export const LinkActions = ({
             View
           </button>
 
-          {link.status !== "CANCELLED" && (
+          {link?.status !== "CANCELLED" && component !== "transaction" && (
             <button
               onClick={() => {
                 onReschedule(link);
@@ -60,7 +61,19 @@ export const LinkActions = ({
             </button>
           )}
 
-          {link.status !== "CANCELLED" && (
+          {link?.status !== "CANCELLED" && component === "transaction" && (
+            <button
+              onClick={() => {
+                onReschedule(link);
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            >
+              Refund Client
+            </button>
+          )}
+
+          {link?.status !== "CANCELLED" && component !== "transaction" && (
             <button
               onClick={() => {
                 onCancle(link);
@@ -72,15 +85,15 @@ export const LinkActions = ({
             </button>
           )}
 
-          {link.status !== "CANCELLED" && (
+          {link?.status !== "CANCELLED" && component !== "transaction" && (
             <button
               onClick={() => {
-                onMarking(link)
+                onMarking(link);
                 setOpen(false);
               }}
               className="block w-full text-left px-4 py-2 hover:bg-gray-100"
             >
-              {link.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
+              {link?.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
             </button>
           )}
         </div>

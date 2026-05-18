@@ -47,10 +47,6 @@ export default function ServiceBookingPage() {
     setOpenBooking(true);
   };
 
-  const handleBack = () => {
-    navigate(`/booking-vendor/${location.split("/")[1]}`, { replace: true });
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -59,8 +55,6 @@ export default function ServiceBookingPage() {
     );
   }
 
-  console.log({ slotsData });
-
   return (
     <div className="min-h-screen bg-[#faf7ff] px-4 py-5 md:px-8">
       {/* Header */}
@@ -68,7 +62,11 @@ export default function ServiceBookingPage() {
         <div className="flex items-center gap-4">
           <button
             className="flex h-8 w-10 items-center justify-center rounded-2xl border border-[#ece3ff] text-[#7c3aed] transition hover:bg-[#f7f2ff]"
-            onClick={handleBack}
+            onClick={() =>
+              navigate(`/booking-vendor/${location.split("/")[1]}`, {
+                replace: true,
+              })
+            }
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -198,7 +196,7 @@ export default function ServiceBookingPage() {
                 <h4 className="text-lg font-semibold text-[#111827]">
                   Easy rescheduling
                 </h4>
-                
+
                 <p className="mt-3 text-sm leading-relaxed text-[#6b7280]">
                   Reschedule or cancel with ease
                 </p>

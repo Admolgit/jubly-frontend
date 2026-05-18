@@ -35,6 +35,9 @@ import Input from "../../ui/Input";
 import ViewBookingModal from "./BookingViewModal";
 import { StatCard } from "../dashboard/StatCard";
 import BookingSearch from "./BookingSearch";
+import BookingForm from "../BookingCreationForm";
+import { useExportBookingsCSVMutation } from "../../../features/vendor/vendorApi";
+import Dialog from "../../ui/Dialog";
 
 type BookingStatus =
   | "ALL"
@@ -96,11 +99,13 @@ const statusConfig: Record<
 
 export function Bookings() {
   const vendor = useSelector(
-    (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
+    (state: { vendor: { vendor: { id: string; businessName: string } } }) =>
+      state.vendor.vendor,
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [bookingOpen, setBookingOpen] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
@@ -257,6 +262,42 @@ export function Bookings() {
     }
   };
 
+  const handleCreateBooking = async (data: any) => {
+    console.log(data);
+  };
+
+  const [exportBookingsCSV, { isLoading: exporting }] =
+    useExportBookingsCSVMutation({});
+
+  const handleExportCSV = async () => {
+    try {
+      const blob = await exportBookingsCSV({}).unwrap();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+
+      a.href = url;
+
+      a.download = `${vendor?.businessName
+        ?.toLowerCase()
+        .replace(/\s+/g, "-")}-bookings-${Date.now()}.csv`;
+
+      document.body.appendChild(a);
+
+      a.click();
+
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success("CSV exported successfully");
+    } catch (error: any) {
+      console.error("Export CSV error:", error);
+      toast.error("Failed to export CSV");
+    }
+  };
+
   useEffect(() => {
     const handler = setTimeout(() => {
       handleSearch(searchFilter.trim());
@@ -279,11 +320,17 @@ export function Bookings() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50">
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50"
+          >
             Export
           </button>
-          <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
-            + New Booking
+          <button
+            onClick={() => setBookingOpen(true)}
+            className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+          >
+            {exporting ? "Exporting..." : "+ New Booking"}
           </button>
         </div>
       </div>
@@ -461,60 +508,49 @@ export function Bookings() {
         open={viewVendorOpen}
         onClose={() => setViewVendorOpen(false)}
         booking={selectedView}
+        setCancelOpen={setCancelOpen}
+        setOpenMark={setOpenMark}
+        setRescheduleOpen={setRescheduleOpen}
       />
+      <Modal
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        title="Create Booking"
+      >
+        <BookingForm
+          setBookingOpen={setBookingOpen}
+          handleCreateBooking={handleCreateBooking}
+        />
+      </Modal>
       <Modal
         open={cancelOpen}
         onClose={() => setCancelOpen(false)}
         title="Cancel Booking"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Are you sure you want to cancel this booking? This action cannot be
-            undone.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setCancelOpen(false)}
-            >
-              Keep Booking
-            </button>
-            <button
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-              onClick={handleCancel}
-              disabled={cancelLoading}
-            >
-              {cancelLoading ? "Cancelling..." : "Cancel Booking"}
-            </button>
-          </div>
-        </div>
+        <Dialog
+          setCancelOpen={setCancelOpen}
+          cancelLoading={cancelLoading}
+          handleCancel={handleCancel}
+          headerText="Are you sure you want to cancel this booking? This action cannot be
+            undone."
+          btnCancelText="No, keep it"
+          btnKeepText="Yes, cancel"
+        />
       </Modal>
       <Modal
         open={openMark}
         onClose={() => setOpenMark(false)}
         title="Mark Booking as Complete"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Are you sure you want to mark this booking as completed? This action
-            cannot be undone.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setOpenMark(false)}
-            >
-              No I am not
-            </button>
-            <button
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              onClick={handleMarkAsCompleted}
-              disabled={markingLoading}
-            >
-              {markingLoading ? "Marking..." : "Mark Booking"}
-            </button>
-          </div>
-        </div>
+        <Dialog
+          setCancelOpen={setOpenMark}
+          cancelLoading={markingLoading}
+          handleCancel={handleMarkAsCompleted}
+          headerText="Are you sure you want to mark this booking as completed? This action
+            cannot be undone."
+          btnCancelText="No, keep it"
+          btnKeepText="Yes, mark as completed"
+        />
       </Modal>
       <Modal
         open={rescheduleOpen}

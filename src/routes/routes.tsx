@@ -30,7 +30,7 @@ import { ClientVendors } from "../components/client-dashboard/ClientVendors";
 import { ClientSettings } from "../components/client-dashboard/ClientSettings";
 import { ClientProfile } from "../components/client-dashboard/ClientProfile";
 import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
-import TransactionsPage from "../components/vendor-dashboard/Transactions";
+import TransactionsPage from "../components/vendor-dashboard/transactions/Transactions";
 import ClientBookings from "../components/client-dashboard/ClientBookings";
 
 export const router = createBrowserRouter([

@@ -42,7 +42,7 @@ export default function ServiceForm({
   const onSubmit = (data: ServiceFormData) => {
     handleCreateService({
       ...data,
-      price: Number(data.price),
+      price: Number(data?.price),
     });
   };
 
@@ -67,9 +67,9 @@ export default function ServiceForm({
                 />
               </div>
 
-              {errors.name && (
+              {errors?.name && (
                 <p className="mt-2 text-sm text-red-500">
-                  {errors.name.message}
+                  {errors?.name?.message}
                 </p>
               )}
             </div>
@@ -90,9 +90,9 @@ export default function ServiceForm({
                 />
               </div>
 
-              {errors.price && (
+              {errors?.price && (
                 <p className="mt-2 text-sm text-red-500">
-                  {errors.price.message}
+                  {errors?.price?.message}
                 </p>
               )}
             </div>
@@ -130,7 +130,7 @@ export default function ServiceForm({
 
                   <input
                     {...register("category")}
-                    placeholder={vendor.category}
+                    placeholder={vendor?.category}
                     disabled={true}
                     className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
                   />
@@ -139,9 +139,9 @@ export default function ServiceForm({
                 <ChevronDown className="h-5 w-5 text-[#6B7280]" />
               </div>
 
-              {errors.category && (
+              {errors?.category && (
                 <p className="mt-2 text-sm text-red-500">
-                  {errors.category.message}
+                  {errors?.category?.message}
                 </p>
               )}
             </div>
