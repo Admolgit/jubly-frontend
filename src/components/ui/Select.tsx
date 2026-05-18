@@ -1,59 +1,74 @@
-import { useState } from "react";
+// src/components/ui/Select.tsx
 
-type Option = {
+import React from "react";
+import { ChevronDown } from "lucide-react";
+
+interface SelectOption {
   label: string;
   value: string;
-};
-
-export function CustomSelect({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label?: string;
-  options: Option[];
-  value?: string;
-  onChange?: (value: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  const selected = options.find((o) => o.value === value);
-
-  return (
-    <div className="relative w-full">
-      {label && (
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          {label}
-        </label>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-[0.6rem] text-sm"
-      >
-        <span>{selected?.label || "Select an option"}</span>
-        <span className="text-gray-400">▾</span>
-      </button>
-
-      {open && (
-        <div className="absolute z-10 mt-1 w-full rounded-lg border bg-white shadow-lg">
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => {
-                onChange?.(opt.value);
-                setOpen(false);
-              }}
-              className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
+
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
+  error?: string;
+  options: SelectOption[];
+  placeholder?: string;
+  icon?: React.ReactNode;
+}
+
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  (
+    {
+      label,
+      error,
+      options,
+      placeholder = "Select option",
+      className = "",
+      icon,
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <div className="mb-3 flex flex-col">
+        <label className="mb-1 text-sm font-medium">{label}</label>
+
+        <div className="relative">
+          {/* Left Icon */}
+          {icon && (
+            <div className="absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-500">
+              {icon}
+            </div>
+          )}
+
+          {/* Right Chevron */}
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+
+          <select
+            {...props}
+            ref={ref}
+            className={`w-full appearance-none rounded border p-2 pr-10 border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              icon ? "pl-10" : ""
+            } ${className}`}
+          >
+            <option value="" disabled>
+              {placeholder}
+            </option>
+
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {error && <span className="mt-1 text-xs text-red-500">{error}</span>}
+      </div>
+    );
+  },
+);
+
+Select.displayName = "Select";
+
+export default Select;

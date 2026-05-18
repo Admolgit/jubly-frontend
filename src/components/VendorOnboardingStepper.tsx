@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Check } from "lucide-react";
-import { CustomSelect } from "./ui/Select";
 import Input from "./ui/Input";
 import {
   useGetBankListsQuery,
@@ -19,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setVendorCredentials } from "../features/vendor/vendorSlice";
+import Select from "./ui/Select";
 
 interface Service {
   name: string;
@@ -243,7 +243,6 @@ export const VendorOnboardingStepper = () => {
 
       navigate("/onboarding-verification");
     } catch (error: any) {
-
       toast.error(
         error?.data?.message || "Something went wrong during onboarding",
         { id: "onboarding" },
@@ -337,7 +336,7 @@ export const VendorOnboardingStepper = () => {
                   name="category"
                   rules={{ required: "Category is required" }}
                   render={({ field }) => (
-                    <CustomSelect
+                    <Select
                       label="Business Category"
                       options={[
                         { label: "Makeup Artist", value: "Makeup Artist" },

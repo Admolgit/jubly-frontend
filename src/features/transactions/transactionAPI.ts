@@ -4,7 +4,7 @@ export const transactionsAPI = api.injectEndpoints({
   endpoints: (builder) => ({
     getTransactionHistoryByVendor: builder.query({
       query: (data) => ({
-        url: `/transactions/${data.vendorId}/?page=${data.page}&limit=${data.limit}&search=${data.searchValue || ""}`,
+        url: `/transactions/${data.vendorId}/?page=${data.page}&limit=${data.limit}&search=${data.search || ""}`,
         method: "GET",
       }),
     }),
@@ -28,6 +28,21 @@ export const transactionsAPI = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    exportTransactionsCSV: builder.mutation({
+      query: () => ({
+        url: `/transactions/export/csv`,
+        method: "GET",
+
+        responseHandler: async (response) => response.blob(),
+      }),
+    }),
+    refundClientTransaction: builder.mutation({
+      query: (data) => ({
+        url: `/paystack/refund`,
+        method: "POST",
+        body: data
+      }),
+    }),
   }),
 });
 
@@ -36,4 +51,6 @@ export const {
   useGetTransactionAmountByVendorQuery,
   useGetTransactionAnalyticsQuery,
   useGetTransactionDashStatsQuery,
+  useExportTransactionsCSVMutation,
+  useRefundClientTransactionMutation,
 } = transactionsAPI;

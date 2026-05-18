@@ -77,6 +77,13 @@ export const vendorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    exportBookingsCSV: builder.mutation({
+      query: () => ({
+        url: `/vendor/export/csv`,
+        method: "GET",
+        responseHandler: async (response) => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -93,4 +100,5 @@ export const {
   useGetDashboardWalletQuery,
   useGetDashboardClientsQuery,
   useSearchVendorsMutation,
+  useExportBookingsCSVMutation,
 } = vendorApi;
