@@ -59,7 +59,7 @@ export default function ViewBookingModal({
                 <p className="mb-1 text-xs text-gray-500">Booking ID</p>
 
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {booking?.id}
                   </h3>
 
@@ -103,7 +103,7 @@ export default function ViewBookingModal({
 
                 <p className="text-xs text-gray-500">Service</p>
 
-                <h4 className="mt-2 text-md font-bold text-gray-900">
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   {booking.services?.name}
                 </h4>
 
@@ -120,7 +120,7 @@ export default function ViewBookingModal({
 
                 <p className="text-xs text-gray-500">Total Amount</p>
 
-                <h4 className="mt-2 text-md font-bold text-gray-900">
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   ₦{Number(booking.services?.price || 0).toLocaleString()}
                 </h4>
 
@@ -135,7 +135,7 @@ export default function ViewBookingModal({
 
                 <p className="text-xs text-gray-500">Booking Date</p>
 
-                <h4 className="mt-2 text-md font-bold text-gray-900">
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   {formatDate(booking.date)}
                 </h4>
 

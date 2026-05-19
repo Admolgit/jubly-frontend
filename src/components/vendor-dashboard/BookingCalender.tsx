@@ -113,7 +113,9 @@ function BookingCalendar() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-950">Booking Calendar</h1>
+          <h1 className="text-2xl font-semibold text-gray-950">
+            Booking Calendar
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
             View your schedule and manage availability.
           </p>
@@ -229,8 +231,7 @@ function BookingCalendar() {
                         {b.status !== "CONFIRMED" ? (
                           <span
                             className={`w-2 h-2 rounded-full ${
-                              statusStyles[b.status]?.dot ||
-                              "bg-gray-400"
+                              statusStyles[b.status]?.dot || "bg-gray-400"
                             }`}
                           ></span>
                         ) : (

@@ -51,7 +51,7 @@ export function EarningsChart({
 
         <div className="text-left sm:text-right">
           <p className="text-sm text-gray-500">Total Earnings</p>
-          <p className="mt-1 text-2xl font-bold text-purple-600">
+          <p className="mt-1 text-2xl font-semibold text-purple-600">
             ₦{total.toLocaleString()}
           </p>
         </div>
@@ -76,7 +76,11 @@ export function EarningsChart({
                   <stop offset="100%" stopColor="#7c3aed" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="#e5e7eb" strokeDasharray="4 4" vertical={false} />
+              <CartesianGrid
+                stroke="#e5e7eb"
+                strokeDasharray="4 4"
+                vertical={false}
+              />
               <XAxis
                 dataKey="month"
                 axisLine={false}
@@ -92,7 +96,10 @@ export function EarningsChart({
                 }
               />
               <Tooltip
-                formatter={(value) => [`₦${Number(value).toLocaleString()}`, "Earnings"]}
+                formatter={(value) => [
+                  `₦${Number(value).toLocaleString()}`,
+                  "Earnings",
+                ]}
                 contentStyle={{
                   borderRadius: 12,
                   border: "1px solid #ede9fe",

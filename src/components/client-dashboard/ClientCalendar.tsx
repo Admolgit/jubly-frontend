@@ -56,7 +56,9 @@ function ClientCalendar() {
   return (
     <div className="py-4">
       <div>
-        <h1 className="text-3xl font-bold text-gray-950">Booking Calendar</h1>
+        <h1 className="text-2xl font-semibold text-gray-950">
+          Booking Calendar
+        </h1>
         <p className="mt-1 text-sm text-gray-500">
           View all your booked sessions in one place.
         </p>

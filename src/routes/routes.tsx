@@ -89,7 +89,9 @@ export const router = createBrowserRouter([
           { path: "services", element: <Services /> },
           { path: "clients", element: <Clients /> },
           { path: "wallet", element: <Wallet /> },
-          { path: "settings", element: <Settings /> },
+          { path: "settings", element: <Settings />, children: [
+            
+          ] },
           { path: "transactions", element: <TransactionsPage /> },
         ],
       },

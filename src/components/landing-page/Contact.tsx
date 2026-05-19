@@ -11,7 +11,7 @@ const Contact = () => {
         viewport={{ once: true }}
         variants={fadeUp}
       >
-        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">
+        <h2 className="text-2xl font-semibold text-center mb-10">
           We Are Ready To Assist You 24x7
         </h2>
 

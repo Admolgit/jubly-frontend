@@ -100,7 +100,7 @@ const SearchBookingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
+      <h1 className="text-2xl font-semibold mb-6 text-gray-800">
         Find Your Vendor
       </h1>
 

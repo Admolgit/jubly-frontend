@@ -71,7 +71,7 @@ export default function ServiceBookingPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
 
-          <h1 className="text-xl font-bold text-[#111827] md:text-2xl">
+          <h1 className="text-xl font-semibold text-[#111827] md:text-2xl">
             Book {JSON.parse(localStorage.getItem("businessName") || "")}
           </h1>
         </div>
@@ -107,7 +107,7 @@ export default function ServiceBookingPage() {
 
               {/* Content */}
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-[#111827]">
+                <h2 className="text-xl font-semibold text-[#111827]">
                   {service?.name}
                 </h2>
 
@@ -142,7 +142,7 @@ export default function ServiceBookingPage() {
                       <span className="text-md text-[#4b5563]">Price</span>
                     </div>
 
-                    <span className="text-xl font-bold text-[#111827]">
+                    <span className="text-xl font-semibold text-[#111827]">
                       ₦{Number(service?.price || 0).toLocaleString()}
                     </span>
                   </div>
@@ -152,7 +152,7 @@ export default function ServiceBookingPage() {
           </div>
 
           <div className="rounded-[32px] border border-[#efe7ff] bg-white p-7 shadow-sm">
-            <h3 className="mb-10 text-xl font-bold text-[#111827]">
+            <h3 className="mb-10 text-xl font-semibold text-[#111827]">
               Why book here?
             </h3>
 
@@ -215,7 +215,7 @@ export default function ServiceBookingPage() {
         </div>
         <div>
           <div className="rounded-[32px] border border-[#efe7ff] bg-white p-7 shadow-sm">
-            <h2 className="text-xl mb-2 font-bold text-[#111827]">
+            <h2 className="text-xl mb-2 font-semibold text-[#111827]">
               Select Date & Time
             </h2>
 

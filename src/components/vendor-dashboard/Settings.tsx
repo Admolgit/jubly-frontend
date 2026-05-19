@@ -46,7 +46,9 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Notifications</h3>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Notifications
+              </h3>
 
               <p className="mt-1 text-md leading-7 text-gray-500">
                 Manage how you receive updates
@@ -116,7 +118,7 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900">
                 Change Password
               </h3>
 
@@ -165,7 +167,7 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Security</h3>
+              <h3 className="text-xl font-semibold text-gray-900">Security</h3>
 
               <p className="mt-1 text-md leading-7 text-gray-500">
                 Manage your account security
@@ -238,7 +240,7 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900">
                 Account Information
               </h3>
 
@@ -311,7 +313,9 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Appearance</h3>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Appearance
+              </h3>
 
               <p className="mt-1 text-md leading-7 text-gray-500">
                 Customize how Jubly looks
@@ -393,7 +397,7 @@ export function Settings() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900">
                 Support & Help
               </h3>
 

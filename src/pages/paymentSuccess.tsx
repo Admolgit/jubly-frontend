@@ -44,8 +44,6 @@ export default function PaymentSuccessPage() {
     window.print();
   };
 
-
-
   const handleDownload = () => {
     const element = document.getElementById("receipt");
 
@@ -121,7 +119,7 @@ export default function PaymentSuccessPage() {
               </div>
             </div>
 
-            <h1 className="text-4xl font-bold tracking-tight text-[#0f172a]">
+            <h1 className="text-4xl font-semibold tracking-tight text-[#0f172a]">
               Payment Successful!
             </h1>
 
@@ -140,7 +138,7 @@ export default function PaymentSuccessPage() {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 px-8 py-6">
             <div>
-              <h2 className="text-2xl font-bold text-[#0f172a]">
+              <h2 className="text-2xl font-semibold text-[#0f172a]">
                 Payment Receipt
               </h2>
 
@@ -282,7 +280,7 @@ export default function PaymentSuccessPage() {
                         Total Paid
                       </span>
 
-                      <span className="text-2xl font-bold text-green-600">
+                      <span className="text-2xl font-semibold text-green-600">
                         {transaction.amount}
                       </span>
                     </div>

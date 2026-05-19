@@ -12,7 +12,7 @@ const Journey = () => {
           viewport={{ once: true }}
           variants={fadeUp}
         >
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="text-2xl font-semibold mb-4">
             The start of the journey
           </h2>
           <p className="text-gray-600 mb-6">

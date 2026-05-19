@@ -32,7 +32,7 @@ export default function VendorOnboardingSuccessPage() {
         <div className="absolute inset-0 bg-black/60" />
 
         <div className="absolute bottom-10 z-10 text-center px-8">
-          <h1 className="text-2xl font-bold transition-all duration-700">
+          <h1 className="text-2xl font-semibold transition-all duration-700">
             {animatedTexts[textIndex]}
           </h1>
 
@@ -54,7 +54,7 @@ export default function VendorOnboardingSuccessPage() {
         <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg text-center">
           <CheckCircle className="mx-auto text-green-500 mb-4" size={60} />
 
-          <h1 className="text-2xl font-bold text-blue-600 mb-2">
+          <h1 className="text-2xl font-semibold text-blue-600 mb-2">
             Profile Submitted 🎉
           </h1>
 

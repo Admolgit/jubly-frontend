@@ -49,7 +49,7 @@ export default function ChangePassword({
     <div className="w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <div className="flex flex-col gap-1 mb-6 text-center">
-          <h1 className="text-3xl font-bold text-center text-blue-600">
+          <h1 className="text-2xl font-semibold text-center text-blue-600">
             Change Password
           </h1>
           <p className="text-lg">

@@ -38,7 +38,7 @@
 //         className={`fixed top-0 left-0 h-full bg-white shadow-md w-64 transform transition-transform duration-300 z-20
 //           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:relative`}
 //       >
-//         <div className="p-6 font-bold text-xl border-b">
+//         <div className="p-6 font-semibold text-xl border-b">
 //           {user?.email || "Jubly"}
 //         </div>
 //         <nav className="flex-1 p-4 space-y-2">
@@ -103,7 +103,7 @@ export default function AppLayout() {
         className={`fixed top-0 left-0 h-full bg-white shadow-md w-64 transform transition-transform duration-300 z-20
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:relative`}
       >
-        <div className="p-6 font-bold text-xl border-b">
+        <div className="p-6 font-semibold text-xl border-b">
           {user?.email || "Jubly"}
         </div>
         <nav className="flex-1 p-4 space-y-2">
