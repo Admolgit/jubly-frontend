@@ -13,7 +13,8 @@ import {
 import { useVerifyTransactionMutation } from "../features/paystack/paystackApi";
 
 export default function PaymentSuccessPage() {
-  const reference = localStorage.getItem("paymentReference") || "";
+  const reference = window.location.search.split("reference=")[1];
+  console.log({ reference });
 
   const [verifyTransaction, { isLoading }] = useVerifyTransactionMutation();
 
@@ -24,9 +25,9 @@ export default function PaymentSuccessPage() {
       try {
         const response = await verifyTransaction({ reference });
 
-        if (response.data.status === "success") {
+        if (response.data.status === 200) {
           console.log({ response });
-          setVerifyData(response);
+          setVerifyData(response?.data);
         }
       } catch (error) {
         console.error("Error verifying payment:", error);
@@ -42,6 +43,8 @@ export default function PaymentSuccessPage() {
   const handlePrint = () => {
     window.print();
   };
+
+
 
   const handleDownload = () => {
     const element = document.getElementById("receipt");
@@ -78,9 +81,11 @@ export default function PaymentSuccessPage() {
     }
   };
 
+  console.log({ verifyData });
+
   const transaction = {
     receipt: `JUB-${verifyData?.data?.reference}-${new Date().toLocaleString()}`,
-    amount: verifyData?.data?.amount,
+    amount: Number(verifyData?.data?.amount / 100).toLocaleString(),
     status: verifyData?.data?.status === "success" ? "Paid" : "Failed",
     customer: verifyData?.customer?.first_name,
     email: verifyData?.customer?.email,
@@ -88,7 +93,7 @@ export default function PaymentSuccessPage() {
     date: new Date().toLocaleString(),
     method: verifyData?.authorization?.brand,
     txId: "txn_8F72K3L9eXJ2Pq",
-    // response.data.metadata.description
+    title: verifyData?.data?.metadata?.title || "Service Payment",
   };
 
   if (isLoading) {
@@ -241,7 +246,7 @@ export default function PaymentSuccessPage() {
                   </h4>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    Annual SaaS subscription payment
+                    {transaction?.title}
                   </p>
                 </div>
 
