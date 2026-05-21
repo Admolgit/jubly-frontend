@@ -69,10 +69,10 @@ export default function RecommendedSection() {
           <ChevronRight size={20} />
         </button>
 
-        <div
+        {/* <div
           ref={scrollRef}
           className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
-        >
+        > */}
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <p className="text-gray-500">Loading vendors...</p>
@@ -143,7 +143,7 @@ export default function RecommendedSection() {
             </div>
           )}
         </div>
-      </div>
+      {/* </div> */}
     </section>
   );
 }
