@@ -1,7 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { motion } from "framer-motion";
 import { fadeUp } from "../animations";
+import Input from "../ui/Input";
+import { useForm } from "react-hook-form";
+import { useCreateEnquryMutation } from "../../features/users/userApi";
+import toast from "react-hot-toast";
+
+type EnquiryFormInput = {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+};
 
 const Contact = () => {
+  const [createEnquiry, { isLoading }] = useCreateEnquryMutation();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EnquiryFormInput>();
+
+  const onSubmit = async (data: any) => {
+    try {
+      const res = await createEnquiry(data).unwrap();
+
+      if (res.status === 201) {
+        toast.success(res.message);
+      }
+      reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <section id="contact" className="py-20 bg-purple-900 text-white">
       <motion.div
@@ -29,25 +61,38 @@ const Contact = () => {
             <p className="text-sm mt-2">📞 +234 800 000 0000</p>
           </div>
 
-          <form className="space-y-4">
-            <input
-              className="w-full border px-4 py-2 rounded"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <Input
+              label=""
+              type="text"
+              {...register("name", { required: "Name is required" })}
+              error={errors.name?.message as any}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               placeholder="Name"
             />
-            <input
-              className="w-full border px-4 py-2 rounded"
+            <Input
+              label=""
+              type="email"
+              {...register("email", { required: "Email is required" })}
+              error={errors.email?.message as any}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               placeholder="Email"
             />
-            <input
-              className="w-full border px-4 py-2 rounded"
+            <Input
+              label=""
+              type="text"
+              {...register("phone", { required: "Phone is required" })}
+              error={errors.phone?.message as any}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               placeholder="Phone"
             />
             <textarea
-              className="w-full border px-4 py-2 rounded"
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               placeholder="Message"
+              {...register("message", { required: "Message is required" })}
             />
             <button className="w-full bg-purple-700 text-white py-3 rounded">
-              Submit
+              {isLoading ? "Submitting..." : "Submit"}
             </button>
           </form>
         </div>
