@@ -6,6 +6,7 @@ import { StatCard } from "./StatCard";
 import { useGetVendorProfileByIdQuery } from "../../../features/vendor/vendorApi";
 import {
   useGetBusinessInsightQuery,
+  useGetClientsVendorStatsQuery,
   // useCreateBookingMutation,
   useGetDashboardStartsQuery,
   useGetServicesCountsQuery,
@@ -35,13 +36,13 @@ import {
   Camera,
   ChevronRight,
   ClipboardList,
-  Eye,
   GraduationCap,
   HeartHandshake,
   Paintbrush,
   Repeat,
   Sparkles,
   TrendingUp,
+  UserPlus2Icon,
   UserRound,
   Wallet,
 } from "lucide-react";
@@ -121,6 +122,8 @@ function DashboardHome() {
       skip: !vendorData?.data?.vendor?.id,
     },
   );
+  const { data: clientsStatsData, isLoading: clientsStatsLoading } =
+    useGetClientsVendorStatsQuery({});
 
   const [createService, { isLoading: createServiceIsLoading }] =
     useCreateServiceMutation();
@@ -176,7 +179,7 @@ function DashboardHome() {
   };
 
   const totalEarnings =
-    Number(dashboardStats?.data?.earnings?.total)?.toLocaleString() || 0;
+    Number(getTransactionsHistoryByVendor?.data?.total)?.toLocaleString() || 0;
   const topServices = servicesCountsData?.data || [];
   const recentBooking = upcomingBookingsData?.data?.[0];
 
@@ -203,7 +206,8 @@ function DashboardHome() {
   if (
     vendorByUserIdLoading ||
     dashboardStatsLoading ||
-    loadingTransactionsAnalyics
+    loadingTransactionsAnalyics ||
+    clientsStatsLoading
   ) {
     return <Loader />;
   }
@@ -216,7 +220,7 @@ function DashboardHome() {
           vendorData={vendorData}
         />
       </div>
-      
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mt-6">
         <StatCard
           title="Total Bookings"
@@ -242,11 +246,11 @@ function DashboardHome() {
           change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
         <StatCard
-          title="Profile Views"
-          value={dashboardStats?.data?.views?.total?.toString() || "0"}
-          icon={<Eye className="w-5 h-5" />}
-          color="blue"
-          change={`${dashboardStats?.data?.views?.growth}% from last month`}
+          title="Total Clients"
+          value={clientsStatsData?.data?.totalClients?.value.toString() || "0"}
+          icon={<UserPlus2Icon className="h-5 w-5" />}
+          color="purple"
+          change={`${clientsStatsData?.data?.totalClients?.growth || 0}% from last month`}
         />
       </div>
 

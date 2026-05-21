@@ -154,6 +154,7 @@ export default function LoginPage() {
                 type="email"
                 {...register("email", { required: "Email is required" })}
                 error={errors.email?.message as any}
+                className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               />
 
               {/* PASSWORD WITH ICON */}
@@ -166,7 +167,7 @@ export default function LoginPage() {
                     minLength: { value: 6, message: "Min 6 characters" },
                   })}
                   error={errors.password?.message as any}
-                  className="pr-10"
+                  className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
                 />
 
                 <button

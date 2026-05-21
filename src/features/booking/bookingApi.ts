@@ -118,6 +118,12 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getClientBookingStat: builder.query({
+      query: (data) => ({
+        url: `/booking/client/${data?.vendorId}/${data?.clientEmail}/booking-stats`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -138,4 +144,6 @@ export const {
   useMarkBookingAsCompletedMutation,
   useRescheduleBookingMutation,
   useGetClientUpcomingBookingsQuery,
+  useGetClientBookingStatQuery,
+  useLazyGetClientBookingStatQuery,
 } = userApi;

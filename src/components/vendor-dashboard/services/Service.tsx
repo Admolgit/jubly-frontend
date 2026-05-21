@@ -142,6 +142,7 @@ export function Services() {
         {
           ...editForm,
           price: Number(editForm.price),
+          vendorId: vendor?.id,
           durationMins: Number(editForm.durationMins),
         },
       ],

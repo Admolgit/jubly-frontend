@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { StatCard } from "../dashboard/StatCard";
 import { CurrencyIcon, StampIcon, Wallet2Icon } from "lucide-react";
 import PayoutSummary from "./PayoutSummary";
-import { useGetTransactionHistoryByVendorQuery } from "../../../features/transactions/transactionAPI";
+import { useGetTransactionDashStatsQuery, useGetTransactionHistoryByVendorQuery } from "../../../features/transactions/transactionAPI";
 import { formatDate } from "../../utils/dateFormatter";
 import Loader from "../../ui/Loader";
 import { useGetUserSubAccountQuery } from "../../../features/users/userApi";
@@ -13,9 +13,6 @@ import { PAYSTACK_BANKS } from "./pastackBanks";
 
 export function Wallet() {
   const navigate = useNavigate();
-  const totalEarned = useSelector(
-    (state: any) => state.transactions.transactions,
-  );
 
   const vendor = useSelector(
     (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
@@ -33,6 +30,8 @@ export function Wallet() {
         skip: !vendor?.id,
       },
     );
+  const { data: transactionDashStats, isLoading: statsLoading } =
+    useGetTransactionDashStatsQuery({});
 
   const transactions = transactionsList?.data?.transactions || [];
   const subAccount = subAccountData?.data || [];
@@ -42,7 +41,7 @@ export function Wallet() {
     [],
   );
 
-  if (isLoading || subAccountLoading) {
+  if (isLoading || subAccountLoading || statsLoading) {
     <Loader />;
   }
 
@@ -55,32 +54,32 @@ export function Wallet() {
             Track balances, payouts, and earnings.
           </p>
         </div>
-        <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
+        {/* <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
           Withdraw to Bank
-        </button>
+        </button> */}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
         <StatCard
           title="Total Earned"
-          value={`₦${Number(totalEarned).toLocaleString()}`}
+          value={`₦${Number(transactionDashStats?.totalPayouts).toLocaleString()}`}
           icon={<Wallet2Icon className="w-5 h-5" />}
           color="green"
-          change="12% from last month"
+          change={`${transactionDashStats?.totalGrowth}% from last month`}
         />
         <StatCard
           title="Available"
-          value={`₦${Number(totalEarned).toLocaleString()}`}
+          value={`₦${Number(transactionDashStats?.completed).toLocaleString()}`}
           icon={<CurrencyIcon className="w-5 h-5" />}
           color="purple"
-          change="12% from last month"
+          change={`${transactionDashStats?.completedGrowth}% from last month`}
         />
         <StatCard
           title="Pending"
-          value="₦20,000"
+          value={`₦${Number(transactionDashStats?.processing).toLocaleString()}`}
           icon={<StampIcon className="w-5 h-5" />}
-          color="purple"
-          change="12% from last month"
+          color="blue"
+          change={`${transactionDashStats?.processingGrowth}% from last month`}
         />
       </div>
 
@@ -150,15 +149,27 @@ export function Wallet() {
                     <div className="flex items-center gap-4">
                       <div
                         className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-                          payout.status === "Completed"
+                          payout.status === "COMPLETED"
                             ? "bg-[#ECFDF3]"
-                            : "bg-[#FFF7E8]"
+                            : payout.status === "PENDING"
+                              ? "bg-blue-100 text-blue-500"
+                              : payout.status === "CONFIRMED"
+                                ? "bg-green-100 text-green-500"
+                                : "bg-red-100 text-red-500"
                         }`}
                       >
-                        {payout.status === "Completed" ? (
+                        {payout.status !== "PENDING" ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 text-[#16A34A]"
+                            className={`h-6 w-6 ${
+                              payout.status === "COMPLETED"
+                                ? "bg-[#ECFDF3]"
+                                : payout.status === "PENDING"
+                                  ? "bg-blue-100 text-blue-500"
+                                  : payout.status === "CONFIRMED"
+                                    ? "bg-green-100 text-green-500"
+                                    : "bg-red-100 text-red-500"
+                            }`}
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -173,7 +184,7 @@ export function Wallet() {
                         ) : (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6 text-[#F59E0B]"
+                            className={`h-6 w-6 bg-blue-100 text-blue-500`}
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -201,9 +212,13 @@ export function Wallet() {
 
                     <span
                       className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-                        payout.status === "CONFIRMED"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-[#FFF7E8] text-[#D97706]"
+                        payout.status === "COMPLETED"
+                          ? "bg-[#ECFDF3]"
+                          : payout.status === "PENDING"
+                            ? "bg-blue-100 text-blue-500"
+                            : payout.status === "CONFIRMED"
+                              ? "bg-green-100 text-green-500"
+                              : "bg-red-100 text-red-500"
                       }`}
                     >
                       <span className="h-2 w-2 rounded-full bg-current" />
@@ -304,7 +319,10 @@ export function Wallet() {
         </div>
       </div>
 
-      <PayoutSummary />
+      <PayoutSummary
+        transactionDashStats={transactionDashStats}
+        statsLoading={statsLoading}
+      />
     </div>
   );
 }

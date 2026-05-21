@@ -6,6 +6,7 @@ import {
   CircleHelp,
   Clock3,
   CreditCard,
+  Eye,
   EyeOff,
   FileText,
   Lock,
@@ -157,11 +158,18 @@ const supportItems: SettingItem[] = [
   },
 ];
 
-function Toggle({ enabled = true }: { enabled?: boolean }) {
+function Toggle({
+  enabled = true,
+  onToggle,
+}: {
+  enabled?: boolean;
+  onToggle?: () => void;
+}) {
   return (
     <button
       type="button"
       aria-pressed={enabled}
+      onClick={onToggle}
       className={`relative h-6 w-11 rounded-full transition ${
         enabled ? "bg-blue-600" : "bg-gray-200"
       }`}
@@ -229,11 +237,37 @@ function ActionList({ items }: { items: SettingItem[] }) {
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("notifications");
+  const [notificationSettings, setNotificationSettings] = useState({
+    "Email Notifications": true,
+    "SMS Notifications": false,
+    "Push Notifications": true,
+  });
+  const [visiblePasswordFields, setVisiblePasswordFields] = useState({
+    "Current Password": false,
+    "New Password": false,
+    "Confirm New Password": false,
+  });
 
   const activeTabMeta = useMemo(
     () => tabs.find((tab) => tab.id === activeTab) ?? tabs[0],
     [activeTab],
   );
+
+  const toggleNotification = (title: keyof typeof notificationSettings) => {
+    setNotificationSettings((current) => ({
+      ...current,
+      [title]: !current[title],
+    }));
+  };
+
+  const togglePasswordVisibility = (
+    label: keyof typeof visiblePasswordFields,
+  ) => {
+    setVisiblePasswordFields((current) => ({
+      ...current,
+      [label]: !current[label],
+    }));
+  };
 
   return (
     <div className="py-4">
@@ -253,8 +287,8 @@ export function Settings() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <aside className="rounded-lg border border-gray-200 bg-white p-2 shadow-sm">
+      <div className="mt-6 w-full gap-6 md:flex lg:flex">
+        <aside className="rounded-[10px] border border-gray-200 bg-white p-2 shadow-sm md:w-[30%] lg:w-[30%]">
           <div className="px-3 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
               Settings sections
@@ -309,7 +343,7 @@ export function Settings() {
           </div>
         </aside>
 
-        <section className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <section className="overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm">
           {activeTab === "notifications" && (
             <>
               <SectionHeader
@@ -318,8 +352,10 @@ export function Settings() {
               />
 
               <div className="divide-y divide-gray-100">
-                {notifications.map((item, index) => {
+                {notifications.map((item) => {
                   const Icon = item.icon;
+                  const notificationKey =
+                    item.title as keyof typeof notificationSettings;
 
                   return (
                     <div
@@ -341,7 +377,10 @@ export function Settings() {
                         </div>
                       </div>
 
-                      <Toggle enabled={index !== 1} />
+                      <Toggle
+                        enabled={notificationSettings[notificationKey]}
+                        onToggle={() => toggleNotification(notificationKey)}
+                      />
                     </div>
                   );
                 })}
@@ -384,26 +423,44 @@ export function Settings() {
                     "Current Password",
                     "New Password",
                     "Confirm New Password",
-                  ].map((label) => (
-                    <div key={label} className="relative">
-                      <Input
-                        label={label}
-                        type="password"
-                        placeholder={
-                          label === "Current Password"
-                            ? "Enter current password"
-                            : label === "New Password"
-                              ? "Enter new password"
-                              : "Confirm new password"
-                        }
-                        className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100"
-                      />
-                      <EyeOff className="absolute right-3 top-1/2 h-5 w-5 text-gray-400" />
-                    </div>
-                  ))}
+                  ].map((label) => {
+                    const passwordKey =
+                      label as keyof typeof visiblePasswordFields;
+                    const isVisible = visiblePasswordFields[passwordKey];
+                    const VisibilityIcon = isVisible ? Eye : EyeOff;
+
+                    return (
+                      <div key={label} className="relative">
+                        <Input
+                          label={label}
+                          type={isVisible ? "text" : "password"}
+                          placeholder={
+                            label === "Current Password"
+                              ? "Enter current password"
+                              : label === "New Password"
+                                ? "Enter new password"
+                                : "Confirm new password"
+                          }
+                          className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100"
+                        />
+                        <button
+                          type="button"
+                          aria-label={
+                            isVisible
+                              ? `Hide ${label.toLowerCase()}`
+                              : `Show ${label.toLowerCase()}`
+                          }
+                          onClick={() => togglePasswordVisibility(passwordKey)}
+                          className="absolute right-3 top-9 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-700"
+                        >
+                          <VisibilityIcon className="h-5 w-5" />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                <Button className="flex text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+                <Button className="flex items-center text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
                   Update Password
                 </Button>
               </div>

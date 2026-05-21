@@ -19,13 +19,15 @@ export default function ServiceBookingPage() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const location = window.location.pathname;
-  console.log(location.split("/"));
+  
   const { data, isLoading } = useGetServiceByIdQuery(serviceId as string);
 
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [selectedDate, setSelectedDate] = useState<any>(null);
   const [openBooking, setOpenBooking] = useState(false);
   const service = data?.data?.service;
+
+  console.log({data, service})
 
   const shouldSkip =
     !selectedDate || !service?.id || !data?.data?.service?.userId;
