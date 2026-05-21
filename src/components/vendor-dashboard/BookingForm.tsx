@@ -76,7 +76,7 @@ export function BookingFormModal({
         <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-[#111827] md:text-2xl">
+            <h3 className="text-xl font-semibold text-[#111827] md:text-2xl">
               Complete Booking
             </h3>
 

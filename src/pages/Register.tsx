@@ -106,7 +106,7 @@ export default function RegisterPage() {
           <div className="w-full">
             <form onSubmit={handleSubmit(onSubmit)} className="w-full">
               <div className="flex flex-col gap-2 mb-4 text-center">
-                <h1 className="text-2xl font-bold text-center text-blue-600">
+                <h1 className="text-2xl font-semibold text-center text-blue-600">
                   Register
                 </h1>
                 <p>Jubly connects proffessionals to clients</p>
@@ -241,7 +241,7 @@ export default function RegisterPage() {
         <div className="absolute inset-0 bg-black/50 rounded-[20px] " />
 
         <div className="absolute bottom-10 z-10 text-center px-8">
-          <h1 className="text-2xl font-bold transition-all duration-700">
+          <h1 className="text-2xl font-semibold transition-all duration-700">
             {animatedTexts[textIndex]}
           </h1>
 

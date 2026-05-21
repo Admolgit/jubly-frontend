@@ -26,8 +26,6 @@ export default function TransactionViewModal({
 }: TransactionViewModalProps) {
   if (!open || !transaction) return null;
 
-  console.log("Transaction details:", transaction);
-
   const fee = Number(transaction?.amount) * Number(transaction?.percentageFee);
 
   const vendorAmount = Number(transaction?.amount) - fee;
@@ -47,7 +45,7 @@ export default function TransactionViewModal({
                 <p className="mb-1 text-xs text-gray-500">Transaction ID</p>
 
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {transaction?.id}
                   </h3>
 
@@ -64,8 +62,12 @@ export default function TransactionViewModal({
             <div>
               <p className="mb-2 text-xs text-gray-500">Status</p>
 
-              <div className="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-xs font-semibold text-green-700">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
+              <div
+                className={`${transaction?.status === "CONFIRMED" ? "bg-green-100 text-green-700" : transaction?.status === "PENDING" ? "bg-blue-100 text-blue-700" : transaction?.status === "COMPLETED" ? "bg-gray-100 text-gray-700" : ""} inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold`}
+              >
+                <span
+                  className={`${transaction?.status === "CONFIRMED" ? "bg-green-500" : transaction?.status === "PENDING" ? "bg-blue-500" : transaction?.status === "COMPLETED" ? "bg-gray-500" : ""} h-2 w-2 rounded-full `}
+                />
 
                 {transaction?.status}
               </div>
@@ -93,7 +95,7 @@ export default function TransactionViewModal({
 
                 <p className="text-xs text-gray-500">Total Amount</p>
 
-                <h4 className="mt-2 text-xl font-bold text-gray-900">
+                <h4 className="mt-2 text-xl font-semibold text-gray-900">
                   ₦{transaction?.amount?.toLocaleString()}
                 </h4>
               </div>
@@ -109,7 +111,7 @@ export default function TransactionViewModal({
                   %)
                 </p>
 
-                <h4 className="mt-2 text-xl font-bold text-gray-900">
+                <h4 className="mt-2 text-xl font-semibold text-gray-900">
                   ₦{fee.toLocaleString()}
                 </h4>
               </div>
@@ -122,7 +124,7 @@ export default function TransactionViewModal({
 
                 <p className="text-xs text-gray-500">Vendor Amount</p>
 
-                <h4 className="mt-2 text-xl font-bold text-gray-900">
+                <h4 className="mt-2 text-xl font-semibold text-gray-900">
                   ₦{vendorAmount?.toLocaleString()}
                 </h4>
               </div>
@@ -135,7 +137,7 @@ export default function TransactionViewModal({
 
                 <p className="text-xs text-gray-500">Settlement Status</p>
 
-                <h4 className="mt-2 text-lg font-bold text-orange-500">
+                <h4 className="mt-2 text-lg font-semibold text-orange-500">
                   {transaction?.status !== "COMPLETED" ? "HELD" : "SETTLED"}
                 </h4>
 

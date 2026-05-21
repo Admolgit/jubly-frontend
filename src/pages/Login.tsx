@@ -143,7 +143,7 @@ export default function LoginPage() {
           <div className="w-full">
             <form onSubmit={handleSubmit(onSubmit)} className="w-full">
               <div className="flex flex-col gap-2 mb-6 text-center">
-                <h1 className="text-2xl font-bold text-center text-blue-600">
+                <h1 className="text-2xl font-semibold text-center text-blue-600">
                   Login
                 </h1>
                 <p>Welcome back! Login to continue.</p>
@@ -154,6 +154,7 @@ export default function LoginPage() {
                 type="email"
                 {...register("email", { required: "Email is required" })}
                 error={errors.email?.message as any}
+                className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
               />
 
               {/* PASSWORD WITH ICON */}
@@ -166,7 +167,7 @@ export default function LoginPage() {
                     minLength: { value: 6, message: "Min 6 characters" },
                   })}
                   error={errors.password?.message as any}
-                  className="pr-10"
+                  className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
                 />
 
                 <button
@@ -228,7 +229,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-black/50 rounded-[20px] " />
 
         <div className="absolute bottom-10 z-10 text-center px-8">
-          <h1 className="text-2xl font-bold transition-all duration-700">
+          <h1 className="text-2xl font-semibold transition-all duration-700">
             {animatedTexts[textIndex]}
           </h1>
 

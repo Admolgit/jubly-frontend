@@ -68,7 +68,8 @@ export function Services() {
   const [createService, { isLoading: createServiceIsLoading }] =
     useCreateServiceMutation();
 
-  const [updateActiveStatus, { isLoading: activeUpdating }] = useUpdateActiveStatusMutation();
+  const [updateActiveStatus, { isLoading: activeUpdating }] =
+    useUpdateActiveStatusMutation();
 
   const servicesList = servicesData?.data || [];
 
@@ -141,6 +142,7 @@ export function Services() {
         {
           ...editForm,
           price: Number(editForm.price),
+          vendorId: vendor?.id,
           durationMins: Number(editForm.durationMins),
         },
       ],
@@ -197,7 +199,7 @@ export function Services() {
     <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between relative">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold">Services</h1>
+          <h1 className="text-2xl font-semibold">Services</h1>
           <p className="text-sm text-gray-500">
             Manage your service catalog and pricing.
           </p>

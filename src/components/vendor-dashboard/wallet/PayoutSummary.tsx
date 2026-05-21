@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Wallet,
   Check,
@@ -7,16 +8,13 @@ import {
   ArrowRight,
   ChevronDown,
 } from "lucide-react";
-import { useGetTransactionDashStatsQuery } from "../../../features/transactions/transactionAPI";
 import Loader from "../../ui/Loader";
 
-export default function PayoutSummary() {
-  const { data: transactionDashStats, isLoading: statsLoading } =
-      useGetTransactionDashStatsQuery({});
-  
-    if(statsLoading) {
-      return <Loader />
-    }
+export default function PayoutSummary({ transactionDashStats, statsLoading }: any) {
+
+  if (statsLoading) {
+    return <Loader />;
+  }
   return (
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
@@ -50,8 +48,8 @@ export default function PayoutSummary() {
 
               <p className="text-sm text-gray-500 mb-2">Total Payouts</p>
 
-              <h3 className="text-2xl leading-none font-bold text-[#111827] mb-3">
-                {Number(transactionDashStats.totalPayouts).toLocaleString()}
+              <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3">
+                {`₦${Number(transactionDashStats.totalPayouts).toLocaleString()}`}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
@@ -68,8 +66,8 @@ export default function PayoutSummary() {
 
               <p className="text-sm text-gray-500 mb-2">Completed</p>
 
-              <h3 className="text-2xl leading-none font-bold text-[#111827] mb-3">
-                {Number(transactionDashStats.completed).toLocaleString()}
+              <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3">
+                {`₦${Number(transactionDashStats.completed).toLocaleString()}`}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
@@ -86,7 +84,7 @@ export default function PayoutSummary() {
 
               <p className="text-sm text-gray-500 mb-2">Processing</p>
 
-              <h3 className="text-2xl leading-none font-bold text-[#111827] mb-3">
+              <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3">
                 {Number(transactionDashStats.processing).toLocaleString()}
               </h3>
 
@@ -104,7 +102,7 @@ export default function PayoutSummary() {
 
               <p className="text-sm text-gray-500 mb-2">Failed</p>
 
-              <h3 className="text-2xl leading-none font-bold text-[#111827] mb-3">
+              <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3">
                 {Number(transactionDashStats.failed).toLocaleString()}
               </h3>
 

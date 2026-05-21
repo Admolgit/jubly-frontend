@@ -314,7 +314,7 @@ export function Bookings() {
     <div className="py-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold">Bookings</h1>
+          <h1 className="text-2xl font-semibold">Bookings</h1>
           <p className="text-sm text-gray-500">
             Track upcoming and past appointments.
           </p>

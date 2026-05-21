@@ -8,7 +8,7 @@ export default function Dashboard() {
 
   return (
     <div className="py-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-semibold">Dashboard</h1>
 
       {/* Stats cards: responsive grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -18,7 +18,7 @@ export default function Dashboard() {
             className="p-4 bg-white rounded-lg shadow flex flex-col items-center"
           >
             <span className="text-gray-500">{stat.label}</span>
-            <span className="text-xl font-bold">{stat.value}</span>
+            <span className="text-xl font-semibold">{stat.value}</span>
           </div>
         ))}
       </div>

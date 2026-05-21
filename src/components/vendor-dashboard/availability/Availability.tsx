@@ -61,7 +61,7 @@ export default function AvailabilityPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold">Availability</h1>
+          <h1 className="text-2xl font-semibold">Availability</h1>
           <p className="text-sm text-gray-500">
             Set when clients can book your services
           </p>

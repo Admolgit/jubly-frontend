@@ -39,7 +39,7 @@ export default function TestimonialSection() {
         <p className="text-sm tracking-widest text-purple-700 uppercase mb-3">
           Testimonials
         </p>
-        <h2 className="text-2xl md:text-3xl md:text-4xl font-semibold mb-14">
+        <h2 className="text-2xl md:text-4xl font-semibold mb-14">
           What our Customers say...
         </h2>
 

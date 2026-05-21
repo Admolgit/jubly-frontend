@@ -42,6 +42,7 @@ export default function ServiceForm({
   const onSubmit = (data: ServiceFormData) => {
     handleCreateService({
       ...data,
+      vendorId: vendor?.id,
       price: Number(data?.price),
     });
   };

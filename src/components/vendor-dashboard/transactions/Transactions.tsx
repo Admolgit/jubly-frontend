@@ -70,8 +70,8 @@ export default function TransactionsPage() {
       icon: "fill-green-600 text-white",
     },
     PENDING: {
-      wrapper: "bg-orange-100 text-orange-600",
-      icon: "text-orange-500",
+      wrapper: "bg-blue-100 text-blue-600",
+      icon: "text-blue-500",
     },
     FAILED: {
       wrapper: "bg-red-100 text-red-600",

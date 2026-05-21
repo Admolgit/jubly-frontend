@@ -20,7 +20,7 @@ const Hero = () => {
             Hair salon, Masseuse, Beauty Salon, Makeup Artist
           </p>
 
-          <h1 className="text-[28px] md:text-[62px] text-[#F7E5C1] font-bold leading-tight mt-2">
+          <h1 className="text-[28px] md:text-[62px] text-[#F7E5C1] font-semibold leading-tight mt-2">
             Find a service close to you
           </h1>
 

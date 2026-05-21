@@ -48,15 +48,15 @@ export default function VendorBookingPage() {
   const services = vendorDetails?.services;
 
   useEffect(() => {
-  if (vendor?.portfolioImages?.length > 0) {
-    const randomImage =
-      vendor.portfolioImages[
-        Math.floor(Math.random() * vendor.portfolioImages.length)
-      ];
+    if (vendor?.portfolioImages?.length > 0) {
+      const randomImage =
+        vendor.portfolioImages[
+          Math.floor(Math.random() * vendor.portfolioImages.length)
+        ];
 
-    localStorage.setItem("vendorRandomImage", randomImage);
-  }
-}, [vendor]);
+      localStorage.setItem("vendorRandomImage", randomImage);
+    }
+  }, [vendor]);
 
   useEffect(() => {
     localStorage.setItem("businessName", JSON.stringify(vendor?.businessName));
@@ -142,7 +142,7 @@ export default function VendorBookingPage() {
               </div>
 
               <div className="pt-3">
-                <h1 className="text-3xl md:text-5xl font-bold text-gray-900">
+                <h1 className="text-2xl md:text-5xl font-semibold text-gray-900">
                   {vendor?.businessName}
                 </h1>
 
@@ -187,7 +187,7 @@ export default function VendorBookingPage() {
                       {item.icon}
                     </div>
 
-                    <h3 className="font-bold text-xl text-gray-900">
+                    <h3 className="font-semibold text-xl text-gray-900">
                       {item.title}
                     </h3>
 
@@ -209,7 +209,7 @@ export default function VendorBookingPage() {
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-8 rounded-full bg-violet-600" />
 
-            <h2 className="text-2xl font-bold text-gray-900">About</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">About</h2>
           </div>
 
           <p className="text-gray-600 leading-8 text-[15px]">
@@ -224,7 +224,9 @@ export default function VendorBookingPage() {
               <div className="flex items-center gap-3">
                 <div className="w-1 h-8 rounded-full bg-violet-600" />
 
-                <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Portfolio
+                </h2>
               </div>
 
               <button className="border border-violet-300 text-violet-600 px-5 py-2 rounded-xl text-sm font-semibold hover:bg-violet-50 transition">
@@ -255,7 +257,7 @@ export default function VendorBookingPage() {
           <div className="flex items-center gap-3 mb-8">
             <div className="w-1 h-8 rounded-full bg-violet-600" />
 
-            <h2 className="text-2xl font-bold text-gray-900">Services</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">Services</h2>
           </div>
 
           {services?.length === 0 ? (
@@ -276,7 +278,7 @@ export default function VendorBookingPage() {
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900">
+                      <h3 className="text-xl font-semibold text-gray-900">
                         {service?.name}
                       </h3>
 
@@ -288,7 +290,7 @@ export default function VendorBookingPage() {
                         </span>
                       </div>
 
-                      <p className="mt-4 text-2xl font-bold text-gray-900">
+                      <p className="mt-4 text-2xl font-semibold text-gray-900">
                         ₦{Number(service?.price).toLocaleString()}
                       </p>
                     </div>
@@ -316,7 +318,7 @@ export default function VendorBookingPage() {
 
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute -top-4 -right-4 bg-white text-black w-10 h-10 rounded-full shadow-lg font-bold"
+              className="absolute -top-4 -right-4 bg-white text-black w-10 h-10 rounded-full shadow-lg font-semibold"
             >
               ✕
             </button>
