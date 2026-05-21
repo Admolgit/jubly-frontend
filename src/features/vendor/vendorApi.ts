@@ -71,6 +71,12 @@ export const vendorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getAllVendors: builder.query({
+      query: () => ({
+        url: "/vendor/all-vendors",
+        method: "GET",
+      }),
+    }),
     searchVendors: builder.mutation({
       query: (data) => ({
         url: `search-vendor?name=${data.name}&location=${data.location}&type=${data.type}&page=${data.page}&limit=${data.limit}`,
@@ -99,6 +105,7 @@ export const {
   useGetDashboardServicesQuery,
   useGetDashboardWalletQuery,
   useGetDashboardClientsQuery,
+  useGetAllVendorsQuery,
   useSearchVendorsMutation,
   useExportBookingsCSVMutation,
 } = vendorApi;
