@@ -1,17 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {
-  CalendarDays,
-  CheckCircle2,
-  Clock3,
-  Copy,
-  Download,
-  // Mail,
-  // MapPin,
-  // Phone,
-  // User2,
-  Wallet,
-} from "lucide-react";
+import { CalendarDays, Clock3, Copy, Download, Wallet } from "lucide-react";
 
 import Modal from "../../ui/Modal";
 import { formatDate } from "../../utils/dateFormatter";
@@ -42,7 +31,56 @@ export default function ViewBookingModal({
   setRescheduleOpen,
 }: Props) {
   if (!booking) return null;
-  console.log({ booking });
+  const bookingStatus = booking?.status;
+  console.log({ booking, bookingStatus });
+
+  const lastStep =
+    bookingStatus === "CANCELLED"
+      ? {
+          title: "Booking Cancelled",
+          description: "This booking was cancelled",
+          active: true,
+          cancelled: true,
+        }
+      : bookingStatus === "COMPLETED"
+        ? {
+            title: "Completed",
+            description: "Service completed successfully",
+            active: true,
+            completed: true,
+          }
+        : {
+            title: "Awaiting Completion",
+            description: "Mark as completed after service",
+            warning: true,
+          };
+
+  const timeline = [
+    {
+      title: "Booking Created",
+      description: "Your booking was created successfully",
+      active: true,
+      warning: false,
+    },
+    {
+      title: "Payment Confirmed",
+      description: "Payment received and confirmed",
+      active:
+        bookingStatus === "CONFIRMED" ||
+        bookingStatus === "COMPLETED" ||
+        bookingStatus === "CANCELLED",
+      // warning: false,
+    },
+    {
+      title: "Appointment Scheduled",
+      description: "Vendor confirmed your appointment",
+      active:
+        bookingStatus === "CONFIRMED" ||
+        bookingStatus === "COMPLETED" ||
+        bookingStatus === "CANCELLED",
+    },
+    lastStep,
+  ];
 
   return (
     <Modal open={open} onClose={onClose} title="Booking Details" size="lg">
@@ -87,7 +125,7 @@ export default function ViewBookingModal({
               </div>
 
               <p className="mt-3 text-xs text-gray-500">
-                Your appointment is confirmed
+                Your appointment is {booking?.status?.toLowerCase()}
               </p>
             </div>
           </div>
@@ -163,7 +201,7 @@ export default function ViewBookingModal({
                 </div>
 
                 <p className="mt-3 text-xs text-gray-400">
-                  Appointment confirmed
+                  Appointment {booking?.status?.toLowerCase()}
                 </p>
               </div>
             </div>
@@ -296,26 +334,18 @@ export default function ViewBookingModal({
             </h3>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-              <TimelineItem
-                title="Booking Created"
-                description="Your booking was created successfully"
-              />
-
-              <TimelineItem
-                title="Payment Confirmed"
-                description="Payment received and confirmed"
-              />
-
-              <TimelineItem
-                title="Appointment Scheduled"
-                description="Vendor confirmed your appointment"
-              />
-
-              <TimelineItem
-                title="Awaiting Completion"
-                description="Mark as completed after service"
-                warning
-              />
+              {timeline.map((item, index) => (
+                <TimelineItem
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  active={item.active}
+                  warning={item.warning}
+                  isLast={index === timeline.length - 1}
+                  cancelled={bookingStatus === "CANCELLED"}
+                  completed={bookingStatus === "COMPLETED"}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -407,34 +437,66 @@ function InfoRow({
   );
 }
 
-function TimelineItem({
-  title,
-  description,
-  warning,
-}: {
+type TimelineItemProps = {
   title: string;
   description: string;
+  active?: boolean;
   warning?: boolean;
-}) {
+  cancelled?: boolean;
+  completed?: boolean;
+  isLast?: boolean;
+};
+
+export function TimelineItem({
+  title,
+  description,
+  active,
+  warning,
+  isLast,
+  cancelled,
+  completed,
+}: TimelineItemProps) {
   return (
-    <div className="flex gap-4">
+    <div className="relative flex flex-col items-center text-center">
+      {!isLast && (
+        <div
+          className={`absolute top-5 left-1/2 h-[2px] w-full 
+            ${
+              cancelled
+                ? "bg-red-500"
+                : completed
+                  ? "bg-gray-500"
+                  : active
+                    ? "bg-green-500"
+                    : "bg-gray-200"
+            }`
+          }
+        />
+      )}
+
       <div
-        className={`mt-1 flex h-10 w-10 items-center justify-center rounded-full ${
-          warning ? "bg-orange-100" : "bg-green-100"
+        className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-4
+        ${
+          cancelled
+            ? "border-red-100 bg-red-500"
+            : completed
+              ? "border-gray-200 bg-gray-500"
+              : 
+              active
+                ? "border-green-100 bg-green-500"
+                : warning
+                  ? "border-orange-100 bg-orange-400"
+                  : "border-gray-100 bg-gray-300"
         }`}
       >
-        {warning ? (
-          <Clock3 className="h-5 w-5 text-orange-500" />
-        ) : (
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-        )}
+        <div className="h-2.5 w-2.5 rounded-full bg-white" />
       </div>
 
-      <div>
-        <h4 className="font-semibold text-gray-900">{title}</h4>
+      <h4 className="mt-4 text-sm font-semibold text-gray-900">{title}</h4>
 
-        <p className="mt-1 text-xs text-gray-500">{description}</p>
-      </div>
+      <p className="mt-1 text-xs leading-relaxed text-gray-500">
+        {description}
+      </p>
     </div>
   );
 }

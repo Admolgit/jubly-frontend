@@ -18,10 +18,10 @@ import Modal from "../ui/Modal";
 import Input from "../ui/Input";
 import { useSelector } from "react-redux";
 import { LinkActions } from "../ui/LinkActions";
-import ViewModal from "../ui/viewModal";
 import BookingFilters from "../utils/BookingFilters";
 import { StatCard } from "../vendor-dashboard/dashboard/StatCard";
 import { ClipboardList } from "lucide-react";
+import ViewBookingModal from "../vendor-dashboard/booking/BookingViewModal";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -336,10 +336,13 @@ function ClientBookings() {
         )}
       </div>
 
-      <ViewModal
-        setViewVendorOpen={setViewVendorOpen}
-        viewVendorOpen={viewVendorOpen}
+      <ViewBookingModal
+        open={viewVendorOpen}
+        onClose={() => setViewVendorOpen(false)}
         booking={selectedView}
+        setCancelOpen={setCancelOpen}
+        setOpenMark={setOpenMark}
+        setRescheduleOpen={setRescheduleOpen}
       />
 
       <Modal

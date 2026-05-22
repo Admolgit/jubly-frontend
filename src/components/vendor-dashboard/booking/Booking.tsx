@@ -465,7 +465,7 @@ export function Bookings() {
                             />
                           )}
 
-                          {b.status === "FAILED" && (
+                          {b.status === "CANCELLED" && (
                             <X
                               size={14}
                               className={statusStyles[b.status].icon}
