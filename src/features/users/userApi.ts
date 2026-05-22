@@ -17,7 +17,26 @@ export const userApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserId: builder.mutation({
+      query: (userId) => ({
+        url: `/users/user/${userId}`,
+        method: "GET",
+      }),
+    }),
+    createEnqury: builder.mutation({
+      query: (data) => ({
+        url: "/users/enquiry",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useLazyGetVendorClientsQuery, useGetUserSubAccountQuery } = userApi;
+export const {
+  useGetProfileQuery,
+  useLazyGetVendorClientsQuery,
+  useGetUserSubAccountQuery,
+  useGetUserIdMutation,
+  useCreateEnquryMutation,
+} = userApi;

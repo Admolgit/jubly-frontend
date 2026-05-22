@@ -258,7 +258,11 @@ export function Bookings() {
       setOpenMark(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to cancel booking");
+      if (error?.status === 403) {
+        toast.error(error?.data?.message);
+      } else {
+        toast.error(error?.message || "Failed to cancel booking");
+      }
     }
   };
 
@@ -395,12 +399,12 @@ export function Bookings() {
           />
         </div>
 
-        <div className="mt-4 w-full">
-          <div className="overflow-x-auto scrollbar-thin">
+        <div className="mt-4 w-full relative">
+          <div className="overflow-x-auto overflow-y-visible scrollbar-thin">
             {getBookingsDataLoading ? (
               <Loader />
             ) : (
-              <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm">
+              <table className="w-full min-w-[700px] text-left rounded-xl border border-gray-200 text-sm relative">
                 <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
                   <tr className="border-b">
                     <th className="px-3 py-3">Client</th>
@@ -412,9 +416,9 @@ export function Bookings() {
                     <th className="px-3 py-3">Action</th>
                   </tr>
                 </thead>
-                <tbody className="text-md text-gray-700 relative">
+                <tbody className="text-md text-gray-700">
                   {getBookingsData?.data?.map((b: any) => (
-                    <tr className="border-b last:border-b-0 relative">
+                    <tr className="border-b last:border-b-0">
                       <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
                         <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
                           {b?.clientName?.split(" ")[0]?.charAt(0)}
@@ -471,7 +475,7 @@ export function Bookings() {
                           {b.status}
                         </div>
                       </td>
-                      <td className="px-3 py-4">
+                      <td className="px-3 py-4 relative overflow-visible">
                         <LinkActions
                           link={b}
                           onReschedule={openReschedule}
