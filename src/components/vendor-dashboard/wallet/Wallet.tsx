@@ -54,9 +54,6 @@ export function Wallet() {
             Track balances, payouts, and earnings.
           </p>
         </div>
-        {/* <button className="rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
-          Withdraw to Bank
-        </button> */}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
@@ -84,7 +81,6 @@ export function Wallet() {
       </div>
 
       <div className="my-6 grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr]">
-        {/* Recent Payouts */}
         <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

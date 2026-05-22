@@ -37,7 +37,7 @@ export const LinkActions = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50 ">
+        <div className="absolute right-0 bottom-full mb-2 z-50 w-48 rounded-xl border border-gray-100 bg-white shadow-2xl">
           <button
             onClick={() => {
               setSelectedView(link);
