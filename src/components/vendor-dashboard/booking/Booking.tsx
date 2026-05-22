@@ -417,7 +417,8 @@ export function Bookings() {
                     <tr className="border-b last:border-b-0 relative">
                       <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
                         <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
-                          AS
+                          {b?.clientName?.split(" ")[0]?.charAt(0)}
+                          {b?.clientName?.split(" ")[1]?.charAt(0)}
                         </div>
                         {b.clientName || "Client Name"}
                       </td>
