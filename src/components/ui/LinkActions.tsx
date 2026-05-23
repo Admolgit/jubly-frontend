@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
+import { useGetUserByEmailQuery } from "../../features/auth/authApi";
 
 export const LinkActions = ({
   link,
@@ -13,21 +14,28 @@ export const LinkActions = ({
 }: any) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
+  const { data } = useGetUserByEmailQuery(
+    {
+      email: link.clientEmail,
+    },
+    {
+      skip: !link.clientEmail,
+    },
+  );
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="relative inline-block" ref={menuRef}>
-      {/* Trigger */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="p-2 hover:bg-gray-200 rounded"
@@ -35,7 +43,6 @@ export const LinkActions = ({
         <MoreHorizontal className="h-4 w-4" />
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute right-0 bottom-full mb-2 z-50 w-48 rounded-xl border border-gray-100 bg-white shadow-2xl">
           <button
@@ -73,29 +80,33 @@ export const LinkActions = ({
             </button>
           )}
 
-          {link?.status !== "CANCELLED" && component !== "transaction" && (
-            <button
-              onClick={() => {
-                onCancle(link);
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-          )}
+          {link?.status !== "CANCELLED" &&
+            component !== "transaction" &&
+            data?.data?.role === "CLIENT" && (
+              <button
+                onClick={() => {
+                  onCancle(link);
+                  setOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            )}
 
-          {link?.status !== "CANCELLED" && component !== "transaction" && (
-            <button
-              onClick={() => {
-                onMarking(link);
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-            >
-              {link?.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
-            </button>
-          )}
+          {link?.status !== "CANCELLED" &&
+            component !== "transaction" &&
+            data?.data?.role === "CLIENT" && (
+              <button
+                onClick={() => {
+                  onMarking(link);
+                  setOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                {link?.status === "CONFIRMED" ? "Mark as completed" : "Dispute"}
+              </button>
+            )}
         </div>
       )}
     </div>

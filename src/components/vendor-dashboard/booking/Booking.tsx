@@ -421,7 +421,8 @@ export function Bookings() {
                     <tr className="border-b last:border-b-0">
                       <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
                         <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
-                          AS
+                          {b?.clientName?.split(" ")[0]?.charAt(0)}
+                          {b?.clientName?.split(" ")[1]?.charAt(0)}
                         </div>
                         {b.clientName || "Client Name"}
                       </td>
@@ -464,7 +465,7 @@ export function Bookings() {
                             />
                           )}
 
-                          {b.status === "FAILED" && (
+                          {b.status === "CANCELLED" && (
                             <X
                               size={14}
                               className={statusStyles[b.status].icon}
@@ -567,6 +568,7 @@ export function Bookings() {
             type="date"
             value={rescheduleDate}
             onChange={(e) => setRescheduleDate(e.target.value)}
+            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
           />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
@@ -574,15 +576,17 @@ export function Bookings() {
               type="time"
               value={rescheduleStartTime}
               onChange={(e) => setRescheduleStartTime(e.target.value)}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
             <Input
               label="End Time (optional)"
               type="time"
               value={rescheduleEndTime}
               onChange={(e) => setRescheduleEndTime(e.target.value)}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-between gap-3">
             <button
               className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               onClick={() => setRescheduleOpen(false)}
@@ -590,7 +594,7 @@ export function Bookings() {
               Cancel
             </button>
             <button
-              className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800`}
+              className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90`}
               onClick={handleReschedule}
               disabled={!rescheduleDate && !rescheduleStartTime}
             >

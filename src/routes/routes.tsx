@@ -32,6 +32,8 @@ import { ClientProfile } from "../components/client-dashboard/ClientProfile";
 import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
 import TransactionsPage from "../components/vendor-dashboard/transactions/Transactions";
 import ClientBookings from "../components/client-dashboard/ClientBookings";
+import PoliciesPage from "../pages/PrivacyPage";
+import TermsOfServicePage from "../pages/TermsOfServicesPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +44,14 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
+      },
+      {
+        path: "/policy",
+        element: <PoliciesPage />,
+      },
+      {
+        path: "/terms",
+        element: <TermsOfServicePage />,
       },
     ],
   },

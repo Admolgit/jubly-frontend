@@ -30,6 +30,19 @@ export const userApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    getNotification: builder.query({
+      query: () => ({
+        url: `/users/notification`,
+        method: "GET",
+      }),
+    }),
+    updateNotification: builder.mutation({
+      query: (data) => ({
+        url: `/users/notification`,
+        method: "PATCH",
+        body: data
+      }),
+    }),
   }),
 });
 
@@ -39,4 +52,6 @@ export const {
   useGetUserSubAccountQuery,
   useGetUserIdMutation,
   useCreateEnquryMutation,
+  useGetNotificationQuery,
+  useUpdateNotificationMutation,
 } = userApi;

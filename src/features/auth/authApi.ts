@@ -62,6 +62,12 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    getUserByEmail: builder.query({
+      query: (email) => ({
+        url: `/users/email/${email.email}`,
+        method: 'GET'
+      })
+    })
   }),
 });
 
@@ -75,4 +81,5 @@ export const {
   useRegisterClientMutation,
   useGetUserByIdMutation,
   useConnectCalenderMutation,
+  useGetUserByEmailQuery,
 } = authApi;

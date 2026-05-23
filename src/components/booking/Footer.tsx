@@ -13,7 +13,6 @@ function Footer({
   return (
     <footer className="bg-gray-900 text-gray-300 mt-16">
       <div className="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8">
-        {/* Business Info */}
         <div>
           <h2 className="text-xl font-semibold text-white">
             {user?.businessName}
@@ -24,8 +23,6 @@ function Footer({
             manage your schedule seamlessly.
           </p>
         </div>
-
-        {/* Contact Info */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-3">Contact</h3>
 
@@ -37,8 +34,6 @@ function Footer({
 
           <p className="text-sm mt-1">✉️ {user?.email}</p>
         </div>
-
-        {/* Quick Links */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-3">Quick Links</h3>
 
@@ -63,8 +58,6 @@ function Footer({
           </ul>
         </div>
       </div>
-
-      {/* Bottom Bar */}
       <div className="border-t border-gray-800 py-4 text-center text-sm text-gray-400">
         <p>
           © {new Date().getFullYear()} {user?.businessName}. All rights

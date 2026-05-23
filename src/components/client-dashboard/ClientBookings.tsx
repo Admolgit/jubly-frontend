@@ -18,10 +18,11 @@ import Modal from "../ui/Modal";
 import Input from "../ui/Input";
 import { useSelector } from "react-redux";
 import { LinkActions } from "../ui/LinkActions";
-import ViewModal from "../ui/viewModal";
 import BookingFilters from "../utils/BookingFilters";
 import { StatCard } from "../vendor-dashboard/dashboard/StatCard";
 import { ClipboardList } from "lucide-react";
+import ViewBookingModal from "../vendor-dashboard/booking/BookingViewModal";
+import Dialog from "../ui/Dialog";
 
 const statusStyles: Record<string, string> = {
   CONFIRMED: "bg-green-100 text-green-700",
@@ -336,10 +337,13 @@ function ClientBookings() {
         )}
       </div>
 
-      <ViewModal
-        setViewVendorOpen={setViewVendorOpen}
-        viewVendorOpen={viewVendorOpen}
+      <ViewBookingModal
+        open={viewVendorOpen}
+        onClose={() => setViewVendorOpen(false)}
         booking={selectedView}
+        setCancelOpen={setCancelOpen}
+        setOpenMark={setOpenMark}
+        setRescheduleOpen={setRescheduleOpen}
       />
 
       <Modal
@@ -347,27 +351,15 @@ function ClientBookings() {
         onClose={() => setCancelOpen(false)}
         title="Cancel Booking"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Are you sure you want to cancel this booking? This action cannot be
-            undone.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setCancelOpen(false)}
-            >
-              Keep Booking
-            </button>
-            <button
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-              onClick={handleCancel}
-              disabled={cancelLoading}
-            >
-              {cancelLoading ? "Cancelling..." : "Cancel Booking"}
-            </button>
-          </div>
-        </div>
+        <Dialog
+          setCancelOpen={setCancelOpen}
+          cancelLoading={cancelLoading}
+          handleCancel={handleCancel}
+          headerText="Are you sure you want to cancel this booking? This action cannot be
+                    undone."
+          btnCancelText="No, keep it"
+          btnKeepText="Yes, cancel"
+        />
       </Modal>
 
       <Modal
@@ -375,27 +367,15 @@ function ClientBookings() {
         onClose={() => setOpenMark(false)}
         title="Mark Booking as Complete"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Are you sure you want to mark this booking as completed? This action
-            cannot be undone.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setOpenMark(false)}
-            >
-              No I am not
-            </button>
-            <button
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              onClick={handleMarkAsCompleted}
-              disabled={markingLoading}
-            >
-              {markingLoading ? "Marking..." : "Mark Booking"}
-            </button>
-          </div>
-        </div>
+        <Dialog
+          setCancelOpen={setOpenMark}
+          cancelLoading={markingLoading}
+          handleCancel={handleMarkAsCompleted}
+          headerText="Are you sure you want to mark this booking as completed? This action
+                    cannot be undone."
+          btnCancelText="No, keep it"
+          btnKeepText="Yes, mark as completed"
+        />
       </Modal>
 
       <Modal
@@ -409,6 +389,7 @@ function ClientBookings() {
             type="date"
             value={rescheduleDate}
             onChange={(e) => setRescheduleDate(e.target.value)}
+            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
           />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
@@ -416,15 +397,17 @@ function ClientBookings() {
               type="time"
               value={rescheduleStartTime}
               onChange={(e) => setRescheduleStartTime(e.target.value)}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
             <Input
               label="End Time (optional)"
               type="time"
               value={rescheduleEndTime}
               onChange={(e) => setRescheduleEndTime(e.target.value)}
+              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-between gap-3">
             <button
               className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               onClick={() => setRescheduleOpen(false)}
@@ -432,7 +415,7 @@ function ClientBookings() {
               Cancel
             </button>
             <button
-              className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800`}
+              className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90`}
               onClick={handleReschedule}
               disabled={!rescheduleDate && !rescheduleStartTime}
             >

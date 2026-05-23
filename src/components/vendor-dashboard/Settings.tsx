@@ -22,6 +22,15 @@ import {
 } from "lucide-react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import {
+  useGetNotificationQuery,
+  useUpdateNotificationMutation,
+} from "../../features/users/userApi";
+import Loader from "../ui/Loader";
+import toast from "react-hot-toast";
+import Modal from "../ui/Modal";
+import PoliciesPage from "../../pages/PrivacyPage";
+import TermsOfServicePage from "../../pages/TermsOfServicesPage";
 
 type SettingsTab =
   | "notifications"
@@ -200,7 +209,15 @@ function SectionHeader({
   );
 }
 
-function ActionList({ items }: { items: SettingItem[] }) {
+function ActionList({
+  items,
+  setPrivacy,
+  setTerms,
+}: {
+  items: SettingItem[];
+  setPrivacy?: (value: boolean) => void;
+  setTerms?: (value: boolean) => void;
+}) {
   return (
     <div className="divide-y divide-gray-100">
       {items.map((item) => {
@@ -211,6 +228,13 @@ function ActionList({ items }: { items: SettingItem[] }) {
             key={item.title}
             type="button"
             className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-gray-50"
+            onClick={() => {
+              if (item.title === "Privacy Policy") {
+                setPrivacy?.(true);
+              } else if(item.title === "Terms of Service") {
+                setTerms?.(true)
+              }
+            }}
           >
             <span className="flex min-w-0 items-center gap-4">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white">
@@ -236,17 +260,27 @@ function ActionList({ items }: { items: SettingItem[] }) {
 }
 
 export function Settings() {
+  const { data: notificationData, isLoading: notificationLoading } =
+    useGetNotificationQuery({});
+  const [updateNotification, { isLoading: updatingNotification }] =
+    useUpdateNotificationMutation({});
+  const mainData = notificationData?.data?.result;
   const [activeTab, setActiveTab] = useState<SettingsTab>("notifications");
   const [notificationSettings, setNotificationSettings] = useState({
-    "Email Notifications": true,
-    "SMS Notifications": false,
-    "Push Notifications": true,
+    "Email Notifications": mainData?.emailNotifications ?? true,
+    "SMS Notifications": mainData?.smsNotifications ?? false,
+    "Push Notifications": mainData?.pushNotifications ?? true,
   });
+  const [bookingDigest, setBookingDigest] = useState(
+    mainData?.bookingDigest ?? "WEEKLY",
+  );
   const [visiblePasswordFields, setVisiblePasswordFields] = useState({
     "Current Password": false,
     "New Password": false,
     "Confirm New Password": false,
   });
+  const [policy, setPolicy] = useState(false);
+  const [terms, setTerms] = useState(false);
 
   const activeTabMeta = useMemo(
     () => tabs.find((tab) => tab.id === activeTab) ?? tabs[0],
@@ -269,303 +303,366 @@ export function Settings() {
     }));
   };
 
-  return (
-    <div className="py-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-950">Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your business profile, notifications, security, and payout
-            preferences.
-          </p>
-        </div>
-        <div>
-          <button className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
-            Save Changes
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+  const handleNotification = async () => {
+    try {
+      if (activeTab === "notifications") {
+        const payload = {
+          emailNotifications: notificationSettings["Email Notifications"],
+          smsNotifications: notificationSettings["SMS Notifications"],
+          pushNotifications: notificationSettings["Push Notifications"],
+          bookingDigest: bookingDigest,
+        };
+        const res = await updateNotification(payload).unwrap();
 
-      <div className="mt-6 w-full gap-6 md:flex lg:flex">
-        <aside className="rounded-[10px] border border-gray-200 bg-white p-2 shadow-sm md:w-[30%] lg:w-[30%]">
-          <div className="px-3 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-              Settings sections
+        if (res.status === 200) {
+          toast.success("Notification set successfully.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log({ notificationData });
+
+  return (
+    <>
+      <div className="py-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-950">Settings</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Manage your business profile, notifications, security, and payout
+              preferences.
             </p>
           </div>
+          <div>
+            <button
+              onClick={handleNotification}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+            >
+              {updatingNotification ? "Submitting..." : "Save Changes"}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
 
-          <div className="space-y-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = tab.id === activeTab;
+        <div className="mt-6 w-full gap-6 md:flex lg:flex">
+          <aside className="rounded-[10px] border border-gray-200 bg-white p-2 shadow-sm md:w-[30%] lg:w-[30%]">
+            <div className="px-3 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                Settings sections
+              </p>
+            </div>
 
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex w-full items-start gap-3 rounded-lg px-3 py-3 text-left transition ${
-                    isActive
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-950"
-                  }`}
-                >
-                  <span
-                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
+            <div className="space-y-1">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = tab.id === activeTab;
+
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex w-full items-start gap-3 rounded-lg px-3 py-3 text-left transition ${
                       isActive
-                        ? "border-blue-100 bg-white"
-                        : "border-gray-200 bg-white"
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-950"
                     }`}
                   >
-                    <Icon
-                      className={`h-4 w-4 ${
-                        isActive ? "text-blue-700" : "text-gray-500"
-                      }`}
-                    />
-                  </span>
-
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold">
-                      {tab.label}
-                    </span>
                     <span
-                      className={`mt-1 block text-xs leading-5 ${
-                        isActive ? "text-blue-600" : "text-gray-500"
+                      className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
+                        isActive
+                          ? "border-blue-100 bg-white"
+                          : "border-gray-200 bg-white"
                       }`}
                     >
-                      {tab.description}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
-        <section className="overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm">
-          {activeTab === "notifications" && (
-            <>
-              <SectionHeader
-                title="Notifications"
-                description="Choose how Jubly should notify you about bookings, reminders, client actions, and account updates."
-              />
-
-              <div className="divide-y divide-gray-100">
-                {notifications.map((item) => {
-                  const Icon = item.icon;
-                  const notificationKey =
-                    item.title as keyof typeof notificationSettings;
-
-                  return (
-                    <div
-                      key={item.title}
-                      className="flex items-center justify-between gap-4 px-6 py-5"
-                    >
-                      <div className="flex min-w-0 items-center gap-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white">
-                          <Icon className="h-5 w-5 text-gray-700" />
-                        </div>
-
-                        <div className="min-w-0">
-                          <h3 className="text-sm font-medium text-gray-950">
-                            {item.title}
-                          </h3>
-                          <p className="mt-1 text-sm text-gray-500">
-                            {item.desc}
-                          </p>
-                        </div>
-                      </div>
-
-                      <Toggle
-                        enabled={notificationSettings[notificationKey]}
-                        onToggle={() => toggleNotification(notificationKey)}
+                      <Icon
+                        className={`h-4 w-4 ${
+                          isActive ? "text-blue-700" : "text-gray-500"
+                        }`}
                       />
-                    </div>
-                  );
-                })}
-              </div>
+                    </span>
 
-              <div className="bg-gray-50 px-6 py-5">
-                <div className="rounded-lg border border-gray-200 bg-white p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-950">
-                        Booking digest
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Receive a daily summary of upcoming bookings and recent
-                        client activity.
-                      </p>
-                    </div>
-
-                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                      <option>Every morning</option>
-                      <option>Every evening</option>
-                      <option>Weekly</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {activeTab === "password" && (
-            <>
-              <SectionHeader
-                title="Change Password"
-                description="Update your password regularly to keep your vendor account secure."
-              />
-
-              <div className="max-w-xl px-6 py-6">
-                <div className="space-y-2">
-                  {[
-                    "Current Password",
-                    "New Password",
-                    "Confirm New Password",
-                  ].map((label) => {
-                    const passwordKey =
-                      label as keyof typeof visiblePasswordFields;
-                    const isVisible = visiblePasswordFields[passwordKey];
-                    const VisibilityIcon = isVisible ? Eye : EyeOff;
-
-                    return (
-                      <div key={label} className="relative">
-                        <Input
-                          label={label}
-                          type={isVisible ? "text" : "password"}
-                          placeholder={
-                            label === "Current Password"
-                              ? "Enter current password"
-                              : label === "New Password"
-                                ? "Enter new password"
-                                : "Confirm new password"
-                          }
-                          className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100"
-                        />
-                        <button
-                          type="button"
-                          aria-label={
-                            isVisible
-                              ? `Hide ${label.toLowerCase()}`
-                              : `Show ${label.toLowerCase()}`
-                          }
-                          onClick={() => togglePasswordVisibility(passwordKey)}
-                          className="absolute right-3 top-9 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-700"
-                        >
-                          <VisibilityIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <Button className="flex items-center text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
-                  Update Password
-                </Button>
-              </div>
-            </>
-          )}
-
-          {activeTab === "security" && (
-            <>
-              <SectionHeader
-                title="Security"
-                description="Review account protection settings, recent activity, and connected devices."
-              />
-              <ActionList items={securityItems} />
-            </>
-          )}
-
-          {activeTab === "account" && (
-            <>
-              <SectionHeader
-                title="Account Information"
-                description="Keep business contact, location, and payment details accurate for clients and payouts."
-              />
-              <ActionList items={accountItems} />
-            </>
-          )}
-
-          {activeTab === "appearance" && (
-            <>
-              <SectionHeader
-                title="Appearance"
-                description="Adjust workspace display preferences for the way you work."
-              />
-
-              <div className="divide-y divide-gray-100">
-                <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-950">Theme</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Choose your preferred interface theme
-                    </p>
-                  </div>
-                  <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                    <option>Light</option>
-                    <option>Dark</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-950">
-                      Language
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Select your preferred workspace language
-                    </p>
-                  </div>
-                  <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                    <option>English</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-950">
-                      Text Size
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Adjust text size for better readability
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {["A-", "A", "A+"].map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-medium ${
-                          size === "A"
-                            ? "border-blue-200 bg-blue-50 text-blue-700"
-                            : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold">
+                        {tab.label}
+                      </span>
+                      <span
+                        className={`mt-1 block text-xs leading-5 ${
+                          isActive ? "text-blue-600" : "text-gray-500"
                         }`}
                       >
-                        {size}
-                      </button>
-                    ))}
+                        {tab.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          <section className="overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm">
+            {activeTab === "notifications" && (
+              <>
+                <SectionHeader
+                  title="Notifications"
+                  description="Choose how Jubly should notify you about bookings, reminders, client actions, and account updates."
+                />
+
+                {notificationLoading ? (
+                  <Loader />
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {notifications.map((item) => {
+                      const Icon = item.icon;
+                      const notificationKey =
+                        item.title as keyof typeof notificationSettings;
+
+                      return (
+                        <div
+                          key={item.title}
+                          className="flex items-center justify-between gap-4 px-6 py-5"
+                        >
+                          <div className="flex min-w-0 items-center gap-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white">
+                              <Icon className="h-5 w-5 text-gray-700" />
+                            </div>
+
+                            <div className="min-w-0">
+                              <h3 className="text-sm font-medium text-gray-950">
+                                {item.title}
+                              </h3>
+                              <p className="mt-1 text-sm text-gray-500">
+                                {item.desc}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Toggle
+                            enabled={notificationSettings[notificationKey]}
+                            onToggle={() => toggleNotification(notificationKey)}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="bg-gray-50 px-6 py-5">
+                  <div className="rounded-lg border border-gray-200 bg-white p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-950">
+                          Booking digest
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Receive a daily summary of upcoming bookings and
+                          recent client activity.
+                        </p>
+                      </div>
+
+                      <select
+                        value={bookingDigest}
+                        onChange={(e) => setBookingDigest(e.target.value)}
+                        className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="EVERY_MORNING">Every morning</option>
+
+                        <option value="EVERY_EVENING">Every evening</option>
+
+                        <option value="WEEKLY">Weekly</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
 
-          {activeTab === "support" && (
-            <>
-              <SectionHeader
-                title="Support & Help"
-                description="Find resources, contact support, and review policy documents for your business account."
-              />
-              <ActionList items={supportItems} />
-            </>
-          )}
-        </section>
+            {activeTab === "password" && (
+              <>
+                <SectionHeader
+                  title="Change Password"
+                  description="Update your password regularly to keep your vendor account secure."
+                />
+
+                <div className="max-w-xl px-6 py-6">
+                  <div className="space-y-2">
+                    {[
+                      "Current Password",
+                      "New Password",
+                      "Confirm New Password",
+                    ].map((label) => {
+                      const passwordKey =
+                        label as keyof typeof visiblePasswordFields;
+                      const isVisible = visiblePasswordFields[passwordKey];
+                      const VisibilityIcon = isVisible ? Eye : EyeOff;
+
+                      return (
+                        <div key={label} className="relative">
+                          <Input
+                            label={label}
+                            type={isVisible ? "text" : "password"}
+                            placeholder={
+                              label === "Current Password"
+                                ? "Enter current password"
+                                : label === "New Password"
+                                  ? "Enter new password"
+                                  : "Confirm new password"
+                            }
+                            className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100"
+                          />
+                          <button
+                            type="button"
+                            aria-label={
+                              isVisible
+                                ? `Hide ${label.toLowerCase()}`
+                                : `Show ${label.toLowerCase()}`
+                            }
+                            onClick={() =>
+                              togglePasswordVisibility(passwordKey)
+                            }
+                            className="absolute right-3 top-9 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-700"
+                          >
+                            <VisibilityIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <Button className="flex items-center text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+                    Update Password
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {activeTab === "security" && (
+              <>
+                <SectionHeader
+                  title="Security"
+                  description="Review account protection settings, recent activity, and connected devices."
+                />
+                <ActionList items={securityItems} />
+              </>
+            )}
+
+            {activeTab === "account" && (
+              <>
+                <SectionHeader
+                  title="Account Information"
+                  description="Keep business contact, location, and payment details accurate for clients and payouts."
+                />
+                <ActionList items={accountItems} />
+              </>
+            )}
+
+            {activeTab === "appearance" && (
+              <>
+                <SectionHeader
+                  title="Appearance"
+                  description="Adjust workspace display preferences for the way you work."
+                />
+
+                <div className="divide-y divide-gray-100">
+                  <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-950">
+                        Theme
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Choose your preferred interface theme
+                      </p>
+                    </div>
+                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                      <option>Light</option>
+                      <option>Dark</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-950">
+                        Language
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Select your preferred workspace language
+                      </p>
+                    </div>
+                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                      <option>English</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-950">
+                        Text Size
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Adjust text size for better readability
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      {["A-", "A", "A+"].map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-medium ${
+                            size === "A"
+                              ? "border-blue-200 bg-blue-50 text-blue-700"
+                              : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === "support" && (
+              <>
+                <SectionHeader
+                  title="Support & Help"
+                  description="Find resources, contact support, and review policy documents for your business account."
+                />
+                <ActionList
+                  items={supportItems}
+                  setPrivacy={setPolicy}
+                  setTerms={setTerms}
+                />
+              </>
+            )}
+          </section>
+        </div>
+
+        <p className="mt-4 text-xs text-gray-400">
+          Currently viewing {activeTabMeta.label.toLowerCase()} settings.
+        </p>
       </div>
-
-      <p className="mt-4 text-xs text-gray-400">
-        Currently viewing {activeTabMeta.label.toLowerCase()} settings.
-      </p>
-    </div>
+      <div>
+        <Modal
+          title="Privacy Policy"
+          open={policy}
+          onClose={() => setPolicy(false)}
+          size="lg"
+        >
+          <PoliciesPage />
+        </Modal>
+        <Modal
+          title="Terms of Service"
+          open={terms}
+          onClose={() => setTerms(false)}
+          size="lg"
+        >
+          <TermsOfServicePage />
+        </Modal>
+      </div>
+    </>
   );
 }
