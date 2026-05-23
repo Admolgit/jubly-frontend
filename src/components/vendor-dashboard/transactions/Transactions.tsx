@@ -297,27 +297,27 @@ export default function TransactionsPage() {
                   <td className="px-6 py-4">
                     <div
                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold ${
-                        statusStyles[item?.status].wrapper
+                        statusStyles[item?.status]?.wrapper
                       }`}
                     >
                       {item?.status === "CONFIRMED" && (
                         <CheckCircle2
                           size={14}
-                          className={statusStyles[item?.status].icon}
+                          className={statusStyles[item?.status]?.icon}
                         />
                       )}
 
                       {item?.status === "PENDING" && (
                         <Clock3
                           size={14}
-                          className={statusStyles[item?.status].icon}
+                          className={statusStyles[item?.status]?.icon}
                         />
                       )}
 
                       {item?.status === "FAILED" && (
                         <X
                           size={14}
-                          className={statusStyles[item?.status].icon}
+                          className={statusStyles[item?.status]?.icon}
                         />
                       )}
 
