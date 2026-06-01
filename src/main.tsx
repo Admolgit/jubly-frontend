@@ -6,6 +6,7 @@ import { store, persistor } from "./app/store";
 import App from "./App";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
+import { ThemeProvider } from "./theme/ThemeContext";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
@@ -14,14 +15,16 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: { fontSize: "14px" },
-          }}
-        />
+        <ThemeProvider>
+          <App />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: { fontSize: "14px" },
+            }}
+          />
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>,

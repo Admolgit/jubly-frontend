@@ -81,7 +81,7 @@ export function Wallet() {
       </div>
 
       <div className="my-6 grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr]">
-        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]  dark:bg-black">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]">
@@ -101,7 +101,7 @@ export function Wallet() {
                 </svg>
               </div>
 
-              <h3 className="text-md font-semibold text-[#111827]">
+              <h3 className="text-md font-semibold text-[#111827] dark:text-white">
                 Recent Payouts
               </h3>
             </div>
@@ -140,7 +140,7 @@ export function Wallet() {
                 }) => (
                   <div
                     key={payout.id}
-                    className="flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF]"
+                    className="flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF] dark:bg-black"
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -196,7 +196,7 @@ export function Wallet() {
                       </div>
 
                       <div>
-                        <p className="text-md font-semibold tracking-tight text-[#111827]">
+                        <p className="text-md font-semibold tracking-tight text-[#111827] dark:text-white">
                           ₦{Number(payout.amount).toLocaleString()}
                         </p>
 
@@ -227,7 +227,7 @@ export function Wallet() {
         </div>
 
         {/* Payout Account */}
-        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:bg-black">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]">
               <svg
@@ -246,7 +246,7 @@ export function Wallet() {
               </svg>
             </div>
 
-            <h3 className="text-md font-semibold text-[#111827]">
+            <h3 className="text-md font-semibold text-[#111827] dark:text-white">
               Payout Account
             </h3>
           </div>
@@ -254,7 +254,7 @@ export function Wallet() {
           <div className="mt-8 space-y-7">
             <div>
               <p className="text-xs text-[#98A2B3]">Bank</p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-[#111827]">
+              <p className="mt-1 text-sm font-semibold tracking-tight text-[#111827] dark:text-white">
                 {bankMap[subAccount.bankName] ?? "N/A"}
               </p>
             </div>
@@ -262,7 +262,7 @@ export function Wallet() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-[#98A2B3]">Account Number</p>
-                <p className="mt-1 text-md font-semibold tracking-wide text-[#111827]">
+                <p className="mt-1 text-md font-semibold tracking-wide text-[#111827] dark:text-white">
                   {subAccount?.accountNumber || "Not Available"}
                 </p>
               </div>
@@ -287,7 +287,7 @@ export function Wallet() {
 
             <div>
               <p className="text-sm text-[#98A2B3]">Account Name</p>
-              <p className="mt-1 text-md font-semibold tracking-tight text-[#111827]">
+              <p className="mt-1 text-md font-semibold tracking-tight text-[#111827] dark:text-white">
                 {subAccount?.accountName || "Not Available"}
               </p>
             </div>

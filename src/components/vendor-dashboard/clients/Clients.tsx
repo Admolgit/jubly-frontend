@@ -82,7 +82,7 @@ export function Clients() {
       {/* HEADER */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-[28px] font-bold text-slate-900">Clients</h1>
+          <h1 className="text-[28px] font-bold text-slate-900 dark:text-white">Clients</h1>
           <p className="mt-1 text-sm text-slate-500">
             Manage and view all your clients
           </p>
@@ -125,7 +125,7 @@ export function Clients() {
         />
       </div>
       
-      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm mt-6">
+      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm mt-6 dark:bg-black">
         <div className="flex flex-col gap-4 border-b border-slate-200 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative w-full max-w-md">
             <Search
@@ -185,7 +185,7 @@ export function Clients() {
                         </div>
 
                         <div>
-                          <p className="text-[16px] font-semibold text-slate-900">
+                          <p className="text-[16px] font-semibold text-slate-900 dark:text-white">
                             {client.firstName} {client.lastName}
                           </p>
                         </div>

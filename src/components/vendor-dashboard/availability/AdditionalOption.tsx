@@ -63,7 +63,7 @@ export default function AdditionalOption() {
   }, [bufferTime, bufferVendorAvailability]);
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 mt-6">
+    <div className="bg-white rounded-xl shadow p-6 mt-6 dark:bg-black">
       <h2 className="text-lg font-semibold mb-4">Additional Options</h2>
 
       <div className="space-y-4">

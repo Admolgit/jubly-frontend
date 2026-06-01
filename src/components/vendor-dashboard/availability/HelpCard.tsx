@@ -1,8 +1,8 @@
 export default function HelpCard() {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm  dark:bg-black">
       {/* Text */}
-      <h3 className="text-lg font-semibold text-gray-900">Need Help?</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Need Help?</h3>
 
       <p className="mt-2 text-sm text-gray-500">
         Learn more about managing your availability.

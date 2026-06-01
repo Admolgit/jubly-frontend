@@ -38,7 +38,7 @@ export function StatCard({
   };
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md dark:bg-black">
       <div className="flex items-center gap-4">
         {icon && (
           <div
@@ -51,7 +51,7 @@ export function StatCard({
         <div>
           <p className="text-sm text-gray-500">{title}</p>
 
-          <h2 className="text-2xl font-semibold mt-1 text-gray-900">
+          <h2 className="text-2xl font-semibold mt-1 text-gray-900  dark:text-white">
             {isLoadingStats ? <Loader /> : value}
           </h2>
         </div>

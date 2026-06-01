@@ -54,7 +54,7 @@ export default function ServiceForm({
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {/* Service Name */}
             <div>
-              <label className="mb-3 block text-sm font-semibold text-[#111827]">
+              <label className="mb-3 block text-sm font-semibold text-[#111827] dark:text-white">
                 Service Name <span className="text-red-500">*</span>
               </label>
 
@@ -64,7 +64,7 @@ export default function ServiceForm({
                 <input
                   {...register("name")}
                   placeholder="Bridal Makeup"
-                  className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
+                  className="w-full bg-transparent text-sm font-medium text-[#111827]  dark:text-white outline-none placeholder:text-[#98A2B3]"
                 />
               </div>
 
@@ -77,7 +77,7 @@ export default function ServiceForm({
 
             {/* Price */}
             <div>
-              <label className="mb-3 block text-sm font-semibold text-[#111827]">
+              <label className="mb-3 block text-sm font-semibold text-[#111827]  dark:text-white">
                 Price <span className="text-red-500">*</span>
               </label>
 
@@ -87,7 +87,7 @@ export default function ServiceForm({
                 <input
                   {...register("price")}
                   placeholder="NGN 10,000"
-                  className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
+                  className="w-full bg-transparent text-sm font-medium text-[#111827]  dark:text-white outline-none placeholder:text-[#98A2B3]"
                 />
               </div>
 
@@ -100,7 +100,7 @@ export default function ServiceForm({
 
             {/* Duration */}
             <div>
-              <label className="mb-3 block text-sm font-semibold text-[#111827]">
+              <label className="mb-3 block text-sm font-semibold text-[#111827]  dark:text-white">
                 Duration <span className="text-red-500">*</span>
               </label>
 
@@ -111,7 +111,7 @@ export default function ServiceForm({
                   <input
                     {...register("durationMins")}
                     placeholder="90 min"
-                    className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
+                    className="w-full bg-transparent text-sm font-medium text-[#111827]  dark:text-white outline-none placeholder:text-[#98A2B3]"
                   />
                 </div>
 
@@ -121,7 +121,7 @@ export default function ServiceForm({
 
             {/* Category */}
             <div>
-              <label className="mb-3 block text-sm font-semibold text-[#111827]">
+              <label className="mb-3 block text-sm font-semibold text-[#111827]  dark:text-white">
                 Category <span className="text-red-500"></span>
               </label>
 
@@ -133,7 +133,7 @@ export default function ServiceForm({
                     {...register("category")}
                     placeholder={vendor?.category}
                     disabled={true}
-                    className="w-full bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#98A2B3]"
+                    className="w-full bg-transparent text-sm font-medium text-[#111827] dark:text-white outline-none placeholder:text-[#98A2B3]"
                   />
                 </div>
 
@@ -150,7 +150,7 @@ export default function ServiceForm({
 
           {/* Description */}
           <div>
-            <label className="mb-3 block text-sm font-semibold text-[#111827]">
+            <label className="mb-3 block text-sm font-semibold text-[#111827] dark:text-white">
               Description
             </label>
 
@@ -162,7 +162,7 @@ export default function ServiceForm({
                   {...register("description")}
                   rows={5}
                   placeholder="Describe the service..."
-                  className="w-full resize-none bg-transparent text-sm text-[#111827] outline-none placeholder:text-[#98A2B3]"
+                  className="w-full resize-none bg-transparent text-sm text-[#111827]  dark:text-white outline-none placeholder:text-[#98A2B3]"
                 />
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function ServiceForm({
           <button
             type="button"
             onClick={() => setServiceOpen(false)}
-            className="h-10 rounded-2xl border border-[#E4E7EC] bg-white px-8 text-sm font-medium text-[#111827] transition hover:bg-gray-50"
+            className="h-10 rounded-2xl border border-[#E4E7EC] bg-white px-8 text-sm font-medium text-[#111827]  dark:text-white transition hover:bg-gray-50 dark:text-black"
           >
             Cancel
           </button>

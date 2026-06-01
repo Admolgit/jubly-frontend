@@ -17,7 +17,7 @@ export function DayPreviewRow({ label, active, slots = [] }: Props) {
           }`}
         />
 
-        <span className="text-sm font-medium text-gray-800">{label}</span>
+        <span className="text-sm font-medium text-gray-800 dark:text-white">{label}</span>
       </div>
 
       <div className="text-sm text-gray-500">

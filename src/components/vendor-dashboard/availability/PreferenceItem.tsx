@@ -21,7 +21,9 @@ export default function PreferenceItem({
 
         {/* Text */}
         <div>
-          <p className="text-sm font-medium text-gray-900">{title}</p>
+          <p className="text-sm font-medium text-gray-900  dark:text-white">
+            {title}
+          </p>
           <p className="text-xs text-gray-500">{description}</p>
         </div>
       </div>

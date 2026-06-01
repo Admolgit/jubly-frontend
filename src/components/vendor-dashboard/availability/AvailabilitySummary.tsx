@@ -6,20 +6,18 @@ import { formatGroupedAvailability } from "./FormatAvailability";
 export default function AvailabilitySummary({ grouped }: any) {
   const formattedAvailability = formatGroupedAvailability(grouped);
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center justify-between">
+    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 flex items-center justify-between dark:bg-black">
       <div className="flex items-center gap-6">
         <div className="rounded-full bg-[#EEEAFC] p-8 text-[#533BD3] ">
           <CalendarDays size={18} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
             Current Availability
           </p>
-          <p className="text-md font-semibold text-gray-900 mt-1">
+          <p className="text-md font-semibold text-gray-900 mt-1 dark:text-white">
             {formattedAvailability.map((item, index) => (
-              <p key={index}>
-                {item}
-              </p>
+              <p key={index}>{item}</p>
             ))}
           </p>
           <p className="text-sm text-gray-400 mt-1">

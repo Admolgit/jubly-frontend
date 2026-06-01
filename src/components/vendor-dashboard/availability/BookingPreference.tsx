@@ -3,9 +3,9 @@ import PreferenceItem from "./PreferenceItem";
 
 export default function BookingPreferences() {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm dark:bg-black">
       {/* Title */}
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">
+      <h3 className="text-sm font-semibold text-gray-900 mb-4 dark:text-white">
         Booking Preferences
       </h3>
 

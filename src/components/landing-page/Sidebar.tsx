@@ -49,11 +49,11 @@ export function Sidebar({
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50">
+      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50 transition-colors dark:border-gray-800 dark:bg-gray-950 dark:text-white">
         <button
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
-          className="rounded-lg border border-gray-200 p-2"
+          className="rounded-lg border border-gray-200 p-2 dark:border-gray-700"
         >
           <Menu size={20} />
         </button>
@@ -68,7 +68,7 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 
+        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 dark:border-gray-800 dark:bg-gray-950 dark:text-white
           ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 overflow-y-auto
         `}
       >
@@ -90,7 +90,7 @@ export function Sidebar({
                   "flex items-center gap-3 rounded-xl px-4 py-3 text-md font-medium transition " +
                   (active
                     ? "bg-gradient-to-r from-purple-700 to-indigo-600 text-white shadow-sm"
-                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700")
+                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-300 dark:hover:bg-gray-900 dark:hover:text-white")
                 }
               >
                 <Icon size={18} strokeWidth={active ? 2.4 : 2} />
@@ -100,29 +100,29 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="mt-16 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="mt-16 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
           <div className="flex min-w-0 items-center gap-3">
             <img
               src={vendor?.profileImage}
               alt="profile"
-              className="h-12 w-12 shrink-0 rounded-full border border-gray-100 object-cover"
+              className="h-12 w-12 shrink-0 rounded-full border border-gray-100 object-cover dark:border-gray-700"
             />
             <div className="min-w-0 leading-tight">
-              <p className="truncate text-sm font-semibold text-gray-900">
+              <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
                 {vendor?.businessName || "Vendor"}
               </p>
-              <p className="truncate text-sm text-gray-500">
+              <p className="truncate text-sm text-gray-500 dark:text-gray-400">
                 {vendor?.category || "Service Provider"}
               </p>
             </div>
-            <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-gray-500" />
+            <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
           </div>
         </div>
 
         <div className="absolute bottom-6 left-6 right-6">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50"
+            className="flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-red-950/30"
           >
             <LogOut size={18} />
             Logout

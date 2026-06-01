@@ -24,21 +24,21 @@ export default function Pagination({
       <button
         onClick={handlePrev}
         disabled={currentPage === 1}
-        className={`p-2 rounded hover:bg-gray-100 ${
+        className={`p-2 rounded hover:bg-gray-100 dark:text-white ${
           currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         <ChevronLeft size={20} />
       </button>
 
-      <span className="font-medium">
+      <span className="font-medium dark:text-white">
         Page {currentPage} of {totalPages}
       </span>
 
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className={`p-2 rounded hover:bg-gray-100 ${
+        className={`p-2 rounded hover:bg-gray-100 dark:text-white ${
           currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >

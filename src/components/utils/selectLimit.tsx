@@ -14,7 +14,7 @@ export function SelectLimit({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
-        <label htmlFor="itemsPerPage" className="font-medium">
+        <label htmlFor="itemsPerPage" className="font-medium dark:text-white">
           {text} per page:
         </label>
         <select
