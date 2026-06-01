@@ -545,7 +545,11 @@ export function Settings() {
                           <Input
                             label={label}
                             type={isVisible ? "text" : "password"}
-                            value={passwordFields[label]}
+                            value={
+                              passwordFields[
+                                label as keyof typeof passwordFields
+                              ]
+                            }
                             onChange={(e) =>
                               setPasswordFields((prev) => ({
                                 ...prev,
