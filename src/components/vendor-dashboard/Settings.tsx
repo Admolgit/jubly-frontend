@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -31,6 +32,9 @@ import toast from "react-hot-toast";
 import Modal from "../ui/Modal";
 import PoliciesPage from "../../pages/PrivacyPage";
 import TermsOfServicePage from "../../pages/TermsOfServicesPage";
+import { useTheme } from "../../theme/ThemeContext";
+import { useChangePasswordMutation } from "../../features/auth/authApi";
+import { useSelector } from "react-redux";
 
 type SettingsTab =
   | "notifications"
@@ -180,7 +184,7 @@ function Toggle({
       aria-pressed={enabled}
       onClick={onToggle}
       className={`relative h-6 w-11 rounded-full transition ${
-        enabled ? "bg-blue-600" : "bg-gray-200"
+        enabled ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
       }`}
     >
       <span
@@ -200,9 +204,11 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="border-b border-gray-100 px-6 py-5">
-      <h2 className="text-lg font-semibold text-gray-950">{title}</h2>
-      <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+    <div className="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
+      <h2 className="text-lg font-semibold text-gray-950 dark:text-white">
+        {title}
+      </h2>
+      <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
         {description}
       </p>
     </div>
@@ -219,7 +225,7 @@ function ActionList({
   setTerms?: (value: boolean) => void;
 }) {
   return (
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-gray-100 dark:divide-gray-800">
       {items.map((item) => {
         const Icon = item.icon;
 
@@ -227,31 +233,31 @@ function ActionList({
           <button
             key={item.title}
             type="button"
-            className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-gray-50"
+            className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-gray-50 dark:hover:bg-gray-900"
             onClick={() => {
               if (item.title === "Privacy Policy") {
                 setPrivacy?.(true);
-              } else if(item.title === "Terms of Service") {
-                setTerms?.(true)
+              } else if (item.title === "Terms of Service") {
+                setTerms?.(true);
               }
             }}
           >
             <span className="flex min-w-0 items-center gap-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white">
-                <Icon className="h-5 w-5 text-gray-700" />
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+                <Icon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               </span>
 
               <span className="min-w-0">
-                <span className="block text-sm font-medium text-gray-950">
+                <span className="block text-sm font-medium text-gray-950 dark:text-white">
                   {item.title}
                 </span>
-                <span className="mt-1 block text-sm text-gray-500">
+                <span className="mt-1 block text-sm text-gray-500 dark:text-gray-400">
                   {item.desc}
                 </span>
               </span>
             </span>
 
-            <ChevronRight className="h-5 w-5 shrink-0 text-gray-400" />
+            <ChevronRight className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-600" />
           </button>
         );
       })}
@@ -260,10 +266,14 @@ function ActionList({
 }
 
 export function Settings() {
+  const { theme, setTheme } = useTheme();
+  const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
     useUpdateNotificationMutation({});
+  const [changePassword, { isLoading: passwordChangeLoading }] =
+    useChangePasswordMutation();
   const mainData = notificationData?.data?.result;
   const [activeTab, setActiveTab] = useState<SettingsTab>("notifications");
   const [notificationSettings, setNotificationSettings] = useState({
@@ -278,6 +288,12 @@ export function Settings() {
     "Current Password": false,
     "New Password": false,
     "Confirm New Password": false,
+  });
+
+  const [passwordFields, setPasswordFields] = useState({
+    "Current Password": "",
+    "New Password": "",
+    "Confirm New Password": "",
   });
   const [policy, setPolicy] = useState(false);
   const [terms, setTerms] = useState(false);
@@ -303,6 +319,27 @@ export function Settings() {
     }));
   };
 
+  const handlePasswordChange = async () => {
+    const payload = {
+      currentPassword: passwordFields["Current Password"],
+      newPassword: passwordFields["New Password"],
+      confirmPassword: passwordFields["Confirm New Password"],
+      userId: user?.id,
+    };
+
+    try {
+      const res = await changePassword(payload).unwrap();
+      console.log({ res, passwordFields });
+      if (res.status === 200) {
+        toast.success(res.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log({ passwordFields });
+
   const handleNotification = async () => {
     try {
       if (activeTab === "notifications") {
@@ -323,15 +360,15 @@ export function Settings() {
     }
   };
 
-  console.log({ notificationData });
-
   return (
     <>
-      <div className="py-4">
+      <div className="min-h-screen rounded-[14px] bg-transparent py-4 transition-colors dark:bg-gray-950">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-950">Settings</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-semibold text-gray-950 dark:text-white">
+              Settings
+            </h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Manage your business profile, notifications, security, and payout
               preferences.
             </p>
@@ -348,9 +385,9 @@ export function Settings() {
         </div>
 
         <div className="mt-6 w-full gap-6 md:flex lg:flex">
-          <aside className="rounded-[10px] border border-gray-200 bg-white p-2 shadow-sm md:w-[30%] lg:w-[30%]">
+          <aside className="rounded-[10px] border border-gray-200 bg-white p-2 shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 md:w-[30%] lg:w-[30%]">
             <div className="px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 Settings sections
               </p>
             </div>
@@ -367,20 +404,22 @@ export function Settings() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex w-full items-start gap-3 rounded-lg px-3 py-3 text-left transition ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-950"
+                        ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-950 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
                     }`}
                   >
                     <span
                       className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
                         isActive
-                          ? "border-blue-100 bg-white"
-                          : "border-gray-200 bg-white"
+                          ? "border-blue-100 bg-white dark:border-blue-900 dark:bg-gray-900"
+                          : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
                       }`}
                     >
                       <Icon
                         className={`h-4 w-4 ${
-                          isActive ? "text-blue-700" : "text-gray-500"
+                          isActive
+                            ? "text-blue-700 dark:text-blue-300"
+                            : "text-gray-500 dark:text-gray-400"
                         }`}
                       />
                     </span>
@@ -391,7 +430,9 @@ export function Settings() {
                       </span>
                       <span
                         className={`mt-1 block text-xs leading-5 ${
-                          isActive ? "text-blue-600" : "text-gray-500"
+                          isActive
+                            ? "text-blue-600 dark:text-blue-300"
+                            : "text-gray-500 dark:text-gray-500"
                         }`}
                       >
                         {tab.description}
@@ -403,7 +444,7 @@ export function Settings() {
             </div>
           </aside>
 
-          <section className="overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm">
+          <section className="overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950">
             {activeTab === "notifications" && (
               <>
                 <SectionHeader
@@ -414,7 +455,7 @@ export function Settings() {
                 {notificationLoading ? (
                   <Loader />
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {notifications.map((item) => {
                       const Icon = item.icon;
                       const notificationKey =
@@ -426,15 +467,15 @@ export function Settings() {
                           className="flex items-center justify-between gap-4 px-6 py-5"
                         >
                           <div className="flex min-w-0 items-center gap-4">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white">
-                              <Icon className="h-5 w-5 text-gray-700" />
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+                              <Icon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                             </div>
 
                             <div className="min-w-0">
-                              <h3 className="text-sm font-medium text-gray-950">
+                              <h3 className="text-sm font-medium text-gray-950 dark:text-white">
                                 {item.title}
                               </h3>
-                              <p className="mt-1 text-sm text-gray-500">
+                              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 {item.desc}
                               </p>
                             </div>
@@ -450,14 +491,14 @@ export function Settings() {
                   </div>
                 )}
 
-                <div className="bg-gray-50 px-6 py-5">
-                  <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <div className="bg-gray-50 px-6 py-5 dark:bg-gray-900">
+                  <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <h3 className="text-sm font-semibold text-gray-950">
+                        <h3 className="text-sm font-semibold text-gray-950 dark:text-white">
                           Booking digest
                         </h3>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           Receive a daily summary of upcoming bookings and
                           recent client activity.
                         </p>
@@ -466,7 +507,7 @@ export function Settings() {
                       <select
                         value={bookingDigest}
                         onChange={(e) => setBookingDigest(e.target.value)}
-                        className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:focus:ring-blue-950"
                       >
                         <option value="EVERY_MORNING">Every morning</option>
 
@@ -504,6 +545,13 @@ export function Settings() {
                           <Input
                             label={label}
                             type={isVisible ? "text" : "password"}
+                            value={passwordFields[label]}
+                            onChange={(e) =>
+                              setPasswordFields((prev) => ({
+                                ...prev,
+                                [label]: e.target.value,
+                              }))
+                            }
                             placeholder={
                               label === "Current Password"
                                 ? "Enter current password"
@@ -511,7 +559,7 @@ export function Settings() {
                                   ? "Enter new password"
                                   : "Confirm new password"
                             }
-                            className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100"
+                            className="h-11 w-full rounded-lg border-gray-200 bg-white px-3 pr-11 text-sm outline-none transition focus:border-blue-500 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-blue-950"
                           />
                           <button
                             type="button"
@@ -523,7 +571,7 @@ export function Settings() {
                             onClick={() =>
                               togglePasswordVisibility(passwordKey)
                             }
-                            className="absolute right-3 top-9 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-700"
+                            className="absolute right-3 top-9 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                           >
                             <VisibilityIcon className="h-5 w-5" />
                           </button>
@@ -532,8 +580,11 @@ export function Settings() {
                     })}
                   </div>
 
-                  <Button className="flex items-center text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
-                    Update Password
+                  <Button
+                    onClick={handlePasswordChange}
+                    className="flex justify-center text-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+                  >
+                    {passwordChangeLoading ? "Updating..." : "Update Password"}
                   </Button>
                 </div>
               </>
@@ -566,42 +617,48 @@ export function Settings() {
                   description="Adjust workspace display preferences for the way you work."
                 />
 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 dark:divide-gray-800">
                   <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-950">
+                      <h3 className="text-sm font-medium text-gray-950 dark:text-white">
                         Theme
                       </h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Choose your preferred interface theme
                       </p>
                     </div>
-                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                      <option>Light</option>
-                      <option>Dark</option>
+                    <select
+                      value={theme}
+                      onChange={(event) =>
+                        setTheme(event.target.value as "light" | "dark")
+                      }
+                      className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:focus:ring-blue-950"
+                    >
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
                     </select>
                   </div>
 
                   <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-950">
+                      <h3 className="text-sm font-medium text-gray-950 dark:text-white">
                         Language
                       </h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Select your preferred workspace language
                       </p>
                     </div>
-                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                    <select className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:focus:ring-blue-950">
                       <option>English</option>
                     </select>
                   </div>
 
                   <div className="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-950">
+                      <h3 className="text-sm font-medium text-gray-950 dark:text-white">
                         Text Size
                       </h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Adjust text size for better readability
                       </p>
                     </div>
@@ -612,8 +669,8 @@ export function Settings() {
                           type="button"
                           className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-medium ${
                             size === "A"
-                              ? "border-blue-200 bg-blue-50 text-blue-700"
-                              : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                              ? "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-300"
+                              : "border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900"
                           }`}
                         >
                           {size}
@@ -641,7 +698,7 @@ export function Settings() {
           </section>
         </div>
 
-        <p className="mt-4 text-xs text-gray-400">
+        <p className="mt-4 text-xs text-gray-400 dark:text-gray-600">
           Currently viewing {activeTabMeta.label.toLowerCase()} settings.
         </p>
       </div>

@@ -14,7 +14,7 @@ export default function DashboardHeader({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-950">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-gray-950 dark:text-white">Dashboard</h1>
           <p className="mt-1 text-sm text-gray-500">
             Overview of your bookings, earnings, and clients.
           </p>
@@ -44,9 +44,9 @@ export default function DashboardHeader({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:bg-black">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Welcome back,{" "}
             <span className="font-semibold text-purple-600">
               {vendorData?.data?.vendor?.businessName || "Vendor"}

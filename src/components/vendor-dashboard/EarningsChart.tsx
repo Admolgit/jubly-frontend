@@ -29,10 +29,10 @@ export function EarningsChart({
   const total = transactionsAnalytics?.data?.total || 0;
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:bg-black">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-950">
+          <h3 className="text-lg font-semibold text-gray-950 dark:text-white">
             Earnings Overview
           </h3>
           <select

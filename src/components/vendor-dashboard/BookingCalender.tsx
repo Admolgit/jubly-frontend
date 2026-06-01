@@ -109,11 +109,10 @@ function BookingCalendar() {
   };
 
   return (
-    <div className="bg-gray-50 py-4">
-      {/* HEADER */}
+    <div className="py-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-950">
+          <h1 className="text-2xl font-semibold text-gray-950 dark:text-white">
             Booking Calendar
           </h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -139,10 +138,8 @@ function BookingCalendar() {
         </div>
       </div>
 
-      {/* MAIN GRID */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_0.8fr] gap-6 pt-6">
-        {/* CALENDAR */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 shadow-sm dark:bg-black">
           <Calendar
             localizer={localizer}
             events={events}
@@ -155,6 +152,7 @@ function BookingCalendar() {
             onNavigate={(date) => {
               console.log("Current date:", date);
             }}
+            // className="dark:bg-black"
             eventPropGetter={(event: any) => {
               return {
                 style: {
@@ -174,7 +172,6 @@ function BookingCalendar() {
             }}
           />
 
-          {/* FOOTER STATS */}
           <div className="flex justify-between mt-4 text-sm text-gray-600">
             <span className="text-green-600 font-medium">
               {stats.confirmed} Confirmed
@@ -194,12 +191,12 @@ function BookingCalendar() {
           </div>
         </div>
 
-        {/* SIDEBAR */}
         <div className="space-y-4">
-          {/* UPCOMING */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-white rounded-2xl p-5 shadow-sm dark:bg-black dark:border">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold">Upcoming Bookings</h3>
+              <h3 className="font-semibold dark:text-white">
+                Upcoming Bookings
+              </h3>
               <button
                 className="text-sm text-purple-600"
                 onClick={() => navigate("/dashboard/bookings")}
@@ -252,8 +249,10 @@ function BookingCalendar() {
           </div>
 
           {/* LEGEND */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 className="font-semibold mb-3">Calendar Legend</h3>
+          <div className="bg-white rounded-2xl p-5 shadow-sm dark:border dark:bg-black">
+            <h3 className="font-semibold mb-3  dark:text-white">
+              Calendar Legend
+            </h3>
 
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">

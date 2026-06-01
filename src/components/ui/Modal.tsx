@@ -25,8 +25,7 @@ export default function Modal({
     };
 
     document.addEventListener("keydown", handleKey);
-
-    // prevent background scroll
+    
     document.body.style.overflow = "hidden";
 
     return () => {
@@ -42,16 +41,11 @@ export default function Modal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm">
-      {/* Overlay */}
       <div className="absolute inset-0" onClick={onClose} />
-
-      {/* Wrapper */}
       <div className="relative flex min-h-full items-center justify-center px-4 py-6">
-        {/* Modal */}
         <div
-          className={`w-full ${sizeClass} max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl transform transition-all duration-200 scale-100`}
+          className={`w-full ${sizeClass} max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl transform transition-all duration-200 scale-100 dark:bg-black dark:border`}
         >
-          {/* Header */}
           <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4">
             {title ? (
               <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -66,8 +60,6 @@ export default function Modal({
               <X size={18} />
             </button>
           </div>
-
-          {/* Body */}
           <div className="px-6 py-5">{children}</div>
         </div>
       </div>

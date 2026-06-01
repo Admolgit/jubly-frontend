@@ -127,7 +127,7 @@ export default function WeeklySchedule({
   // -------------------------
   return (
     <>
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4 dark:bg-black">
         <h2 className="text-sm font-medium text-gray-700">Weekly Schedule</h2>
 
         {days.map((day) => {
@@ -148,7 +148,7 @@ export default function WeeklySchedule({
         })}
 
         {/* ---------------- QUICK SETUPS ---------------- */}
-        <div className="bg-white p-4 rounded-xl shadow mb-6">
+        <div className="bg-white p-4 rounded-xl shadow mb-6 dark:bg-black">
           <h3 className="font-semibold text-lg">Quick Setups</h3>
           <p className="text-sm text-gray-500 mb-4">
             Use a preset to quickly set your availability.

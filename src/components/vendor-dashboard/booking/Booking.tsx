@@ -364,7 +364,7 @@ export function Bookings() {
           change={`${dashboardStats?.data?.earnings?.growth}% from last month`}
         />
       </div>
-      <div className="rounded-2xl bg-white p-4 shadow-sm mt-6">
+      <div className="rounded-2xl bg-white p-4 shadow-sm mt-6 dark:bg-black">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-3">
             {statusOptions.map((option) => {
@@ -419,7 +419,7 @@ export function Bookings() {
                 <tbody className="text-md text-gray-700">
                   {getBookingsData?.data?.map((b: any) => (
                     <tr className="border-b last:border-b-0">
-                      <td className="px-3 py-4 font-semibold text-gray-900 flex items-center gap-3">
+                      <td className="px-3 py-4 font-semibold text-gray-900 dark:text-gray-400 flex items-center gap-3">
                         <div className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium">
                           {b?.clientName?.split(" ")[0]?.charAt(0)}
                           {b?.clientName?.split(" ")[1]?.charAt(0)}
@@ -435,7 +435,7 @@ export function Bookings() {
                       <td className="px-3 py-4 text-gray-600 font-semibold">
                         {formatTimeFromISO(b.startTime as string)}
                       </td>
-                      <td className="px-3 py-4 font-semibold text-gray-900 tracking-tight">
+                      <td className="px-3 py-4 font-semibold text-gray-900 dark:text-gray-400 tracking-tight">
                         N {Number(b.services?.price)?.toLocaleString()}
                       </td>
                       <td className="px-6 py-4">

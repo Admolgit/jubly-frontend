@@ -274,9 +274,9 @@ function DashboardHome() {
           />
         </div>
 
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:bg-black">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-950">
+            <h3 className="text-lg font-semibold text-gray-950 dark:text-white">
               Top Services
             </h3>
             <button
@@ -327,8 +327,8 @@ function DashboardHome() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-5 mt-6">
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-3">
-          <h3 className="text-lg font-semibold text-gray-950">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-3 dark:bg-black">
+          <h3 className="text-lg font-semibold text-gray-950 dark:text-white">
             Business Insights
           </h3>
 
@@ -347,7 +347,7 @@ function DashboardHome() {
                   </span>
                   <div>
                     <p className="text-sm text-gray-500">{insight.label}</p>
-                    <p className="text-lg font-semibold text-gray-950">
+                    <p className="text-lg font-semibold text-gray-950 dark:text-white">
                       {insight.value}
                     </p>
                     <p className="text-xs font-medium text-purple-600">
@@ -360,9 +360,9 @@ function DashboardHome() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm xl:col-span-2 dark:bg-black">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-950">
+            <h3 className="text-lg font-semibold text-gray-950 dark:text-white">
               Recent Bookings
             </h3>
             <button

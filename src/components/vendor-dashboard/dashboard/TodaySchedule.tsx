@@ -13,13 +13,13 @@ export function TodaySchedule({
   const bookings = upcomingBookingsData?.data || [];
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:bg-black">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
             <CalendarDays className="h-5 w-5" />
           </span>
-          <h3 className="text-lg font-semibold text-gray-950">
+          <h3 className="text-lg font-semibold text-gray-950 dark:text-white">
             Today's Schedule
           </h3>
         </div>

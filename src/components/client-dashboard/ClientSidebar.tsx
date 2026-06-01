@@ -37,11 +37,11 @@ export function ClientSidebar({
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50">
+      <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 bg-white p-4 text-gray-950 z-50 transition-colors dark:border-gray-800 dark:bg-gray-950 dark:text-white">
         <button
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
-          className="rounded-lg border border-gray-200 p-2"
+          className="rounded-lg border border-gray-200 p-2 dark:border-gray-700"
         >
           <Menu size={20} />
         </button>
@@ -56,7 +56,7 @@ export function ClientSidebar({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 
+        className={`fixed inset-y-0 left-0 top-16 md:top-0 w-64 border-r border-gray-100 bg-white p-6 text-gray-950 shadow-sm transform transition-transform duration-300 z-40 dark:border-gray-800 dark:bg-gray-950 dark:text-white
           ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 overflow-y-auto
         `}
       >
@@ -78,7 +78,7 @@ export function ClientSidebar({
                   "flex items-center gap-3 rounded-xl px-4 py-3 text-md font-medium transition " +
                   (active
                     ? "bg-gradient-to-r from-purple-700 to-indigo-600 text-white shadow-sm"
-                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700")
+                    : "text-gray-900 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-300 dark:hover:bg-gray-900 dark:hover:text-white")
                 }
               >
                 <Icon size={18} />

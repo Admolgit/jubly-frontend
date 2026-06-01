@@ -56,7 +56,9 @@ export default function DayRow({
 
         <input type="checkbox" checked={isActive} onChange={handleToggle} />
 
-        <span className="text-sm font-medium text-gray-900">{day}</span>
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-400">
+          {day}
+        </span>
       </div>
 
       {isActive ? (

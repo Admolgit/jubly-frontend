@@ -30,9 +30,9 @@ export default function AvailabilityPreview({ availabilityData }: Props) {
   const grouped = availabilityData?.data?.grouped || {};
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm dark:bg-black">
       {/* Title */}
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
         Availability Preview
       </h3>
 
