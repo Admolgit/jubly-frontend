@@ -96,7 +96,7 @@ export default function PaymentSuccessPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f7fb]">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="rounded-2xl bg-white px-6 py-5 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">Verifying payment...</p>
         </div>
@@ -105,7 +105,7 @@ export default function PaymentSuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] px-4 py-14">
+    <div className="min-h-screen px-4 py-8">
       <div className="mx-auto max-w-4xl">
         {/* Success Header */}
         <div className="rounded-[28px] border border-gray-100 bg-white px-6 py-12 shadow-sm">
