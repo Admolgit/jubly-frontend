@@ -48,11 +48,11 @@ type BookingStatus =
 
 const statusStyles: any = {
   ALL: {
-    pill: "",
+    wrapper: "",
     dot: "",
   },
   COMPLETED: {
-    pill: "bg-grey-100 text-grey-700",
+    wrapper: "bg-grey-100 text-grey-700",
     dot: "bg-grey-500",
   },
   CONFIRMED: {
@@ -64,7 +64,7 @@ const statusStyles: any = {
     icon: "text-orange-500",
   },
   CANCELLED: {
-    pill: "bg-red-100 text-red-700",
+    wrapper: "bg-red-100 text-red-700",
     dot: "bg-red-500",
   },
 };

@@ -4,7 +4,6 @@ import { Search, SlidersHorizontal } from "lucide-react";
 export default function BookingSearch({ value, setSearchFilter }: any) {
   return (
     <div className="flex items-center gap-3">
-      {/* Search Input */}
       <div className="relative w-full max-w-md">
         <Search
           size={18}
@@ -21,8 +20,6 @@ export default function BookingSearch({ value, setSearchFilter }: any) {
           onChange={(e: any) => setSearchFilter(e.target.value)}
         />
       </div>
-
-      {/* Filter Button */}
       <button className="flex items-center justify-center rounded-2xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md transition">
         <SlidersHorizontal size={18} className="text-gray-600" />
       </button>

@@ -46,6 +46,7 @@ export default function TransactionsPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
   console.log(setSearchFilter);
+  console.log(selectedView);
 
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
@@ -73,9 +74,21 @@ export default function TransactionsPage() {
       wrapper: "bg-blue-100 text-blue-600",
       icon: "text-blue-500",
     },
+    COMPLETED: {
+      wrapper: "bg-grey-100 text-grey-700",
+      dot: "bg-grey-500",
+    },
     FAILED: {
       wrapper: "bg-red-100 text-red-600",
       icon: "text-red-500",
+    },
+    REFUND_PENDING: {
+      wrapper: "bg-orange-100 text-orange-600",
+      icon: "text-orange-500",
+    },
+    CANCELLED: {
+      wrapper: "bg-red-100 text-red-700",
+      dot: "bg-red-500",
     },
   };
 
@@ -93,7 +106,8 @@ export default function TransactionsPage() {
 
   const [exportTransactionsCSV, { isLoading: isExporting }] =
     useExportTransactionsCSVMutation();
-  const [refundClientTransaction, { isLoading: isRefunding }] = useRefundClientTransactionMutation();
+  const [refundClientTransaction, { isLoading: isRefunding }] =
+    useRefundClientTransactionMutation();
 
   const handleExportTransactions = async () => {
     try {
@@ -141,7 +155,7 @@ export default function TransactionsPage() {
       console.log(error);
       toast.error("Failed to refund transactions");
     }
-  }
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -261,7 +275,7 @@ export default function TransactionsPage() {
             </thead>
 
             <tbody>
-              {transactions.map((item: any, i: number) => (
+              {transactions?.map((item: any, i: number) => (
                 <tr
                   key={i}
                   className="border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition"
@@ -315,6 +329,12 @@ export default function TransactionsPage() {
                       )}
 
                       {item?.status === "FAILED" && (
+                        <Clock3
+                          size={14}
+                          className={statusStyles[item?.status]?.icon}
+                        />
+                      )}
+                      {item?.status === "CANCELLED" && (
                         <X
                           size={14}
                           className={statusStyles[item?.status]?.icon}
