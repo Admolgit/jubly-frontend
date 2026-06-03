@@ -118,7 +118,6 @@ export default function VendorBookingPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f8fc] overflow-x-hidden">
-      {/* HERO */}
       <section className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-[#f7f4ff] via-[#f9f8ff] to-[#f1edff]">
         <div className="absolute inset-0 opacity-40">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-200 rounded-full blur-3xl" />
@@ -127,7 +126,6 @@ export default function VendorBookingPage() {
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-16">
           <div className="grid lg:grid-cols-[1.5fr,1fr] gap-10 items-center">
-            {/* LEFT */}
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <div className="relative">
                 <img
@@ -157,8 +155,7 @@ export default function VendorBookingPage() {
                     {vendor?.city}, {vendor?.state}, {vendor?.country}
                   </span>
                 </div>
-
-                {/* SOCIALS */}
+                
                 <div className="flex items-center gap-3 mt-5">
                   <button className="w-10 h-10 rounded-full border bg-white flex items-center justify-center hover:bg-violet-50 transition">
                     <Instagram className="w-4 h-4 text-gray-700" />
@@ -174,8 +171,7 @@ export default function VendorBookingPage() {
                 </div>
               </div>
             </div>
-
-            {/* RIGHT STATS */}
+            
             <div className="bg-white/90 backdrop-blur-sm border border-violet-100 rounded-3xl shadow-sm p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-5">
                 {stats.map((item, index) => (
@@ -201,10 +197,8 @@ export default function VendorBookingPage() {
           </div>
         </div>
       </section>
-
-      {/* CONTENT */}
+      
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
-        {/* ABOUT */}
         <section className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-8 rounded-full bg-violet-600" />
@@ -216,8 +210,7 @@ export default function VendorBookingPage() {
             {vendor?.bio || "Best makeup artist in Surulere"}
           </p>
         </section>
-
-        {/* PORTFOLIO */}
+        
         {vendor?.portfolioImages?.length > 0 && (
           <section className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
             <div className="flex items-center justify-between mb-6">
@@ -251,8 +244,7 @@ export default function VendorBookingPage() {
             </div>
           </section>
         )}
-
-        {/* SERVICES */}
+        
         <section className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-1 h-8 rounded-full bg-violet-600" />
@@ -263,7 +255,7 @@ export default function VendorBookingPage() {
           {services?.length === 0 ? (
             <p className="text-gray-400">No services added yet</p>
           ) : (
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid md:grid-cols-3 gap-5">
               {services?.map((service: any) => (
                 <div
                   key={service?.id}
@@ -301,8 +293,7 @@ export default function VendorBookingPage() {
           )}
         </section>
       </div>
-
-      {/* IMAGE MODAL */}
+      
       {selectedImage && (
         <div
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
@@ -326,15 +317,7 @@ export default function VendorBookingPage() {
         </div>
       )}
 
-      {/* FOOTER */}
       <Footer user={vendorUser} />
-
-      {/* FLOATING BOOK BUTTON */}
-      {/* <div className="fixed bottom-5 right-5 z-40">
-        <button className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-4 rounded-2xl shadow-2xl font-semibold transition">
-          Book Appointment
-        </button>
-      </div> */}
     </div>
   );
 }
