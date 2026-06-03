@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
-  CalendarDays,
-  CheckCircle2,
   Clock3,
   Copy,
   CreditCard,
   Download,
-  // Download,
   User2,
   Wallet,
-  // X,
 } from "lucide-react";
 import { formatDate } from "../../utils/dateFormatter";
 import { formatTimeFromISO } from "../../utils/timeFormatter";
@@ -30,11 +25,52 @@ export default function TransactionViewModal({
 
   const vendorAmount = Number(transaction?.amount) - fee;
 
+  const transactionStatus = transaction?.status;
+
+  const lastStep =
+    transactionStatus === "CANCELLED"
+      ? {
+          title: "Booking Cancelled",
+          description: "This booking was cancelled",
+          active: true,
+          cancelled: true,
+        }
+      : transactionStatus === "COMPLETED"
+        ? {
+            title: "Completed",
+            description: "Service completed successfully",
+            active: true,
+            completed: true,
+          }
+        : {
+            title: "Fund held",
+            description: "Mark as completed after service",
+            warning: true,
+          };
+
+  const timeline = [
+    {
+      title: "Payment Initiated",
+      description: new Date(transaction?.createdAt).toLocaleString(),
+      active: true,
+      warning: false,
+    },
+    {
+      title: "Payment Confirmed",
+      description: new Date(transaction?.paidAt).toLocaleString(),
+      active:
+        transactionStatus === "PENDING" ||
+        transactionStatus === "COMPLETED" ||
+        transactionStatus === "CANCELLED",
+      // warning: false,
+    },
+    lastStep,
+  ];
+
   return (
     <div className="w-full">
       <div>
         <div className="space-y-2 p-2">
-          {/* Top */}
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100">
@@ -77,8 +113,7 @@ export default function TransactionViewModal({
               </p>
             </div>
           </div>
-
-          {/* Amount Summary */}
+          
           <div className="overflow-hidden rounded-3xl border border-gray-200">
             <div className="border-b border-gray-100 bg-gray-50 px-6 py-4">
               <h3 className="text-sm font-semibold text-gray-900">
@@ -99,8 +134,7 @@ export default function TransactionViewModal({
                   ₦{transaction?.amount?.toLocaleString()}
                 </h4>
               </div>
-
-              {/* Fee */}
+              
               <div className="p-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100">
                   <CreditCard className="h-5 w-5 text-orange-600" />
@@ -115,8 +149,7 @@ export default function TransactionViewModal({
                   ₦{fee.toLocaleString()}
                 </h4>
               </div>
-
-              {/* Vendor */}
+              
               <div className="p-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100">
                   <Wallet className="h-5 w-5 text-green-600" />
@@ -129,7 +162,6 @@ export default function TransactionViewModal({
                 </h4>
               </div>
 
-              {/* Settlement */}
               <div className="p-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100">
                   <Clock3 className="h-5 w-5 text-blue-600" />
@@ -149,10 +181,8 @@ export default function TransactionViewModal({
               </div>
             </div>
           </div>
-
-          {/* Middle */}
+          
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {/* Payment Info */}
             <div className="overflow-hidden rounded-3xl border border-gray-200">
               <div className="border-b border-gray-100 px-6 py-5">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -181,8 +211,7 @@ export default function TransactionViewModal({
                 />
               </div>
             </div>
-
-            {/* Sender */}
+            
             <div className="overflow-hidden rounded-3xl border border-gray-200">
               <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -210,10 +239,8 @@ export default function TransactionViewModal({
               </div>
             </div>
           </div>
-
-          {/* Bottom */}
+          
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {/* Related Booking */}
             <div className="overflow-hidden rounded-3xl border border-gray-200">
               <div className="border-b border-gray-100 px-6 py-5">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -221,24 +248,35 @@ export default function TransactionViewModal({
                 </h3>
               </div>
 
-              <div className="flex items-center gap-5 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  <CalendarDays className="h-5 w-5 text-gray-400" />
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700">
-                    No booking linked
-                  </h4>
-
-                  <p className="mt-1 text-xs text-gray-500">
-                    This transaction is not associated with a booking.
-                  </p>
-                </div>
+              <div className="space-y-2 p-2">
+                <InfoRow label="Booking ID" value={transaction?.booking?.id} />
+                <InfoRow
+                  label="Client Email"
+                  value={transaction?.booking?.clientEmail}
+                />
+                <InfoRow
+                  label="Client Name"
+                  value={transaction?.booking?.clientName}
+                />
+                <InfoRow
+                  label="Booking Name"
+                  value={transaction?.booking?.services?.name}
+                />
+                <InfoRow
+                  label="Booking Description"
+                  value={transaction?.booking?.services?.description}
+                />
+                <InfoRow
+                  label="Duration"
+                  value={
+                    transaction?.booking?.services?.durationMins % 60 !== 0
+                      ? ` ${transaction?.booking?.services?.durationMins / 60} hours`
+                      : ` ${transaction?.booking?.services?.durationMins / 60} hours`
+                  }
+                />
               </div>
             </div>
-
-            {/* Timeline */}
+            
             <div className="overflow-hidden rounded-3xl border border-gray-200">
               <div className="border-b border-gray-100 px-6 py-5">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -247,27 +285,23 @@ export default function TransactionViewModal({
               </div>
 
               <div className="space-y-4 p-2">
-                <TimelineItem
-                  title="Payment Initiated"
-                  date={new Date(transaction?.createdAt).toLocaleString()}
-                />
-
-                <TimelineItem
-                  title="Payment Confirmed"
-                  date={new Date(transaction?.paidAt).toLocaleString()}
-                />
-
-                <TimelineItem
-                  title="Funds Held"
-                  date="Will be released to vendor when booking is marked as completed"
-                  warning
-                />
+                {timeline.map((item, index) => (
+                  <TimelineItem
+                    key={index}
+                    title={item.title}
+                    description={item.description}
+                    active={item.active}
+                    warning={item.warning}
+                    isLast={index === timeline.length - 1}
+                    cancelled={transactionStatus === "CANCELLED"}
+                    completed={transactionStatus === "COMPLETED"}
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Footer */}
+        
         <div className="flex flex-col gap-4 border-t border-gray-100 px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
           <button className="inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100">
             <Download className="h-4 w-4" />
@@ -296,33 +330,65 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function TimelineItem({
-  title,
-  date,
-  warning,
-}: {
+type TimelineItemProps = {
   title: string;
-  date: string;
+  description: string;
+  active?: boolean;
   warning?: boolean;
-}) {
+  cancelled?: boolean;
+  completed?: boolean;
+  isLast?: boolean;
+};
+
+export function TimelineItem({
+  title,
+  description,
+  active,
+  warning,
+  isLast,
+  cancelled,
+  completed,
+}: TimelineItemProps) {
   return (
-    <div className="flex items-start gap-4">
+    <div className="relative flex gap-4 pb-8">
+      {!isLast && (
+        <div
+          className={`absolute left-5 top-10 w-[2px] h-full
+            ${
+              cancelled
+                ? "bg-red-500"
+                : completed
+                  ? "bg-gray-500"
+                  : active
+                    ? "bg-green-500"
+                    : "bg-gray-200"
+            }`}
+        />
+      )}
+
       <div
-        className={`mt-1 flex h-7 w-7 items-center justify-center rounded-full ${
-          warning ? "bg-orange-100" : "bg-green-100"
-        }`}
+        className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-4
+          ${
+            cancelled
+              ? "border-red-100 bg-red-500"
+              : completed
+                ? "border-gray-200 bg-gray-500"
+                : active
+                  ? "border-green-100 bg-green-500"
+                  : warning
+                    ? "border-orange-100 bg-orange-400"
+                    : "border-gray-100 bg-gray-300"
+          }`}
       >
-        {warning ? (
-          <Clock3 className="h-4 w-4 text-orange-500" />
-        ) : (
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
-        )}
+        <div className="h-2.5 w-2.5 rounded-full bg-white" />
       </div>
 
       <div>
-        <h4 className="font-semibold text-gray-900">{title}</h4>
+        <h4 className="text-sm font-semibold text-gray-900">{title}</h4>
 
-        <p className="mt-1 text-xs text-gray-500">{date}</p>
+        <p className="mt-1 text-xs leading-relaxed text-gray-500">
+          {description}
+        </p>
       </div>
     </div>
   );

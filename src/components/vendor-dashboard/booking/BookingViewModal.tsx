@@ -32,7 +32,6 @@ export default function ViewBookingModal({
 }: Props) {
   if (!booking) return null;
   const bookingStatus = booking?.status;
-  console.log({ booking, bookingStatus });
 
   const lastStep =
     bookingStatus === "CANCELLED"
@@ -362,26 +361,30 @@ export default function ViewBookingModal({
               Contact Vendor
             </button>
 
-            <button
-              onClick={() => setRescheduleOpen(true)}
-              className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700"
-            >
-              Reschedule
-            </button>
+            {bookingStatus === "CONFIRMED" && (
+              <>
+                <button
+                  onClick={() => setRescheduleOpen(true)}
+                  className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700"
+                >
+                  Reschedule
+                </button>
 
-            <button
-              onClick={() => setCancelOpen(true)}
-              className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600"
-            >
-              Cancel Booking
-            </button>
+                <button
+                  onClick={() => setCancelOpen(true)}
+                  className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600"
+                >
+                  Cancel Booking
+                </button>
 
-            <button
-              onClick={() => setOpenMark(true)}
-              className="rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg"
-            >
-              Mark as Completed
-            </button>
+                <button
+                  onClick={() => setOpenMark(true)}
+                  className="rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg"
+                >
+                  Mark as Completed
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -469,8 +472,7 @@ export function TimelineItem({
                   : active
                     ? "bg-green-500"
                     : "bg-gray-200"
-            }`
-          }
+            }`}
         />
       )}
 
@@ -481,8 +483,7 @@ export function TimelineItem({
             ? "border-red-100 bg-red-500"
             : completed
               ? "border-gray-200 bg-gray-500"
-              : 
-              active
+              : active
                 ? "border-green-100 bg-green-500"
                 : warning
                   ? "border-orange-100 bg-orange-400"
