@@ -35,6 +35,7 @@ import TermsOfServicePage from "../../pages/TermsOfServicesPage";
 import { useTheme } from "../../theme/ThemeContext";
 import { useChangePasswordMutation } from "../../features/auth/authApi";
 import { useSelector } from "react-redux";
+import VendorUserModal from "../ui/VendorUserModal";
 
 type SettingsTab =
   | "notifications"
@@ -219,10 +220,12 @@ function ActionList({
   items,
   setPrivacy,
   setTerms,
+  setProfileView,
 }: {
   items: SettingItem[];
   setPrivacy?: (value: boolean) => void;
   setTerms?: (value: boolean) => void;
+  setProfileView?: (value: boolean) => void;
 }) {
   return (
     <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -239,6 +242,8 @@ function ActionList({
                 setPrivacy?.(true);
               } else if (item.title === "Terms of Service") {
                 setTerms?.(true);
+              } else if (item.title === "Personal Details") {
+                setProfileView?.(true);
               }
             }}
           >
@@ -268,6 +273,9 @@ function ActionList({
 export function Settings() {
   const { theme, setTheme } = useTheme();
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
+  const vendor = useSelector(
+    (state: { vendor: { vendor: any } }) => state.vendor?.vendor,
+  );
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
@@ -276,6 +284,7 @@ export function Settings() {
     useChangePasswordMutation();
   const mainData = notificationData?.data?.result;
   const [activeTab, setActiveTab] = useState<SettingsTab>("notifications");
+  const [profileView, setProfileView] = useState(false);
   const [notificationSettings, setNotificationSettings] = useState({
     "Email Notifications": mainData?.emailNotifications ?? true,
     "SMS Notifications": mainData?.smsNotifications ?? false,
@@ -338,8 +347,6 @@ export function Settings() {
     }
   };
 
-  console.log({ passwordFields });
-
   const handleNotification = async () => {
     try {
       if (activeTab === "notifications") {
@@ -359,6 +366,12 @@ export function Settings() {
       console.log(error);
     }
   };
+
+  const handleSaveVendor = (updatedVendor: any) => {
+    // Handle the updated vendor information here (e.g., send to API, update state)
+    console.log("Updated Vendor Info:", updatedVendor);
+    setProfileView(false); // Close the modal after saving
+  }
 
   return (
     <>
@@ -610,7 +623,10 @@ export function Settings() {
                   title="Account Information"
                   description="Keep business contact, location, and payment details accurate for clients and payouts."
                 />
-                <ActionList items={accountItems} />
+                <ActionList
+                  items={accountItems}
+                  setProfileView={setProfileView}
+                />
               </>
             )}
 
@@ -705,6 +721,16 @@ export function Settings() {
         <p className="mt-4 text-xs text-gray-400 dark:text-gray-600">
           Currently viewing {activeTabMeta.label.toLowerCase()} settings.
         </p>
+      </div>
+      <div>
+        <Modal
+          title=""
+          open={profileView}
+          onClose={() => setProfileView(false)}
+          size="lg"
+        >
+          <VendorUserModal onSave={handleSaveVendor} vendor={vendor} user={user} />
+        </Modal>
       </div>
       <div>
         <Modal
