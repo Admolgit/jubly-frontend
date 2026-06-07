@@ -27,12 +27,14 @@ interface VendorUserModalProps {
   vendor: any;
   onSave?: (data: any) => void;
   user?: any;
+  handleSelectImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function VendorUserModal({
   vendor,
   onSave,
   user,
+  handleSelectImage,
 }: VendorUserModalProps) {
   const [activeTab, setActiveTab] = useState<"info" | "activity">("info");
 
@@ -122,16 +124,6 @@ export default function VendorUserModal({
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    console.log(file);
-
-    // upload image here
-  };
 
   console.log({ vendor, user });
 
@@ -329,14 +321,14 @@ export default function VendorUserModal({
                 onChange={handleChange}
               />
 
-              <div className="col-span-2">
+              {/* <div className="col-span-2">
                 <Input
                   label="Address"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="space-y-4 p-8">

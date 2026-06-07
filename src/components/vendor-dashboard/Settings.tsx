@@ -26,6 +26,7 @@ import Button from "../ui/Button";
 import {
   useGetNotificationQuery,
   useUpdateNotificationMutation,
+  useUpdateProfileImageMutation,
 } from "../../features/users/userApi";
 import Loader from "../ui/Loader";
 import toast from "react-hot-toast";
@@ -276,6 +277,7 @@ export function Settings() {
   const vendor = useSelector(
     (state: { vendor: { vendor: any } }) => state.vendor?.vendor,
   );
+  const [updateProfileImage, { refetch }] = useUpdateProfileImageMutation();
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
@@ -347,6 +349,27 @@ export function Settings() {
     }
   };
 
+  const handleSelectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    console.log(e.target.files);
+
+    // const formData = new FormData();
+
+    // formData.append("profileImage", file as Blob);
+
+    // console.log(formData);
+    const payload = {
+      profileImage: file,
+    }
+
+    console.log({ payload });
+
+    const res = await updateProfileImage(payload).unwrap();
+    if (res.status === 200) {
+      toast.success("Profile image updated successfully");
+    }
+  };
+
   const handleNotification = async () => {
     try {
       if (activeTab === "notifications") {
@@ -371,7 +394,7 @@ export function Settings() {
     // Handle the updated vendor information here (e.g., send to API, update state)
     console.log("Updated Vendor Info:", updatedVendor);
     setProfileView(false); // Close the modal after saving
-  }
+  };
 
   return (
     <>
@@ -729,7 +752,12 @@ export function Settings() {
           onClose={() => setProfileView(false)}
           size="lg"
         >
-          <VendorUserModal onSave={handleSaveVendor} vendor={vendor} user={user} />
+          <VendorUserModal
+            onSave={handleSaveVendor}
+            vendor={vendor}
+            user={user}
+            handleSelectImage={handleSelectImage}
+          />
         </Modal>
       </div>
       <div>
