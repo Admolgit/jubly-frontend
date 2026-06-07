@@ -277,7 +277,7 @@ export function Settings() {
   const vendor = useSelector(
     (state: { vendor: { vendor: any } }) => state.vendor?.vendor,
   );
-  const [updateProfileImage, { refetch }] = useUpdateProfileImageMutation();
+  const [updateProfileImage] = useUpdateProfileImageMutation();
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
