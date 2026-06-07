@@ -43,6 +43,20 @@ export const userApi = api.injectEndpoints({
         body: data
       }),
     }),
+    updateProfileImage: builder.mutation({
+      query: (data) => ({
+        url: `/users/profile-image`,
+        method: "PATCH",
+        body: data
+      }),
+    }),
+    updateUser: builder.mutation({
+      query: (data) => ({
+        url: `/users/user/update`,
+        method: "PATCH",
+        body: data
+      }),
+    }),
   }),
 });
 
@@ -54,4 +68,6 @@ export const {
   useCreateEnquryMutation,
   useGetNotificationQuery,
   useUpdateNotificationMutation,
+  useUpdateProfileImageMutation,
+  useUpdateUserMutation,
 } = userApi;

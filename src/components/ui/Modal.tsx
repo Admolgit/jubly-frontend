@@ -37,7 +37,7 @@ export default function Modal({
   if (!open) return null;
 
   const sizeClass =
-    size === "sm" ? "max-w-sm" : size === "lg" ? "max-w-3xl" : "max-w-xl";
+    size === "sm" ? "max-w-sm" : size === "lg" ? "max-w-5xl" : "max-w-xl";
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm">

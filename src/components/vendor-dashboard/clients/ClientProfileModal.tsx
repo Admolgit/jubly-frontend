@@ -25,7 +25,6 @@ export default function ClientProfileModal({
   clientStatsData,
 }: ClientProfileModalProps) {
   const initials = `${client?.firstName?.[0] || ""}`;
-  console.log({ clientStatsData });
   const first = clientStatsData?.data?.bookings?.[0];
   const second = clientStatsData?.data?.bookings?.[1];
   const third = clientStatsData?.data?.bookings?.[2];
@@ -105,7 +104,7 @@ export default function ClientProfileModal({
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-4">
         <div className="rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100">

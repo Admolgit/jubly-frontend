@@ -229,9 +229,6 @@ export const VendorOnboardingStepper = () => {
         });
       }
 
-      /**
-       * 3️⃣ Single API Call
-       */
       const res = await completeVendorOnboarding(formData).unwrap();
 
       toast.success(
