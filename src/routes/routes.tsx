@@ -34,6 +34,7 @@ import TransactionsPage from "../components/vendor-dashboard/transactions/Transa
 import ClientBookings from "../components/client-dashboard/ClientBookings";
 import PoliciesPage from "../pages/PrivacyPage";
 import TermsOfServicePage from "../pages/TermsOfServicesPage";
+import FAQPage from "../components/landing-page/FAQ";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
       {
         path: "/terms",
         element: <TermsOfServicePage />,
+      },
+      {
+        path: "/faq",
+        element: <FAQPage />,
       },
     ],
   },

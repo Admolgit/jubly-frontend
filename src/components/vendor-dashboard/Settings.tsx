@@ -46,7 +46,7 @@ type SettingsTab =
   | "appearance"
   | "support";
 
-type SettingItem = {
+export type SettingItem = {
   title: string;
   desc: string;
   icon: typeof Bell;
@@ -173,7 +173,7 @@ const supportItems: SettingItem[] = [
   },
 ];
 
-function Toggle({
+export function Toggle({
   enabled = true,
   onToggle,
 }: {
@@ -198,7 +198,7 @@ function Toggle({
   );
 }
 
-function SectionHeader({
+export function SectionHeader({
   title,
   description,
 }: {
