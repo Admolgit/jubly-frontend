@@ -57,6 +57,12 @@ export const userApi = api.injectEndpoints({
         body: data
       }),
     }),
+    getActivityLogs: builder.query({
+      query: () => ({
+        url: `activity-logs`,
+        method: 'GET',
+      })
+    })
   }),
 });
 
@@ -70,4 +76,5 @@ export const {
   useUpdateNotificationMutation,
   useUpdateProfileImageMutation,
   useUpdateUserMutation,
+  useGetActivityLogsQuery,
 } = userApi;

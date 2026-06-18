@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../logo";
-
-// import Button from "../ui/Button";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Home", id: "hero" },
   { label: "About", id: "about" },
-  { label: "Contact", id: "contact" },
+  { label: "Services", id: "services" },
+  { label: "Faq", id: "how-it-works" },
 ];
 
 const Navbar = () => {
@@ -18,22 +18,52 @@ const Navbar = () => {
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
     });
-    setIsOpen(false); // close mobile menu after click
+
+    setIsOpen(false);
   };
 
   return (
-    <nav className="fixed top-0 w-full bg-white z-50 shadow-sm">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav
+      className="
+      fixed
+      left-0
+      right-0
+      top-0
+      z-50
+      backdrop-blur-xl
+      bg-black/20
+      border-b
+      border-white/10
+    "
+    >
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Logo />
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex gap-6 text-sm">
+        <div className="flex items-center gap-3">
+          <Logo />
+        </div>
+
+        {/* Desktop Menu */}
+
+        <div className="hidden lg:flex items-center gap-10">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className="hover:text-purple-600"
+              className="
+                text-white/90
+                hover:text-white
+                transition
+                relative
+                after:absolute
+                after:left-0
+                after:-bottom-2
+                after:h-[2px]
+                after:w-0
+                after:bg-fuchsia-500
+                hover:after:w-full
+                after:transition-all
+              "
             >
               {item.label}
             </button>
@@ -41,58 +71,112 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex gap-3">
+
+        <div className="hidden lg:flex gap-3">
           <button
-            className="px-4 py-2 border rounded text-sm cursor-pointer"
             onClick={() => navigate("/login")}
+            className="
+              px-5
+              py-2.5
+              rounded-xl
+              border
+              border-white/20
+              text-white
+              hover:bg-white/5
+              transition
+            "
           >
             Login
           </button>
+
           <button
-            className="px-4 py-2 bg-purple-700 text-white rounded text-sm cursor-pointer"
             onClick={() => navigate("/register")}
+            className="
+              px-5
+              py-2.5
+              rounded-xl
+              bg-gradient-to-r
+              from-pink-500
+              to-purple-600
+              text-white
+              shadow-lg
+              shadow-purple-500/20
+              hover:scale-[1.02]
+              transition-all
+            "
           >
             Signup
           </button>
         </div>
 
-        {/* Hamburger Button */}
+        {/* Mobile Toggle */}
+
         <button
-          className="md:hidden flex flex-col gap-1"
           onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden text-white"
         >
-          <span className="w-6 h-0.5 bg-black"></span>
-          <span className="w-6 h-0.5 bg-black"></span>
-          <span className="w-6 h-0.5 bg-black"></span>
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white shadow-md px-6 py-4 space-y-4">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className="block w-full text-left hover:text-purple-600"
-            >
-              {item.label}
-            </button>
-          ))}
 
-          <div className="flex flex-col gap-3 pt-4">
-            <button
-              className="px-4 py-2 border rounded text-sm w-full"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </button>
-            <button
-              className="px-4 py-2 bg-purple-700 text-white rounded text-sm w-full"
-              onClick={() => navigate("/register")}
-            >
-              Signup
-            </button>
+      {isOpen && (
+        <div
+          className="
+          lg:hidden
+          border-t
+          border-white/10
+          bg-[#0d021f]/95
+          backdrop-blur-xl
+        "
+        >
+          <div className="px-6 py-6 flex flex-col gap-5">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollTo(item.id)}
+                className="
+                  text-left
+                  text-white
+                  hover:text-fuchsia-400
+                  transition
+                "
+              >
+                {item.label}
+              </button>
+            ))}
+
+            <div className="pt-4 flex flex-col gap-3">
+              <button
+                onClick={() => navigate("/login")}
+                className="
+                  w-full
+                  py-3
+                  rounded-xl
+                  border
+                  border-white/20
+                  text-white
+                "
+              >
+                Login
+              </button>
+
+              <button
+                onClick={() => navigate("/register")}
+                className="
+                  w-full
+                  py-3
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-pink-500
+                  to-purple-600
+                  text-white
+                "
+              >
+                Signup
+              </button>
+            </div>
           </div>
         </div>
       )}

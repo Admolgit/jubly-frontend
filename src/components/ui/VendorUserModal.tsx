@@ -1,27 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState } from "react";
 import {
-  // X,
   Camera,
-  // User,
   Mail,
   Phone,
-  // MapPin,
   Wallet,
   Calendar,
   Shield,
   CheckCircle2,
-  // ExternalLink,
-  UserPlus,
-  Pencil,
-  Lock,
-  BadgeCheck,
-  CreditCard,
-  // Trash2,
+  User,
 } from "lucide-react";
-// import Modal from "./Modal";
 import Input from "./Input";
 import { formatDate } from "../utils/dateFormatter";
+import { useGetActivityLogsQuery } from "../../features/users/userApi";
 
 interface VendorUserModalProps {
   vendor: any;
@@ -36,6 +27,7 @@ export default function VendorUserModal({
   user,
   handleSelectImage,
 }: VendorUserModalProps) {
+  const { data: activityLogs } = useGetActivityLogsQuery({});
   const [activeTab, setActiveTab] = useState<"info" | "activity">("info");
 
   const [formData, setFormData] = useState({
@@ -55,57 +47,6 @@ export default function VendorUserModal({
     }));
   };
 
-  const activities = [
-    {
-      icon: UserPlus,
-      color: "green",
-      title: "Vendor Account Created",
-      description: "Vendor account was successfully created.",
-      date: formatDate(user?.createdAt),
-      actor: "System",
-    },
-    {
-      icon: Pencil,
-      color: "purple",
-      title: "Business Profile Updated",
-      description: "Business information was updated.",
-      date: "May 18, 2026 • 02:15 PM",
-      actor: vendor?.businessName,
-    },
-    {
-      icon: Lock,
-      color: "blue",
-      title: "Password Changed",
-      description: "Vendor password was updated.",
-      date: "May 21, 2026 • 11:00 AM",
-      actor: vendor?.businessName,
-    },
-    {
-      icon: BadgeCheck,
-      color: "green",
-      title: "Business Verified",
-      description: "Vendor verification completed.",
-      date: "May 25, 2026 • 08:30 AM",
-      actor: "System",
-    },
-    {
-      icon: Calendar,
-      color: "indigo",
-      title: "Booking Received",
-      description: "New booking was created.",
-      date: "Jun 01, 2026 • 09:00 AM",
-      actor: "Client",
-    },
-    {
-      icon: CreditCard,
-      color: "pink",
-      title: "Payout Processed",
-      description: "Vendor settlement was processed.",
-      date: "Jun 02, 2026 • 01:30 PM",
-      actor: "System",
-    },
-  ];
-
   const getColor = (color: string) => {
     switch (color) {
       case "green":
@@ -118,14 +59,14 @@ export default function VendorUserModal({
         return "bg-indigo-100 text-indigo-600";
       case "pink":
         return "bg-pink-100 text-pink-600";
+      case "red":
+        return "bg-red-100 text-red-600";
       default:
         return "bg-gray-100 text-gray-600";
     }
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  console.log({ vendor, user });
 
   return (
     <div>
@@ -153,8 +94,10 @@ export default function VendorUserModal({
                 />
               ) : (
                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-600">
-                  {vendor?.businessName?.split(" ")?.[0]?.charAt(0)}
-                  {vendor?.businessName?.split(" ")?.[1]?.charAt(0)}
+                  {vendor?.businessName?.split(" ")?.[0]?.charAt(0) ||
+                    user?.firstName?.split(" ")?.[0]?.charAt(0)}
+                  {vendor?.businessName?.split(" ")?.[1]?.charAt(0) ||
+                    user?.lastName?.split(" ")?.[0]?.charAt(0)}
                 </div>
               )}
 
@@ -186,7 +129,8 @@ export default function VendorUserModal({
             </span>
 
             <p className="mt-4 text-sm text-gray-500">
-              Vendor since {formatDate(user?.createdAt)}
+              {user?.role === "CLIENT" ? "Client" : "Vendor"} since{" "}
+              {formatDate(user?.createdAt)}
             </p>
           </div>
 
@@ -195,8 +139,8 @@ export default function VendorUserModal({
           <div className="space-y-5">
             <InfoItem
               icon={<Shield size={18} />}
-              label="Vendor ID"
-              value={vendor?.id}
+              label={user?.role === "CLIENT" ? "User ID" : "Vendor ID"}
+              value={user?.role === "CLIENT" ? user?.id : vendor?.id}
             />
 
             <InfoItem
@@ -229,12 +173,14 @@ export default function VendorUserModal({
               <CheckCircle2 size={18} className="text-green-600" />
 
               <span className="font-medium text-green-700">
-                Verified Vendor
+                {user?.role === "CLIENT" ? "" : "Verified Vendor"}
               </span>
             </div>
 
             <p className="mt-2 text-sm text-gray-500">
-              This vendor can receive bookings and payments.
+              This {user?.role === "CLIENT" ? "client" : "vendor"} can{" "}
+              {user?.role === "CLIENT" ? "initiate" : "receive"} bookings and
+              payments.
             </p>
           </div>
 
@@ -332,9 +278,7 @@ export default function VendorUserModal({
             </div>
           ) : (
             <div className="space-y-4 p-8">
-              {activities.map((activity, index) => {
-                const Icon = activity.icon;
-
+              {activityLogs?.data?.map((activity: any, index: number) => {
                 return (
                   <div key={index} className="rounded-2xl border p-5">
                     <div className="flex items-start justify-between">
@@ -344,11 +288,11 @@ export default function VendorUserModal({
                             activity.color,
                           )}`}
                         >
-                          <Icon size={18} />
+                          <User size={18} />
                         </div>
 
                         <div>
-                          <h4 className="font-semibold">{activity.title}</h4>
+                          <h4 className="font-semibold">{activity.action}</h4>
 
                           <p className="text-sm text-gray-500">
                             {activity.description}
@@ -357,7 +301,9 @@ export default function VendorUserModal({
                       </div>
 
                       <div className="text-right">
-                        <p className="text-sm font-medium">{activity.date}</p>
+                        <p className="text-sm font-medium">
+                          {formatDate(activity.createdAt)}
+                        </p>
 
                         <p className="mt-1 text-xs text-gray-500">
                           {activity.actor}
