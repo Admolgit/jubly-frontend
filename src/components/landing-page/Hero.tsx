@@ -71,8 +71,34 @@ import SearchBar from "./SearchBar";
 import ProfessionalCard from "./ProfessionalCard";
 import CategoryCard from "./CategoryCard";
 import HowItWorks from "./Howitworks";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useGetAllVendorsQuery } from "../../features/vendor/vendorApi";
+import { useGetUserIdMutation } from "../../features/users/userApi";
 
 export default function Hero() {
+  const navigate = useNavigate();
+  
+    const [userId, setUserId] = useState("");
+  
+    const { data: vendorsData } = useGetAllVendorsQuery({});
+    const [getUserId] = useGetUserIdMutation();
+  
+    const vendors = vendorsData?.data?.vendors || [];
+  
+    useEffect(() => {
+      const fetchUser = async () => {
+        if (!userId) return;
+  
+        const res = await getUserId(userId).unwrap();
+  
+        if (res.status === 200) {
+          navigate(`/vendor-booking/${res.data.slug}`);
+        }
+      };
+  
+      fetchUser();
+    }, [userId]);
   return (
     <section className="relative bg-[#0F0223] font-sans">
       <div className="absolute inset-0">
@@ -151,17 +177,21 @@ export default function Hero() {
               {/* Floating Cards */}
               <div className="absolute right-0 top-16 z-20">
                 <ProfessionalCard
-                  name="Jessica Parker"
-                  role="Hair Stylist"
+                  name={vendors[0]?.businessName}
+                  role={vendors[0]?.category}
                   rating={4.9}
+                  vendorImg={vendors[0]?.profileImage}
+                  onNavigate={() => setUserId(vendors[0]?.userId)}
                 />
               </div>
 
               <div className="absolute bottom-20 left-0 z-20">
                 <ProfessionalCard
-                  name="Sarah Morgan"
-                  role="Makeup Artist"
+                  name={vendors[1]?.businessName}
+                  role={vendors[1]?.category}
                   rating={5}
+                  vendorImg={vendors[1]?.profileImage}
+                  onNavigate={() => setUserId(vendors[1]?.userId)}
                 />
               </div>
             </div>

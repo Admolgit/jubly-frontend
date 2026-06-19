@@ -119,6 +119,11 @@ const categories = [
     image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796",
     services: 80,
   },
+  {
+    name: "Photography",
+    image: "https://images.pexels.com/photos/3584932/pexels-photo-3584932.jpeg",
+    services: 80,
+  },
 ];
 
 import { motion } from "framer-motion";

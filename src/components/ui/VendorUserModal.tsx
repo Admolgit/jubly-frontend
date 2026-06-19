@@ -316,14 +316,16 @@ export default function VendorUserModal({
             </div>
           )}
 
-          <div className="flex justify-end gap-4 border-t px-8 py-5">
-            <button
-              onClick={() => onSave?.(formData)}
-              className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-white"
-            >
-              Save Changes
-            </button>
-          </div>
+          {activeTab === "info" && (
+            <div className="flex justify-end gap-4 border-t px-8 py-5">
+              <button
+                onClick={() => onSave?.(formData)}
+                className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-white"
+              >
+                Save Changes
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

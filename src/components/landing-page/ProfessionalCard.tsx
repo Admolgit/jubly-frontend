@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -5,9 +6,11 @@ interface Props {
   name: string;
   role: string;
   rating: number;
+  vendorImg?: any;
+  onNavigate?: any;
 }
 
-export default function ProfessionalCard({ name, role, rating }: Props) {
+export default function ProfessionalCard({ name, role, rating, vendorImg, onNavigate }: Props) {
   return (
     <motion.div
       animate={{
@@ -21,8 +24,11 @@ export default function ProfessionalCard({ name, role, rating }: Props) {
     >
       <div className="flex gap-4">
         <img
-          src="https://i.pravatar.cc/150"
-          alt=""
+          src={
+            vendorImg ||
+            "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+          }
+          alt={name}
           className="w-14 h-14 rounded-full"
         />
 
@@ -38,7 +44,10 @@ export default function ProfessionalCard({ name, role, rating }: Props) {
         </div>
       </div>
 
-      <button className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+      <button
+        onClick={onNavigate}
+        className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+      >
         Book Now
       </button>
     </motion.div>
