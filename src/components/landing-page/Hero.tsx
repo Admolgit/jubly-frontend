@@ -72,29 +72,19 @@ import ProfessionalCard from "./ProfessionalCard";
 import CategoryCard from "./CategoryCard";
 import HowItWorks from "./Howitworks";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetAllVendorsQuery } from "../../features/vendor/vendorApi";
 import { useGetUserIdMutation } from "../../features/users/userApi";
 
 export default function Hero() {
   const navigate = useNavigate();
-    const scrollRef = useRef<HTMLDivElement>(null);
   
     const [userId, setUserId] = useState("");
   
-    const { data: vendorsData, isLoading } = useGetAllVendorsQuery({});
+    const { data: vendorsData } = useGetAllVendorsQuery({});
     const [getUserId] = useGetUserIdMutation();
   
     const vendors = vendorsData?.data?.vendors || [];
-  
-    const scroll = (direction: "left" | "right") => {
-      if (!scrollRef.current) return;
-  
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -350 : 350,
-        behavior: "smooth",
-      });
-    };
   
     useEffect(() => {
       const fetchUser = async () => {
