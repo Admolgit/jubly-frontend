@@ -184,31 +184,31 @@ export default function TransactionsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         <StatCard
           title="Total Payouts"
-          value={Number(transactionDashStats.totalPayouts).toLocaleString()}
+          value={Number(transactionDashStats?.totalPayouts).toLocaleString()}
           icon={<Download className="w-5 h-5" />}
           color="purple"
-          change={`${transactionDashStats.totalGrowth}% from last month`}
+          change={`${transactionDashStats?.totalGrowth}% from last month`}
         />
         <StatCard
           title="Completed"
-          value={Number(transactionDashStats.completed).toLocaleString()}
+          value={Number(transactionDashStats?.completed).toLocaleString()}
           icon={<Check className="w-5 h-5" />}
           color="green"
-          change={`${transactionDashStats.completedGrowth}% from last month`}
+          change={`${transactionDashStats?.completedGrowth}% from last month`}
         />
         <StatCard
           title="Processing"
-          value={Number(transactionDashStats.processing).toLocaleString()}
+          value={Number(transactionDashStats?.processing).toLocaleString()}
           icon={<Clock3 className="w-5 h-5" />}
           color="blue"
-          change={`${transactionDashStats.processingGrowth}% from last month`}
+          change={`${transactionDashStats?.processingGrowth}% from last month`}
         />
         <StatCard
           title="Failed"
-          value={Number(transactionDashStats.failed).toLocaleString()}
+          value={Number(transactionDashStats?.failed).toLocaleString()}
           icon={<X className="w-5 h-5" />}
           color="orange"
-          change={`${transactionDashStats.failedGrowth}% from last month`}
+          change={`${transactionDashStats?.failedGrowth}% from last month`}
         />
       </div>
 

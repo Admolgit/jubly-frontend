@@ -1,23 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { UnknownAction } from "@reduxjs/toolkit";
+import type { UnknownAction } from '@reduxjs/toolkit';
 import {
   createApi,
   fetchBaseQuery,
   type BaseQueryApi,
   type FetchArgs,
-} from "@reduxjs/toolkit/query/react";
+} from '@reduxjs/toolkit/query/react';
 
 // ✅ Use Vite env with fallback
-export const BASE = import.meta.env.VITE_API_URI || "http://localhost:4001/api/v1";
+export const BASE =
+  import.meta.env.VITE_API_URI || 'http://localhost:4001/api/v1';
 
 // --- Base Query ---
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as any).auth?.token;
+    const token =
+      (getState() as any).auth?.token ||
+      JSON.parse(localStorage.getItem('accessToken') as string);
 
     if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
 
     return headers;
@@ -37,7 +40,7 @@ const baseQueryWithErrorHandling = async (
 
     if (status === 401) {
       // automatically logout user if token expired
-      api.dispatch({ type: "auth/logout" });
+      api.dispatch({ type: 'auth/logout' });
     }
 
     return {
@@ -46,7 +49,7 @@ const baseQueryWithErrorHandling = async (
         data: {
           message:
             (result.error.data as any)?.message ||
-            "Something went wrong. Please try again.",
+            'Something went wrong. Please try again.',
         },
       },
     };
@@ -57,20 +60,20 @@ const baseQueryWithErrorHandling = async (
 
 // --- Create API ---
 export const api = createApi({
-  reducerPath: "api",
+  reducerPath: 'api',
   baseQuery: baseQueryWithErrorHandling,
   endpoints: () => ({}),
   tagTypes: [
-    "User",
-    "Vendor",
-    "Service",
-    "Booking",
-    "DashboardStats",
-    "Availabilities",
+    'User',
+    'Vendor',
+    'Service',
+    'Booking',
+    'DashboardStats',
+    'Availabilities',
   ],
   // Persist rehydration support
   extractRehydrationInfo(action: UnknownAction, { reducerPath }) {
-    if (action.type === "persist/REHYDRATE") {
+    if (action.type === 'persist/REHYDRATE') {
       return (action as any).payload?.[reducerPath];
     }
   },

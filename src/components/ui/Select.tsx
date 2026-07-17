@@ -22,7 +22,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       label,
       error,
       options,
-      placeholder = "Select option",
+      // placeholder = "Select option",
       className = "",
       icon,
       ...props
@@ -51,9 +51,9 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               icon ? "pl-10" : ""
             } ${className}`}
           >
-            <option value="" disabled>
+            {/* <option value="" disabled>
               {placeholder}
-            </option>
+            </option> */}
 
             {options.map((option) => (
               <option key={option.value} value={option.value}>

@@ -44,11 +44,11 @@ export default function PayoutSummary({ transactionDashStats, statsLoading }: an
               <p className="text-sm text-gray-500 mb-2">Total Payouts</p>
 
               <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3 dark:text-white">
-                {`₦${Number(transactionDashStats.totalPayouts).toLocaleString()}`}
+                {`₦${Number(transactionDashStats?.totalPayouts).toLocaleString()}`}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-green-600 font-semibold">{`${transactionDashStats.totalGrowth}%`}</span>
+                <span className="text-green-600 font-semibold">{`${transactionDashStats?.totalGrowth}%`}</span>
                 <span className="text-gray-400">vs last month</span>
               </div>
             </div>
@@ -60,11 +60,11 @@ export default function PayoutSummary({ transactionDashStats, statsLoading }: an
               <p className="text-sm text-gray-500 mb-2">Completed</p>
 
               <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3 dark:text-white">
-                {`₦${Number(transactionDashStats.completed).toLocaleString()}`}
+                {`₦${Number(transactionDashStats?.completed).toLocaleString()}`}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-green-600 font-semibold">{`${transactionDashStats.completedGrowth}%`}</span>
+                <span className="text-green-600 font-semibold">{`${transactionDashStats?.completedGrowth}%`}</span>
                 <span className="text-gray-400">vs last month</span>
               </div>
             </div>
@@ -76,11 +76,11 @@ export default function PayoutSummary({ transactionDashStats, statsLoading }: an
               <p className="text-sm text-gray-500 mb-2">Processing</p>
 
               <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3 dark:text-white">
-                {Number(transactionDashStats.processing).toLocaleString()}
+                {Number(transactionDashStats?.processing).toLocaleString()}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-orange-500 font-semibold">{`${transactionDashStats.processingGrowth}%`}</span>
+                <span className="text-orange-500 font-semibold">{`${transactionDashStats?.processingGrowth}%`}</span>
                 <span className="text-gray-400">vs last month</span>
               </div>
             </div>
@@ -92,12 +92,12 @@ export default function PayoutSummary({ transactionDashStats, statsLoading }: an
               <p className="text-sm text-gray-500 mb-2">Failed</p>
 
               <h3 className="text-2xl leading-none font-semibold text-[#111827] mb-3 dark:text-white">
-                {Number(transactionDashStats.failed).toLocaleString()}
+                {Number(transactionDashStats?.failed).toLocaleString()}
               </h3>
 
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-gray-400 font-semibold">
-                  {transactionDashStats.failedGrowth}%
+                  {transactionDashStats?.failedGrowth}%
                 </span>
                 <span className="text-gray-400">vs last month</span>
               </div>
