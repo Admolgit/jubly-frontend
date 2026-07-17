@@ -5,9 +5,6 @@ import { useSelector } from "react-redux";
 
 const ProtectedRoutes = () => {
   const user = useSelector((state: any) => state.auth.user);
-  // const vendor = useSelector(
-  //   (state: { vendor: { vendor: any } }) => state.vendor.vendor,
-  // );
 
   const location = useLocation();
 
@@ -17,8 +14,7 @@ const ProtectedRoutes = () => {
 
   const isVendorRoute = location.pathname.startsWith("/dashboard");
   const isClientRoute = location.pathname.startsWith("/client-dashboard");
-
-  // 🚨 ROLE CHECK
+  
   if (user.role === "VENDOR" && isClientRoute) {
     return <Navigate to="/dashboard" replace />;
   }

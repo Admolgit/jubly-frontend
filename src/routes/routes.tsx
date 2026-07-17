@@ -35,6 +35,7 @@ import ClientBookings from "../components/client-dashboard/ClientBookings";
 import PoliciesPage from "../pages/PrivacyPage";
 import TermsOfServicePage from "../pages/TermsOfServicesPage";
 import FAQPage from "../components/landing-page/FAQ";
+import OAuthHandler from "../pages/OauthHandlePage";
 
 export const router = createBrowserRouter([
   {
@@ -86,6 +87,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/login", element: <Login /> },
       { path: "/register", element: <RegisterPage /> },
+      { path: "/oauth", element: <OAuthHandler /> },
     ],
   },
 

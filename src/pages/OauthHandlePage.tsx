@@ -1,8 +1,8 @@
-import { useEffect } from "react";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { setCredentials } from "../features/auth/authSlice";
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { setCredentials } from '../features/auth/authSlice';
 
 export default function OAuthHandler() {
   const [searchParams] = useSearchParams();
@@ -10,12 +10,12 @@ export default function OAuthHandler() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    const refreshToken = searchParams.get("refreshToken");
-    const authRaw = searchParams.get("auth");
+    const token = searchParams.get('token');
+    const refreshToken = searchParams.get('refreshToken');
+    const authRaw = searchParams.get('auth');
 
     if (!token || !refreshToken || !authRaw) {
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
       return;
     }
 
@@ -26,45 +26,59 @@ export default function OAuthHandler() {
       authObj = null;
     }
 
-    localStorage.setItem("accessToken", JSON.stringify(token));
-    localStorage.setItem("refreshToken", JSON.stringify(refreshToken));
+    localStorage.setItem('accessToken', JSON.stringify(token));
+    localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
     if (authObj?.data) {
-      localStorage.setItem("auth", JSON.stringify(authObj.data));
+      localStorage.setItem('auth', JSON.stringify(authObj.data));
     }
 
-    if (authObj?.data?.user?.status === "NOT_SUBMITTED") {
-      navigate("/onboarding", {
+    if (authObj?.data?.user?.status === 'NOT_SUBMITTED') {
+      navigate('/onboarding', {
         replace: true,
         state: { fromOAuth: true, onboarding: true },
       });
       dispatch(
-        setCredentials({ user: authObj.data.user, token: authObj.data.token }),
+        setCredentials({
+          user: authObj.data.user || authObj.data.data.user,
+          token: authObj.data.token || authObj.data.data.token,
+          refreshToken:
+            authObj.data.refreshToken || authObj.data.data.refreshToken,
+        }),
       );
-      toast.success("Please complete your KYC to continue.");
+      toast.success('Please complete your KYC to continue.');
       return;
     }
 
     if (authObj.data.meta.alreadyExists) {
-      navigate("/dashboard", {
+      navigate('/dashboard', {
         replace: true,
         state: { fromOAuth: true, onboarding: false },
       });
       dispatch(
-        setCredentials({ user: authObj.data.user, token: authObj.data.token }),
+        setCredentials({
+          user: authObj.data.user || authObj.data.data.user,
+          token: authObj.data.token || authObj.data.data.token,
+          refreshToken: authObj.data.refreshToken || authObj.data.data.refreshToken,
+        }),
       );
     } else {
-      navigate("/onboarding", {
+      navigate('/onboarding', {
         replace: true,
         state: { fromOAuth: true, onboarding: true },
       });
       dispatch(
-        setCredentials({ user: authObj.data.user, token: authObj.data.token }),
+        setCredentials({
+          user: authObj.data.user || authObj.data.data.user,
+          token: authObj.data.token || authObj.data.data.token,
+          refreshToken:
+            authObj.data.refreshToken || authObj.data.data.refreshToken,
+        }),
       );
       toast.success(
-        "Successfully signed up via OAuth!, please complete your onboarding.",
+        'Successfully signed up via OAuth!, please complete your onboarding.',
       );
     }
   }, [navigate, searchParams, dispatch]);
 
-  return <p className="text-center text-primary">Signing you in…</p>;
+  return <p className='text-center text-primary'>Signing you in…</p>;
 }

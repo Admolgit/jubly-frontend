@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// src/components/VendorOnboardingStepper.tsx
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Check } from "lucide-react";
@@ -79,8 +78,6 @@ export const VendorOnboardingStepper = () => {
     name: "services",
   });
 
-  console.log("REDUX", { step });
-
   const watchProfileImage = watch("profileImage");
   const watchPortfolioImages = watch("portfolioImages");
   const accountNumber = watch("accountNumber");
@@ -120,7 +117,6 @@ export const VendorOnboardingStepper = () => {
     }
 
     const values = getValues();
-    console.log({ values });
 
     if (step === 0) {
       try {
@@ -336,6 +332,7 @@ export const VendorOnboardingStepper = () => {
                     <Select
                       label="Business Category"
                       options={[
+                        { label: "Select Option", value: "" },
                         { label: "Makeup Artist", value: "Makeup Artist" },
                         { label: "Photographer", value: "Photographer" },
                         {
