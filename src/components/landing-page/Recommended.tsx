@@ -230,14 +230,12 @@ export default function RecommendedSection() {
               ref={scrollRef}
               className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
             >
-              {vendors.map((vendor: any) => {
+              {vendors?.map((vendor: any) => {
                 const minPriceService = vendor?.services?.reduce(
                   (min: any, service: any) =>
-                    service.price < min.price ? service : min,
-                  vendor.services[0],
+                    service?.price < min?.price ? service : min,
+                  vendor?.services[0],
                 );
-
-                console.log(minPriceService);
                 return (
                   <motion.div
                     key={vendor.id}
@@ -250,10 +248,10 @@ export default function RecommendedSection() {
                     <div className="relative">
                       <img
                         src={
-                          vendor.profileImage ||
+                          vendor?.profileImage ||
                           "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
                         }
-                        alt={vendor.businessName}
+                        alt={vendor?.businessName}
                         className="h-64 w-full object-cover"
                       />
 
@@ -265,11 +263,11 @@ export default function RecommendedSection() {
                     {/* CONTENT */}
                     <div className="p-5">
                       <h3 className="text-2xl font-semibold text-white">
-                        {vendor.category || "Beauty Service"}
+                        {vendor?.category || "Beauty Service"}
                       </h3>
 
                       <p className="mt-1 text-gray-300">
-                        By {vendor.businessName}
+                        By {vendor?.businessName}
                       </p>
 
                       <div className="mt-3 flex items-center gap-2">
@@ -285,11 +283,11 @@ export default function RecommendedSection() {
                       </div>
 
                       <p className="mt-6 text-xl font-semibold text-white">
-                        From ₦{minPriceService.price}
+                        From ₦{minPriceService?.price?.toLocaleString()}
                       </p>
 
                       <button
-                        onClick={() => setUserId(vendor.userId)}
+                        onClick={() => setUserId(vendor?.userId)}
                         className="mt-5 w-full rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02]"
                       >
                         Book Now
