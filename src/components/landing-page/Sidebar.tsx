@@ -43,7 +43,7 @@ export function Sidebar({
   );
 
   const handleLogout = () => {
-    localStorage.removeItem("persist:root");
+    localStorage.clear();
     window.location.href = "/login";
   };
 

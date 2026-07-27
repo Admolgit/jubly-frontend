@@ -295,7 +295,7 @@ export default function VendorUserModal({
             <div className='space-y-4 p-8'>
               {activityLogs?.data?.map((activity: any, index: number) => {
                 return (
-                  <div key={index} className='rounded-2xl border p-5'>
+                  <div key={`${index-activity}`} className='rounded-2xl border p-5'>
                     <div className='flex items-start justify-between'>
                       <div className='flex gap-4'>
                         <div

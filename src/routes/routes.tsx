@@ -1,132 +1,132 @@
-﻿import { createBrowserRouter } from "react-router-dom";
-import AuthLayout from "../layouts/AuthLayout";
-import Login from "../pages/Login";
-import RootLayout from "../layouts/RootLayout";
-import RegisterPage from "../pages/Register";
-import ProtectedRoutes from "./ProtectedRoutes";
-import Onboarding from "../pages/Onboarding";
-import LandingPage from "../pages/landingPage";
-import VerifyOtpPage from "../pages/VerificationOtpPage";
-import VendorOnboardingSuccessPage from "../pages/OnboardingVerification";
-import VendorAvailability from "../pages/vendor/VendorAvailability";
-import GoogleSync from "../pages/vendor/GoogleSync";
-import BookingCalendar from "../components/vendor-dashboard/BookingCalender";
-import { Bookings } from "../components/vendor-dashboard/booking/Booking";
-import { Clients } from "../components/vendor-dashboard/clients/Clients";
-import { Wallet } from "../components/vendor-dashboard/wallet/Wallet";
-import { Settings } from "../components/vendor-dashboard/Settings";
-import DashboardLayout from "../pages/vendor-dashboard/Dashboard";
-import { Services } from "../components/vendor-dashboard/services/Service";
-import VendorBookingPage from "../pages/VendorBookingPage";
-import ServiceBookingPage from "../pages/ServiceBookingPage";
-import PaymentSuccessPage from "../pages/paymentSuccess";
-import SearchBookingPage from "../pages/SearchBookingPage";
-import DashboardHome from "../components/vendor-dashboard/dashboard/DashboardHome";
-import ClientLayout from "../layouts/ClientLayout";
-import ClientDashboardLayout from "../pages/client-dashboard/Dashboard";
-import { ClientDashboardHome } from "../components/client-dashboard/ClientDashboardHome";
-import ClientCalendar from "../components/client-dashboard/ClientCalendar";
-import { ClientVendors } from "../components/client-dashboard/ClientVendors";
-import { ClientSettings } from "../components/client-dashboard/ClientSettings";
-import { ClientProfile } from "../components/client-dashboard/ClientProfile";
-import AvailabilityPage from "../components/vendor-dashboard/availability/Availability";
-import TransactionsPage from "../components/vendor-dashboard/transactions/Transactions";
-import ClientBookings from "../components/client-dashboard/ClientBookings";
-import PoliciesPage from "../pages/PrivacyPage";
-import TermsOfServicePage from "../pages/TermsOfServicesPage";
-import FAQPage from "../components/landing-page/FAQ";
-import OAuthHandler from "../pages/OauthHandlePage";
+﻿import { createBrowserRouter } from 'react-router-dom';
+import AuthLayout from '../layouts/AuthLayout';
+import Login from '../pages/Login';
+import RootLayout from '../layouts/RootLayout';
+import RegisterPage from '../pages/Register';
+import ProtectedRoutes from './ProtectedRoutes';
+import Onboarding from '../pages/Onboarding';
+import LandingPage from '../pages/landingPage';
+import VerifyOtpPage from '../pages/VerificationOtpPage';
+import VendorOnboardingSuccessPage from '../pages/OnboardingVerification';
+import VendorAvailability from '../pages/vendor/VendorAvailability';
+import GoogleSync from '../pages/vendor/GoogleSync';
+import BookingCalendar from '../components/vendor-dashboard/BookingCalender';
+import { Bookings } from '../components/vendor-dashboard/booking/Booking';
+import { Clients } from '../components/vendor-dashboard/clients/Clients';
+import { Wallet } from '../components/vendor-dashboard/wallet/Wallet';
+import { Settings } from '../components/vendor-dashboard/Settings';
+import DashboardLayout from '../pages/vendor-dashboard/Dashboard';
+import { Services } from '../components/vendor-dashboard/services/Service';
+import VendorBookingPage from '../pages/VendorBookingPage';
+import ServiceBookingPage from '../pages/ServiceBookingPage';
+import PaymentSuccessPage from '../pages/paymentSuccess';
+import SearchBookingPage from '../pages/SearchBookingPage';
+import DashboardHome from '../components/vendor-dashboard/dashboard/DashboardHome';
+import ClientLayout from '../layouts/ClientLayout';
+import ClientDashboardLayout from '../pages/client-dashboard/Dashboard';
+import { ClientDashboardHome } from '../components/client-dashboard/ClientDashboardHome';
+import ClientCalendar from '../components/client-dashboard/ClientCalendar';
+import { ClientVendors } from '../components/client-dashboard/ClientVendors';
+import { ClientSettings } from '../components/client-dashboard/ClientSettings';
+import { ClientProfile } from '../components/client-dashboard/ClientProfile';
+import AvailabilityPage from '../components/vendor-dashboard/availability/Availability';
+import TransactionsPage from '../components/vendor-dashboard/transactions/Transactions';
+import ClientBookings from '../components/client-dashboard/ClientBookings';
+import PoliciesPage from '../pages/PrivacyPage';
+import TermsOfServicePage from '../pages/TermsOfServicesPage';
+import FAQPage from '../components/landing-page/FAQ';
+import OAuthHandler from '../pages/OauthHandlePage';
 
 export const router = createBrowserRouter([
   {
-    path: "",
+    path: '',
     element: <RootLayout />,
     // errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <LandingPage />,
       },
       {
-        path: "/policy",
+        path: '/policy',
         element: <PoliciesPage />,
       },
       {
-        path: "/terms",
+        path: '/terms',
         element: <TermsOfServicePage />,
       },
       {
-        path: "/faq",
+        path: '/faq',
         element: <FAQPage />,
       },
     ],
   },
   {
-    path: "",
+    path: '',
     element: <ClientLayout />,
     // errorElement: <ErrorPage />,
     children: [
-      { path: "/vendor-booking/:slug", element: <VendorBookingPage /> },
-      { path: "/:slug/:serviceId", element: <ServiceBookingPage /> },
-      { path: "/verify-payment", element: <PaymentSuccessPage /> },
-      { path: "/onboarding", element: <Onboarding /> },
-      { path: "/verify-email", element: <VerifyOtpPage /> },
+      { path: '/vendor-booking/:slug', element: <VendorBookingPage /> },
+      { path: '/:slug/:serviceId', element: <ServiceBookingPage /> },
+      { path: '/verify-payment', element: <PaymentSuccessPage /> },
+      { path: '/onboarding', element: <Onboarding /> },
+      { path: '/verify-email', element: <VerifyOtpPage /> },
       {
-        path: "/onboarding-verification",
+        path: '/onboarding-verification',
         element: <VendorOnboardingSuccessPage />,
       },
-      { path: "/vendor-availability", element: <VendorAvailability /> },
-      { path: "/vendor-sync", element: <GoogleSync /> },
-      { path: "/booking", element: <SearchBookingPage /> },
+      { path: '/vendor-availability', element: <VendorAvailability /> },
+      { path: '/vendor-sync', element: <GoogleSync /> },
+      { path: '/booking', element: <SearchBookingPage /> },
     ],
   },
 
   {
-    path: "",
+    path: '',
     element: <AuthLayout />,
     children: [
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <RegisterPage /> },
-      { path: "/oauth", element: <OAuthHandler /> },
+      { path: '/login', element: <Login /> },
+      { path: '/register', element: <RegisterPage /> },
+      { path: '/oauth', element: <OAuthHandler /> },
     ],
   },
 
   {
-    path: "",
+    path: '',
     element: <ProtectedRoutes />,
     children: [
       {
-        path: "dashboard",
+        path: 'dashboard',
         element: <DashboardLayout />,
         children: [
           { index: true, element: <DashboardHome /> },
-          { path: "calendar", element: <BookingCalendar /> },
-          { path: "bookings", element: <Bookings /> },
-          { path: "availability", element: <AvailabilityPage /> },
-          { path: "services", element: <Services /> },
-          { path: "clients", element: <Clients /> },
-          { path: "wallet", element: <Wallet /> },
-          { path: "settings", element: <Settings /> },
-          { path: "transactions", element: <TransactionsPage /> },
+          { path: 'calendar', element: <BookingCalendar /> },
+          { path: 'bookings', element: <Bookings /> },
+          { path: 'availability', element: <AvailabilityPage /> },
+          { path: 'services', element: <Services /> },
+          { path: 'clients', element: <Clients /> },
+          { path: 'wallet', element: <Wallet /> },
+          { path: 'settings', element: <Settings /> },
+          { path: 'transactions', element: <TransactionsPage /> },
         ],
       },
     ],
   },
 
   {
-    path: "",
+    path: '',
     element: <ProtectedRoutes />,
     children: [
       {
-        path: "client-dashboard",
+        path: 'client-dashboard',
         element: <ClientDashboardLayout />,
         children: [
           { index: true, element: <ClientDashboardHome /> },
-          { path: "bookings", element: <ClientBookings /> },
-          { path: "calendar", element: <ClientCalendar /> },
-          { path: "vendors", element: <ClientVendors /> },
-          { path: "settings", element: <ClientSettings /> },
-          { path: "settings/profile", element: <ClientProfile /> },
+          { path: 'bookings', element: <ClientBookings /> },
+          { path: 'calendar', element: <ClientCalendar /> },
+          { path: 'vendors', element: <ClientVendors /> },
+          { path: 'settings', element: <ClientSettings /> },
+          { path: 'settings/profile', element: <ClientProfile /> },
         ],
       },
     ],
