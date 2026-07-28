@@ -9,6 +9,7 @@ type FormValues = {
   name: string;
   email: string;
   phone: string;
+  address: string;
 };
 
 export function BookingFormModal({
@@ -39,6 +40,7 @@ export function BookingFormModal({
         clientName: data.name,
         clientEmail: data.email,
         phone: data.phone,
+        clientAddress: data.address,
         startTime: slot.startTime,
         endTime: slot.endTime,
       };
@@ -145,7 +147,21 @@ export function BookingFormModal({
               </p>
             )}
 
-            {/* Submit Button */}
+            <Input
+              type="text"
+              label="Service Address"
+              placeholder="Enter the address where the service is needed"
+              className="border p-3 rounded w-full mb-1"
+              {...register("address", {
+                required: "Service address is required",
+              })}
+            />
+            {errors.address && (
+              <p className="text-red-500 text-sm mb-3">
+                {errors.address.message}
+              </p>
+            )}
+
             <button
               type="button"
               onClick={handleSubmit(onSubmit)}

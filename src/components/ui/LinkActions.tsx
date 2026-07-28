@@ -44,7 +44,7 @@ export const LinkActions = ({
       </button>
 
       {open && (
-        <div className="absolute right-0 bottom-full mb-2 z-50 w-48 rounded-xl border border-gray-100 bg-white shadow-2xl">
+        <div className="absolute right-0 top-full mb-2 z-50 w-48 rounded-xl border border-gray-100 bg-white shadow-2xl">
           <button
             onClick={() => {
               setSelectedView(link);
