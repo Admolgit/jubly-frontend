@@ -47,8 +47,6 @@ export function BookingFormModal({
 
       const res = await createBookingPayment(payload).unwrap();
 
-      console.log(res);
-
       if (res.status === 201) {
         window.open(res.data.authorizationUrl, "_self");
       }

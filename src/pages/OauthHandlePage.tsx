@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
