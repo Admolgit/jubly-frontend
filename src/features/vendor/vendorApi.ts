@@ -83,6 +83,14 @@ export const vendorApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    updateBankDetails: builder.mutation({
+      query: (data: { accountNumber: string; settlementBank: string }) => ({
+        url: "/vendor/bank-details",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
     exportBookingsCSV: builder.mutation({
       query: () => ({
         url: `/vendor/export/csv`,
@@ -107,5 +115,6 @@ export const {
   useGetDashboardClientsQuery,
   useGetAllVendorsQuery,
   useSearchVendorsMutation,
+  useUpdateBankDetailsMutation,
   useExportBookingsCSVMutation,
 } = vendorApi;
