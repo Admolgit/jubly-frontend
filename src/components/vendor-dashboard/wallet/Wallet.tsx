@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSelector } from "react-redux";
-import { StatCard } from "../dashboard/StatCard";
-import { CurrencyIcon, StampIcon, Wallet2Icon } from "lucide-react";
-import PayoutSummary from "./PayoutSummary";
-import { useGetTransactionDashStatsQuery, useGetTransactionHistoryByVendorQuery } from "../../../features/transactions/transactionAPI";
-import { formatDate } from "../../utils/dateFormatter";
-import Loader from "../../ui/Loader";
-import { useGetUserSubAccountQuery } from "../../../features/users/userApi";
-import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
-import { PAYSTACK_BANKS } from "./pastackBanks";
+import { useSelector } from 'react-redux';
+import { StatCard } from '../dashboard/StatCard';
+import { CurrencyIcon, StampIcon, Wallet2Icon } from 'lucide-react';
+import PayoutSummary from './PayoutSummary';
+import {
+  useGetTransactionDashStatsQuery,
+  useGetTransactionHistoryByVendorQuery,
+} from '../../../features/transactions/transactionAPI';
+import { formatDate } from '../../utils/dateFormatter';
+import Loader from '../../ui/Loader';
+import { useGetUserSubAccountQuery } from '../../../features/users/userApi';
+import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { PAYSTACK_BANKS } from './pastackBanks';
+import { useUpdateBankDetailsMutation } from '../../../features/vendor/vendorApi';
+import Modal from '../../ui/Modal';
+import toast from 'react-hot-toast';
 
 export function Wallet() {
   const navigate = useNavigate();
@@ -18,8 +24,11 @@ export function Wallet() {
     (state: { vendor: { vendor: { id: string } } }) => state.vendor.vendor,
   );
 
-  const { data: subAccountData, isLoading: subAccountLoading } =
-    useGetUserSubAccountQuery({});
+  const {
+    data: subAccountData,
+    isLoading: subAccountLoading,
+    refetch: refetchSubAccount,
+  } = useGetUserSubAccountQuery({});
 
   const { data: transactionsList, isLoading } =
     useGetTransactionHistoryByVendorQuery(
@@ -35,7 +44,38 @@ export function Wallet() {
 
   const transactions = transactionsList?.data?.transactions || [];
   const subAccount = subAccountData?.data || [];
+  const [bankDetailsOpen, setBankDetailsOpen] = useState(false);
+  const [accountNumber, setAccountNumber] = useState('');
+  const [settlementBank, setSettlementBank] = useState('');
+  const [updateBankDetails, { isLoading: isUpdatingBank }] =
+    useUpdateBankDetailsMutation();
 
+  const openBankDetailsModal = () => {
+    setAccountNumber(subAccount?.accountNumber || '');
+    setSettlementBank(subAccount?.bankName || '');
+    setBankDetailsOpen(true);
+  };
+
+  const handleBankDetailsUpdate = async () => {
+    if (!/^\d{10}$/.test(accountNumber)) {
+      toast.error('Enter a valid 10-digit account number');
+      return;
+    }
+
+    if (!settlementBank) {
+      toast.error('Select your bank');
+      return;
+    }
+
+    try {
+      await updateBankDetails({ accountNumber, settlementBank }).unwrap();
+      await refetchSubAccount();
+      toast.success('Bank details updated successfully');
+      setBankDetailsOpen(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to update bank details');
+    }
+  };
   const bankMap = useMemo(
     () => Object.fromEntries(PAYSTACK_BANKS.map((b) => [b.code, b.name])),
     [],
@@ -46,89 +86,89 @@ export function Wallet() {
   }
 
   return (
-    <div className="py-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className='py-4'>
+      <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <div>
-          <h1 className="text-2xl font-semibold">Wallet</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className='text-2xl font-semibold'>Wallet</h1>
+          <p className='text-sm text-gray-500'>
             Track balances, payouts, and earnings.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6">
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 my-6'>
         <StatCard
-          title="Total Earned"
+          title='Total Earned'
           value={`₦${Number(transactionDashStats?.totalPayouts).toLocaleString()}`}
-          icon={<Wallet2Icon className="w-5 h-5" />}
-          color="green"
+          icon={<Wallet2Icon className='w-5 h-5' />}
+          color='green'
           change={`${transactionDashStats?.totalGrowth}% from last month`}
         />
         <StatCard
-          title="Available"
+          title='Available'
           value={`₦${Number(transactionDashStats?.completed).toLocaleString()}`}
-          icon={<CurrencyIcon className="w-5 h-5" />}
-          color="purple"
+          icon={<CurrencyIcon className='w-5 h-5' />}
+          color='purple'
           change={`${transactionDashStats?.completedGrowth}% from last month`}
         />
         <StatCard
-          title="Pending"
+          title='Pending'
           value={`₦${Number(transactionDashStats?.processing).toLocaleString()}`}
-          icon={<StampIcon className="w-5 h-5" />}
-          color="blue"
+          icon={<StampIcon className='w-5 h-5' />}
+          color='blue'
           change={`${transactionDashStats?.processingGrowth}% from last month`}
         />
       </div>
 
-      <div className="my-6 grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr]">
-        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]  dark:bg-black">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]">
+      <div className='my-6 grid grid-cols-1 gap-6 xl:grid-cols-[0.65fr_0.35fr]'>
+        <div className='rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]  dark:bg-black'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]'>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-[#6D5DFB]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-5 w-5 text-[#6D5DFB]'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
                   strokeWidth={2}
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                   />
                 </svg>
               </div>
 
-              <h3 className="text-md font-semibold text-[#111827] dark:text-white">
+              <h3 className='text-md font-semibold text-[#111827] dark:text-white'>
                 Recent Payouts
               </h3>
             </div>
 
             <button
-              className="flex items-center gap-2 rounded-xl border border-[#E7E4FF] px-4 py-2 text-xs font-medium text-[#6D5DFB] transition hover:bg-[#F8F7FF]"
-              onClick={() => navigate("/dashboard/transactions")}
+              className='flex items-center gap-2 rounded-xl border border-[#E7E4FF] px-4 py-2 text-xs font-medium text-[#6D5DFB] transition hover:bg-[#F8F7FF]'
+              onClick={() => navigate('/dashboard/transactions')}
             >
               View all
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-4 w-4'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
                 strokeWidth={2}
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M9 5l7 7-7 7'
                 />
               </svg>
             </button>
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className='mt-6 space-y-4'>
             {transactions
               ?.slice(0, 3)
               ?.map(
@@ -140,67 +180,67 @@ export function Wallet() {
                 }) => (
                   <div
                     key={payout.id}
-                    className="flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF] dark:bg-black"
+                    className='flex items-center justify-between rounded-2xl border border-[#F3F4F6] bg-white px-5 py-5 transition hover:border-[#E9E9EF] dark:bg-black'
                   >
-                    <div className="flex items-center gap-4">
+                    <div className='flex items-center gap-4'>
                       <div
                         className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-                          payout.status === "COMPLETED"
-                            ? "bg-[#ECFDF3]"
-                            : payout.status === "PENDING"
-                              ? "bg-blue-100 text-blue-500"
-                              : payout.status === "CONFIRMED"
-                                ? "bg-green-100 text-green-500"
-                                : "bg-red-100 text-red-500"
+                          payout.status === 'COMPLETED'
+                            ? 'bg-[#ECFDF3]'
+                            : payout.status === 'PENDING'
+                              ? 'bg-blue-100 text-blue-500'
+                              : payout.status === 'CONFIRMED'
+                                ? 'bg-green-100 text-green-500'
+                                : 'bg-red-100 text-red-500'
                         }`}
                       >
-                        {payout.status !== "PENDING" ? (
+                        {payout.status !== 'PENDING' ? (
                           <svg
-                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns='http://www.w3.org/2000/svg'
                             className={`h-6 w-6 ${
-                              payout.status === "COMPLETED"
-                                ? "bg-[#ECFDF3]"
-                                : payout.status === "PENDING"
-                                  ? "bg-blue-100 text-blue-500"
-                                  : payout.status === "CONFIRMED"
-                                    ? "bg-green-100 text-green-500"
-                                    : "bg-red-100 text-red-500"
+                              payout.status === 'COMPLETED'
+                                ? 'bg-[#ECFDF3]'
+                                : payout.status === 'PENDING'
+                                  ? 'bg-blue-100 text-blue-500'
+                                  : payout.status === 'CONFIRMED'
+                                    ? 'bg-green-100 text-green-500'
+                                    : 'bg-red-100 text-red-500'
                             }`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
                             strokeWidth={2}
                           >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M3 10h18M7 15h.01M11 15h2m-9 4h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M3 10h18M7 15h.01M11 15h2m-9 4h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z'
                             />
                           </svg>
                         ) : (
                           <svg
-                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns='http://www.w3.org/2000/svg'
                             className={`h-6 w-6 bg-blue-100 text-blue-500`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
                             strokeWidth={2}
                           >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                             />
                           </svg>
                         )}
                       </div>
 
                       <div>
-                        <p className="text-md font-semibold tracking-tight text-[#111827] dark:text-white">
+                        <p className='text-md font-semibold tracking-tight text-[#111827] dark:text-white'>
                           ₦{Number(payout.amount).toLocaleString()}
                         </p>
 
-                        <p className="mt-1 text-sm text-[#667085]">
+                        <p className='mt-1 text-sm text-[#667085]'>
                           {formatDate(payout.createdAt)}
                         </p>
                       </div>
@@ -208,16 +248,16 @@ export function Wallet() {
 
                     <span
                       className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-                        payout.status === "COMPLETED"
-                          ? "bg-[#ECFDF3]"
-                          : payout.status === "PENDING"
-                            ? "bg-blue-100 text-blue-500"
-                            : payout.status === "CONFIRMED"
-                              ? "bg-green-100 text-green-500"
-                              : "bg-red-100 text-red-500"
+                        payout.status === 'COMPLETED'
+                          ? 'bg-[#ECFDF3]'
+                          : payout.status === 'PENDING'
+                            ? 'bg-blue-100 text-blue-500'
+                            : payout.status === 'CONFIRMED'
+                              ? 'bg-green-100 text-green-500'
+                              : 'bg-red-100 text-red-500'
                       }`}
                     >
-                      <span className="h-2 w-2 rounded-full bg-current" />
+                      <span className='h-2 w-2 rounded-full bg-current' />
                       {payout.status}
                     </span>
                   </div>
@@ -227,86 +267,89 @@ export function Wallet() {
         </div>
 
         {/* Payout Account */}
-        <div className="rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:bg-black">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]">
+        <div className='rounded-3xl border border-[#F1F1F4] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:bg-black'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F5F3FF]'>
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-[#6D5DFB]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-5 w-5 text-[#6D5DFB]'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
                 strokeWidth={2}
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
                 />
               </svg>
             </div>
 
-            <h3 className="text-md font-semibold text-[#111827] dark:text-white">
+            <h3 className='text-md font-semibold text-[#111827] dark:text-white'>
               Payout Account
             </h3>
           </div>
 
-          <div className="mt-8 space-y-7">
+          <div className='mt-8 space-y-7'>
             <div>
-              <p className="text-xs text-[#98A2B3]">Bank</p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-[#111827] dark:text-white">
-                {bankMap[subAccount.bankName] ?? "N/A"}
+              <p className='text-xs text-[#98A2B3]'>Bank</p>
+              <p className='mt-1 text-sm font-semibold tracking-tight text-[#111827] dark:text-white'>
+                {bankMap[subAccount.bankName] ?? 'N/A'}
               </p>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className='flex items-center justify-between'>
               <div>
-                <p className="text-xs text-[#98A2B3]">Account Number</p>
-                <p className="mt-1 text-md font-semibold tracking-wide text-[#111827] dark:text-white">
-                  {subAccount?.accountNumber || "Not Available"}
+                <p className='text-xs text-[#98A2B3]'>Account Number</p>
+                <p className='mt-1 text-md font-semibold tracking-wide text-[#111827] dark:text-white'>
+                  {subAccount?.accountNumber || 'Not Available'}
                 </p>
               </div>
 
-              <button className="rounded-lg p-2 text-[#667085] transition hover:bg-gray-100">
+              <button className='rounded-lg p-2 text-[#667085] transition hover:bg-gray-100'>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-5 w-5'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
                   strokeWidth={2}
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'
                   />
                 </svg>
               </button>
             </div>
 
             <div>
-              <p className="text-sm text-[#98A2B3]">Account Name</p>
-              <p className="mt-1 text-md font-semibold tracking-tight text-[#111827] dark:text-white">
-                {subAccount?.accountName || "Not Available"}
+              <p className='text-sm text-[#98A2B3]'>Account Name</p>
+              <p className='mt-1 text-md font-semibold tracking-tight text-[#111827] dark:text-white'>
+                {subAccount?.accountName || 'Not Available'}
               </p>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-[#F2F4F7] pt-6">
-            <button className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#D9D6FE] bg-white px-5 py-3 text-xs font-semibold text-[#6D5DFB] transition hover:bg-[#F8F7FF]">
+          <div className='mt-8 border-t border-[#F2F4F7] pt-6'>
+            <button
+              onClick={openBankDetailsModal}
+              className='flex w-full items-center justify-center gap-2 rounded-2xl border border-[#D9D6FE] bg-white px-5 py-3 text-xs font-semibold text-[#6D5DFB] transition hover:bg-[#F8F7FF]'
+            >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-4 w-4'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
                 strokeWidth={2}
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M11 5h2m-1-1v2m0 12v2m-7-9H3m18 0h-2M5.636 5.636l1.414 1.414m11.314 11.314l-1.414-1.414M5.636 18.364l1.414-1.414m11.314-11.314l-1.414 1.414"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  d='M11 5h2m-1-1v2m0 12v2m-7-9H3m18 0h-2M5.636 5.636l1.414 1.414m11.314 11.314l-1.414-1.414M5.636 18.364l1.414-1.414m11.314-11.314l-1.414 1.414'
                 />
               </svg>
               Update Bank Details
@@ -315,6 +358,67 @@ export function Wallet() {
         </div>
       </div>
 
+      <Modal
+        open={bankDetailsOpen}
+        onClose={() => setBankDetailsOpen(false)}
+        title='Update Bank Details'
+      >
+        <div className='space-y-4'>
+          <div>
+            <label className='mb-1 block text-sm font-medium text-gray-700'>
+              Bank
+            </label>
+            <select
+              value={settlementBank}
+              onChange={(event) => setSettlementBank(event.target.value)}
+              className='w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-purple-500'
+            >
+              <option value=''>Select a bank</option>
+              {PAYSTACK_BANKS.map((bank) => (
+                <option key={bank.code} value={bank.code}>
+                  {bank.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className='mb-1 block text-sm font-medium text-gray-700'>
+              Account Number
+            </label>
+            <input
+              type='text'
+              inputMode='numeric'
+              maxLength={10}
+              value={accountNumber}
+              onChange={(event) =>
+                setAccountNumber(event.target.value.replace(/\D/g, ''))
+              }
+              className='w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-purple-500'
+              placeholder='0123456789'
+            />
+          </div>
+          <p className='text-xs text-gray-500'>
+            We will verify the account name before saving these details.
+          </p>
+          <div className='flex justify-end gap-3 pt-2'>
+            <button
+              type='button'
+              onClick={() => setBankDetailsOpen(false)}
+              className='rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700'
+            >
+              Cancel
+            </button>
+            <button
+              type='button'
+              onClick={handleBankDetailsUpdate}
+              disabled={isUpdatingBank}
+              className='rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60'
+            >
+              {isUpdatingBank ? 'Updating...' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      </Modal>
       <PayoutSummary
         transactionDashStats={transactionDashStats}
         statsLoading={statsLoading}

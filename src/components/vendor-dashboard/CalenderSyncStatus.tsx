@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSelector } from "react-redux";
 import { useConnectCalenderMutation } from "../../features/auth/authApi";
 import Loader from "../ui/Loader";
 import { CalendarCheck, CheckCircle2 } from "lucide-react";
@@ -11,15 +10,11 @@ export function CalendarSyncStatus({
   data: any;
   isLoading: boolean;
 }) {
-  const connected = data?.data?.linked?.linked || false;
+  const connected = data?.data?.calendar?.linked || false;
   const [connectCalender] = useConnectCalenderMutation();
 
-  const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
-
   const handleConnect = async () => {
-    const response = await connectCalender({
-      userId: user?.id,
-    }).unwrap();
+    const response = await connectCalender({}).unwrap();
 
     if (response.url) {
       window.location.href = response.url;

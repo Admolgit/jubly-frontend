@@ -4,7 +4,9 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoutes = () => {
-  const user = useSelector((state: any) => state.auth.user);
+  const user =
+    useSelector((state: any) => state.auth.user) ||
+    JSON.parse(localStorage.getItem('auth') || '').data.user;
 
   const location = useLocation();
 

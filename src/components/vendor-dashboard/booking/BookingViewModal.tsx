@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CalendarDays, Clock3, Copy, Download, Wallet } from "lucide-react";
+import { CalendarDays, Clock3, Copy, Download, MapPin, Wallet } from "lucide-react";
 
 import Modal from "../../ui/Modal";
 import { formatDate } from "../../utils/dateFormatter";
@@ -32,6 +32,9 @@ export default function ViewBookingModal({
 }: Props) {
   if (!booking) return null;
   const bookingStatus = booking?.status;
+  const mapUrl = booking?.clientAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.clientAddress)}`
+    : null;
 
   const lastStep =
     bookingStatus === "CANCELLED"
@@ -216,6 +219,22 @@ export default function ViewBookingModal({
 
               <InfoRow label="Phone" value="+234 801 234 5678" />
 
+              <InfoRow
+                label="Service Address"
+                value={booking.clientAddress || "Not provided"}
+              />
+
+              {mapUrl && (
+                <a
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-100"
+                >
+                  <MapPin className="h-4 w-4" />
+                  Open in Google Maps
+                </a>
+              )}
               <InfoRow label="Notes" value="Please arrive 15 minutes early." />
             </Card>
 

@@ -155,18 +155,23 @@ function ClientBookings() {
       return;
     }
 
+    const payload = {
+      bookingId: selectedBooking.id,
+      date: rescheduleDate,
+      startTime: rescheduleStartTime,
+      endTime: rescheduleEndTime || undefined,
+    };
+
+    console.log({ payload })
+
     try {
-      await rescheduleBooking({
-        bookingId: selectedBooking.id,
-        date: rescheduleDate,
-        startTime: rescheduleStartTime,
-        endTime: rescheduleEndTime || undefined,
-      }).unwrap();
+      await rescheduleBooking(payload).unwrap();
       toast.success("Booking rescheduled successfully");
       setRescheduleOpen(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to reschedule booking");
+      console.log({ error });
+      toast.error(error?.error || "Failed to reschedule booking");
     }
   };
 
