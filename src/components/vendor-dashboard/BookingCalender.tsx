@@ -43,7 +43,6 @@ const statusStyles: any = {
 function BookingCalendar() {
   const navigate = useNavigate();
   const vendor = useSelector((state: any) => state.vendor.vendor);
-  const user = useSelector((state: any) => state.auth.user);
   const now = new Date();
   const [view, setView] = useState('');
 
@@ -95,9 +94,7 @@ function BookingCalendar() {
   }, [vendorUpcomingData]);
 
   const handleConnect = async () => {
-    const connectedUserId =
-      user?.id ?? JSON.parse(localStorage.getItem('auth') || '').data.user.id;
-    const res = await connectCalender({ userId: connectedUserId }).unwrap();
+    const res = await connectCalender({}).unwrap();
     if (res.url) window.location.href = res.url;
   };
 
@@ -125,7 +122,7 @@ function BookingCalendar() {
         <div className='flex items-center gap-3'>
           {linkedLoading ? (
             <Loader />
-          ) : calendarLinkedData?.data?.linked?.linked ? (
+          ) : calendarLinkedData?.data?.calendar?.linked ? (
             <button className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90'>
               Calendar Synced
             </button>

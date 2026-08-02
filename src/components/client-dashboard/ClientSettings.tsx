@@ -57,7 +57,7 @@ export function ClientSettings() {
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
     useUpdateNotificationMutation({});
-  const mainData = notificationData?.data?.result;
+  const mainData = notificationData?.data;
 
   const [openChange, setOpenChange] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
@@ -70,6 +70,17 @@ export function ClientSettings() {
   const [bookingDigest, setBookingDigest] = useState(
     mainData?.bookingDigest ?? "WEEKLY",
   );
+  const [syncedMainData, setSyncedMainData] = useState(mainData);
+
+  if (mainData && mainData !== syncedMainData) {
+    setSyncedMainData(mainData);
+    setNotificationSettings({
+      "Email Notifications": mainData?.emailNotifications ?? true,
+      "SMS Notifications": mainData?.smsNotifications ?? false,
+      "Push Notifications": mainData?.pushNotifications ?? true,
+    });
+    setBookingDigest(mainData?.bookingDigest ?? "WEEKLY");
+  }
 
   const toggleNotification = (title: keyof typeof notificationSettings) => {
     setNotificationSettings((current) => ({

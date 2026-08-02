@@ -45,6 +45,8 @@ export function BookingFormModal({
         endTime: slot.endTime,
       };
 
+      console.log("Payload:", payload);
+
       const res = await createBookingPayment(payload).unwrap();
 
       if (res.status === 201) {
