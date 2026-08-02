@@ -95,8 +95,8 @@ function DashboardHome() {
       skip: !vendorData?.data?.vendor?.id,
     });
   const { data: calendarLinkedData, isLoading: calendarLinkedLoading } =
-    useGetCalendarLinkedQuery(vendorData?.data?.vendor?.userId, {
-      skip: !vendorData?.data?.vendor?.userId,
+    useGetCalendarLinkedQuery(undefined, {
+      skip: !vendorData?.data?.vendor?.id,
     });
   const { data: upcomingBookingsData, isLoading: upcomingIsLoading } =
     useGetUpcomingBookingsQuery({});

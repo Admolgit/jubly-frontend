@@ -1,18 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSelector } from 'react-redux';
 import Button from '../../components/ui/Button';
 import { useConnectCalenderMutation } from '../../features/auth/authApi';
 
 export default function GoogleSync() {
   const [connectCalender] = useConnectCalenderMutation();
 
-  const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
-
   const handleConnect = async () => {
-    const connectedUserId =
-      user?.id ?? JSON.parse(localStorage.getItem('auth') || '').data.user.id;
     const response = await connectCalender({
-      userId: connectedUserId,
       direction: 'onboarding-calendar'
     }).unwrap();
     if (response.url) {

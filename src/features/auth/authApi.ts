@@ -58,7 +58,7 @@ export const authApi = api.injectEndpoints({
     }),
     connectCalender: builder.mutation({
       query: (data) => ({
-        url: `/google/calendar?userId=${data.userId}&direction=${data.direction}`,
+        url: `/google/calendar?direction=${data.direction}`,
         method: "GET",
       }),
     }),

@@ -3,8 +3,8 @@ import { api } from "../../app/api";
 export const calendarApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCalendarLinked: builder.query({
-      query: (userId) => ({
-        url: `/google/linked?userId=${userId}`,
+      query: () => ({
+        url: `/google/linked`,
         method: "GET",
       }),
     }),

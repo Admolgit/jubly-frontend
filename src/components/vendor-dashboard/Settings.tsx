@@ -284,17 +284,28 @@ export function Settings() {
     useUpdateNotificationMutation({});
   const [changePassword, { isLoading: passwordChangeLoading }] =
     useChangePasswordMutation();
-  const mainData = notificationData?.data?.result;
+  const mainData = notificationData?.data;
   const [activeTab, setActiveTab] = useState<SettingsTab>('notifications');
   const [profileView, setProfileView] = useState(false);
   const [notificationSettings, setNotificationSettings] = useState({
-    'Email Notifications': mainData?.emailNotifications ?? true,
-    'SMS Notifications': mainData?.smsNotifications ?? false,
-    'Push Notifications': mainData?.pushNotifications ?? true,
+    'Email Notifications': mainData?.emailNotifications,
+    'SMS Notifications': mainData?.smsNotifications,
+    'Push Notifications': mainData?.pushNotifications,
   });
   const [bookingDigest, setBookingDigest] = useState(
     mainData?.bookingDigest ?? 'WEEKLY',
   );
+  const [syncedMainData, setSyncedMainData] = useState(mainData);
+
+  if (mainData && mainData !== syncedMainData) {
+    setSyncedMainData(mainData);
+    setNotificationSettings({
+      'Email Notifications': mainData?.emailNotifications,
+      'SMS Notifications': mainData?.smsNotifications,
+      'Push Notifications': mainData?.pushNotifications,
+    });
+    setBookingDigest(mainData?.bookingDigest ?? 'WEEKLY');
+  }
   const [visiblePasswordFields, setVisiblePasswordFields] = useState({
     'Current Password': false,
     'New Password': false,

@@ -30,9 +30,9 @@ function Footer({
             📍 {user?.city}, {user?.state}, {user?.country}
           </p>
 
-          <p className="text-sm mt-1">📞 {user?.phone}</p>
+          {/* <p className="text-sm mt-1">📞 {user?.phone}</p>
 
-          <p className="text-sm mt-1">✉️ {user?.email}</p>
+          <p className="text-sm mt-1">✉️ {user?.email}</p> */}
         </div>
         <div>
           <h3 className="text-lg font-semibold text-white mb-3">Quick Links</h3>

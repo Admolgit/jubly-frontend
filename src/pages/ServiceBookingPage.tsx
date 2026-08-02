@@ -58,6 +58,8 @@ export default function ServiceBookingPage() {
     );
   }
 
+  console.log({ data })
+
   return (
     <div className="min-h-screen bg-[#faf7ff] px-4 py-5 md:px-8">
       <div className="mx-auto mb-6 flex max-w-6xl items-center justify-between rounded-3xl border border-[#efe7ff] bg-white px-6 py-5 shadow-sm">
