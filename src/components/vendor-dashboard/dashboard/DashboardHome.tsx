@@ -162,6 +162,8 @@ function DashboardHome() {
             description: data.description,
             durationMins: Number(data.durationMins),
             name: data.name,
+            price: Number(data.price),
+            vendorId: vendorData?.data?.vendor?.id,
           },
         ],
       }).unwrap();
@@ -433,6 +435,7 @@ function DashboardHome() {
           setServiceOpen={setServiceOpen}
           handleCreateService={handleCreateService}
           createServiceIsLoading={createServiceIsLoading}
+          vendor={vendorData?.data?.vendor}
         />
       </Modal>
 

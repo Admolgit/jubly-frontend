@@ -68,12 +68,14 @@ function BookingCalendar() {
 
   const [connectCalender] = useConnectCalenderMutation();
 
+  console.log({ bookingCalendarData })
+
   const events = React.useMemo(() => {
     if (!bookingCalendarData?.data?.calendar) return [];
     return Object.values(bookingCalendarData.data.calendar)
       .flat()
       .map((b: any) => ({
-        title: b.customer || 'Booking',
+        title: b.title || 'Booking',
         start: new Date(b.startTime),
         end: new Date(b.endTime),
         status: b.status,

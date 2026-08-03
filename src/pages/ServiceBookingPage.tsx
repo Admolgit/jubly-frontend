@@ -269,7 +269,7 @@ export default function ServiceBookingPage() {
       {openBooking && (
         <BookingFormModal
           slot={selectedSlot}
-          dayofWeek={selectedDate}
+          dayOfWeek={selectedSlot ? new Date(selectedSlot.startTime).getDay() : null}
           vendorId={data?.data?.service?.vendorId}
           serviceId={service?.id}
           open={openBooking}

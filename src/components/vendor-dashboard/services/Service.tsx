@@ -121,6 +121,7 @@ export function Services() {
             description: data.description,
             durationMins: Number(data.durationMins),
             name: data.name,
+            vendorId: vendor?.id,
           },
         ],
       }).unwrap();
