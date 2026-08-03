@@ -33,7 +33,7 @@ function ClientCalendar() {
     return Object.values(bookingCalendarData.data.calendar)
       .flat()
       .map((booking: any) => ({
-        title: booking.customer || "Booking",
+        title: booking.name || "Booking",
         start: new Date(booking.startTime),
         end: new Date(booking.endTime),
         status: booking.status,
@@ -54,102 +54,102 @@ function ClientCalendar() {
   }
 
   return (
-    <div className="py-4">
+    <div className='py-4'>
       <div>
-        <h1 className="text-2xl font-semibold text-gray-950">
+        <h1 className='text-2xl font-semibold text-gray-950'>
           Booking Calendar
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className='mt-1 text-sm text-gray-500'>
           View all your booked sessions in one place.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_0.8fr] gap-6 pt-6">
+      <div className='grid grid-cols-1 xl:grid-cols-[1.6fr_0.8fr] gap-6 pt-6'>
         {/* CALENDAR */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className='bg-white rounded-2xl p-4 shadow-sm'>
           <Calendar
             localizer={localizer}
             events={events}
-            startAccessor="start"
-            endAccessor="end"
+            startAccessor='start'
+            endAccessor='end'
             style={{ height: 520 }}
             onView={(newView) => {
               setView(newView);
             }}
             onNavigate={(date) => {
-              console.log("Current date:", date);
+              console.log('Current date:', date);
             }}
             eventPropGetter={(event: any) => {
               return {
                 style: {
                   backgroundColor:
-                    event.status === "CONFIRMED"
-                      ? "#7c3aed"
-                      : event.status === "COMPLETED"
-                        ? "#333333"
-                        : event.status === "PENDING"
-                          ? "yellow"
-                          : "red",
-                  color: "white",
-                  borderRadius: "8px",
-                  border: "none",
+                    event.status === 'CONFIRMED'
+                      ? '#7c3aed'
+                      : event.status === 'COMPLETED'
+                        ? '#333333'
+                        : event.status === 'PENDING'
+                          ? 'yellow'
+                          : 'red',
+                  color: 'white',
+                  borderRadius: '8px',
+                  border: 'none',
                 },
               };
             }}
           />
 
           {/* FOOTER STATS */}
-          <div className="flex justify-between mt-4 text-sm text-gray-600">
-            <span className="text-green-600 font-medium">
+          <div className='flex justify-between mt-4 text-sm text-gray-600'>
+            <span className='text-green-600 font-medium'>
               {stats.confirmed} Confirmed
             </span>
-            <span className="text-grey-600 font-medium">
+            <span className='text-grey-600 font-medium'>
               {stats.completed} Completed
             </span>
-            <span className="text-amber-500 font-medium">
+            <span className='text-amber-500 font-medium'>
               {stats.pending} Pending
             </span>
-            <span className="text-red-500 font-medium">
+            <span className='text-red-500 font-medium'>
               {stats.cancelled} Cancelled
             </span>
-            <span className="font-semibold text-gray-800">
+            <span className='font-semibold text-gray-800'>
               {events.length} Total
             </span>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {/* UPCOMING */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold">Upcoming Bookings</h3>
+          <div className='bg-white rounded-2xl p-5 shadow-sm'>
+            <div className='flex justify-between items-center'>
+              <h3 className='font-semibold'>Upcoming Bookings</h3>
               <button
-                className="text-sm text-purple-600"
-                onClick={() => navigate("/client-dashboard/bookings")}
+                className='text-sm text-purple-600'
+                onClick={() => navigate('/client-dashboard/bookings')}
               >
                 View all
               </button>
             </div>
-            <div className="mt-4 space-y-3">
+            <div className='mt-4 space-y-3'>
               {upcomingList.length === 0 ? (
-                <p className="text-sm text-gray-500">No upcoming bookings.</p>
+                <p className='text-sm text-gray-500'>No upcoming bookings.</p>
               ) : (
                 upcomingList.map((booking: any) => (
                   <div
                     key={booking.id}
-                    className="rounded-xl border border-gray-100 p-3"
+                    className='rounded-xl border border-gray-100 p-3'
                   >
-                    <p className="text-sm font-semibold text-gray-900">
-                      {booking?.services?.name || "Service"}
+                    <p className='text-sm font-semibold text-gray-900'>
+                      {booking?.services?.name || 'Service'}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className='text-xs text-gray-500'>
                       {(booking?.vendor?.businessName ||
                         booking?.vendorName ||
                         "Vendor") +
                         " • " +
                         formatDate(booking.date, "DD/MM/YYYY")}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className='text-xs text-gray-500'>
                       {formatTimeFromISO(booking.startTime as string)}
                     </p>
                   </div>
@@ -158,19 +158,19 @@ function ClientCalendar() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <h3 className="font-semibold">Legend</h3>
-            <div className="mt-3 space-y-2 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
+          <div className='rounded-2xl bg-white p-5 shadow-sm'>
+            <h3 className='font-semibold'>Legend</h3>
+            <div className='mt-3 space-y-2 text-sm text-gray-600'>
+              <div className='flex items-center gap-2'>
+                <span className='h-2 w-2 rounded-full bg-green-500' />
                 Confirmed
               </div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-amber-500" />
+              <div className='flex items-center gap-2'>
+                <span className='h-2 w-2 rounded-full bg-amber-500' />
                 Pending
               </div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
+              <div className='flex items-center gap-2'>
+                <span className='h-2 w-2 rounded-full bg-red-500' />
                 Cancelled
               </div>
             </div>

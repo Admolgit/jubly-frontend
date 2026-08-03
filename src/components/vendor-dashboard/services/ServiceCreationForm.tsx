@@ -45,6 +45,7 @@ export default function ServiceForm({
       vendorId: vendor?.id,
       price: Number(data?.price),
     });
+    setServiceOpen(false);
   };
 
   return (

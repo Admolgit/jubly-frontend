@@ -11,7 +11,10 @@ import {
 import { formatDate } from "../../utils/dateFormatter";
 import Pagination from "../../utils/pagination";
 import SelectLimit from "../../utils/selectLimit";
-import { formatTimeFromISO } from "../../utils/timeFormatter";
+import {
+  addMinutesToTime,
+  formatTimeFromISO,
+} from "../../utils/timeFormatter";
 import Loader from "../../ui/Loader";
 import { useSelector } from "react-redux";
 // import { useGetTransactionAmountByVendorQuery } from "../../../features/transactions/transactionAPI";
@@ -214,6 +217,15 @@ export function Bookings() {
     setRescheduleOpen(true);
   };
 
+  const handleRescheduleStartTimeChange = (value: string) => {
+    setRescheduleStartTime(value);
+
+    const durationMins = selectedBooking?.services?.durationMins;
+    if (value && durationMins) {
+      setRescheduleEndTime(addMinutesToTime(value, durationMins));
+    }
+  };
+
   const handleCancel = async () => {
     if (!selectedBooking?.id) return;
 
@@ -245,7 +257,8 @@ export function Bookings() {
       setRescheduleOpen(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to reschedule booking");
+      console.log({ error });
+      toast.error(error?.data?.message || "Failed to reschedule booking");
     }
   };
 
@@ -575,13 +588,14 @@ export function Bookings() {
               label="Start Time"
               type="time"
               value={rescheduleStartTime}
-              onChange={(e) => setRescheduleStartTime(e.target.value)}
+              onChange={(e) => handleRescheduleStartTimeChange(e.target.value)}
               className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
             <Input
               label="End Time (optional)"
               type="time"
               value={rescheduleEndTime}
+              disabled
               onChange={(e) => setRescheduleEndTime(e.target.value)}
               className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
             />
