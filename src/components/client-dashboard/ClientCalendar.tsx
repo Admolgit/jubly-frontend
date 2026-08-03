@@ -33,7 +33,7 @@ function ClientCalendar() {
     return Object.values(bookingCalendarData.data.calendar)
       .flat()
       .map((booking: any) => ({
-        title: booking.name || "Booking",
+        title: booking.title || "Booking",
         start: new Date(booking.startTime),
         end: new Date(booking.endTime),
         status: booking.status,
