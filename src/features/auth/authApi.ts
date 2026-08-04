@@ -51,8 +51,8 @@ export const authApi = api.injectEndpoints({
       }),
     }),
     getUserById: builder.mutation({
-      query: (data) => ({
-        url: `/auth/user/${data.userId}`,
+      query: (userId) => ({
+        url: `/auth/user/${userId}`,
         method: "GET",
       }),
     }),

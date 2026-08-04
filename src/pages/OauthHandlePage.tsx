@@ -35,8 +35,6 @@ export default function OAuthHandler() {
         return;
       }
 
-      console.log({ authObj });
-
       try {
         const payload = authObj?.data?.data?.user?.id;
         const res = await getUserBySlug(payload).unwrap();
@@ -54,7 +52,6 @@ export default function OAuthHandler() {
         localStorage.setItem('auth', JSON.stringify(authObj?.data));
 
         if (
-          authObj?.data?.user?.status === 'NOT_SUBMITTED' ||
           authObj?.data?.meta?.isSignup
         ) {
           navigate('/onboarding', {
@@ -73,8 +70,8 @@ export default function OAuthHandler() {
           toast.success('Please complete your KYC to continue.');
           return;
         } else if (
-          !res?.data?.vendor?.onboardingCompleted &&
-          res?.data?.vendor?.isApproved
+          !res?.data?.user?.vendor?.onboardingCompleted &&
+          res?.data?.user?.vendor?.isApproved
         ) {
           const user = res?.data?.user;
           const token = res?.data?.token;
@@ -83,8 +80,8 @@ export default function OAuthHandler() {
           navigate('/vendor-availability');
           toast.success('Please set your availability.');
         } else if (
-          res?.data?.vendor?.onboardingCompleted &&
-          res?.data?.vendor?.isApproved &&
+          res?.data?.user?.vendor?.onboardingCompleted &&
+          res?.data?.user?.vendor?.isApproved &&
           authObj?.data?.meta?.alreadyExists
         ) {
           navigate('/dashboard', {
