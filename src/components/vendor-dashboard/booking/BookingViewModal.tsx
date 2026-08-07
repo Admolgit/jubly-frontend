@@ -12,51 +12,56 @@ import {
 import Modal from '../../ui/Modal';
 import { formatDate } from '../../utils/dateFormatter';
 import { formatTimeFromISO } from '../../utils/timeFormatter';
+import {
+  getBookingStatusBadge,
+  CANCELLED_BOOKING_STATUSES,
+} from '../../utils/bookingStatus';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   booking: any;
-  setCancelOpen: (open: boolean) => void;
-  setOpenMark: (open: boolean) => void;
-  setRescheduleOpen: (open: boolean) => void;
-};
-
-const statusStyles: Record<string, string> = {
-  CONFIRMED: 'bg-green-100 text-green-700',
-  PENDING: 'bg-amber-100 text-amber-700',
-  CANCELLED: 'bg-red-100 text-red-700',
-  COMPLETED: 'bg-gray-100 text-gray-600',
+  onCancel: (booking: any) => void;
+  onMarkComplete: (booking: any) => void;
+  onReschedule: (booking: any) => void;
+  onManageReschedule?: (booking: any) => void;
 };
 
 export default function ViewBookingModal({
   open,
   onClose,
   booking,
-  setCancelOpen,
-  setOpenMark,
-  setRescheduleOpen,
+  onCancel,
+  onMarkComplete,
+  onReschedule,
+  onManageReschedule,
 }: Props) {
   if (!booking) return null;
   const bookingStatus = booking?.status;
+  const isCancelled = CANCELLED_BOOKING_STATUSES.includes(bookingStatus);
   const mapUrl = booking?.clientAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.clientAddress)}`
     : null;
 
-  const lastStep =
-    bookingStatus === 'CANCELLED'
+  const lastStep = isCancelled
+    ? {
+        title: 'Booking Cancelled',
+        description: 'This booking was cancelled',
+        active: true,
+        cancelled: true,
+      }
+    : bookingStatus === 'COMPLETED'
       ? {
-          title: 'Booking Cancelled',
-          description: 'This booking was cancelled',
+          title: 'Completed',
+          description: 'Service completed successfully',
           active: true,
-          cancelled: true,
+          completed: true,
         }
-      : bookingStatus === 'COMPLETED'
+      : bookingStatus === 'RESCHEDULE_REQUESTED'
         ? {
-            title: 'Completed',
-            description: 'Service completed successfully',
-            active: true,
-            completed: true,
+            title: 'Reschedule Pending',
+            description: 'Waiting for the other party to respond to a reschedule proposal',
+            warning: true,
           }
         : {
             title: 'Awaiting Completion',
@@ -77,7 +82,8 @@ export default function ViewBookingModal({
       active:
         bookingStatus === 'CONFIRMED' ||
         bookingStatus === 'COMPLETED' ||
-        bookingStatus === 'CANCELLED',
+        bookingStatus === 'RESCHEDULE_REQUESTED' ||
+        isCancelled,
       // warning: false,
     },
     {
@@ -86,7 +92,8 @@ export default function ViewBookingModal({
       active:
         bookingStatus === 'CONFIRMED' ||
         bookingStatus === 'COMPLETED' ||
-        bookingStatus === 'CANCELLED',
+        bookingStatus === 'RESCHEDULE_REQUESTED' ||
+        isCancelled,
     },
     lastStep,
   ];
@@ -125,7 +132,7 @@ export default function ViewBookingModal({
 
               <div
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold ${
-                  statusStyles[booking?.status]
+                  getBookingStatusBadge(booking?.status).wrapper
                 }`}
               >
                 <span className='h-2 w-2 rounded-full bg-current' />
@@ -201,7 +208,7 @@ export default function ViewBookingModal({
 
                 <div
                   className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                    statusStyles[booking.status]
+                    getBookingStatusBadge(booking.status).wrapper
                   }`}
                 >
                   <span className='h-2 w-2 rounded-full bg-current' />
@@ -367,7 +374,7 @@ export default function ViewBookingModal({
                   active={item.active}
                   warning={item.warning}
                   isLast={index === timeline.length - 1}
-                  cancelled={bookingStatus === 'CANCELLED'}
+                  cancelled={isCancelled}
                   completed={bookingStatus === 'COMPLETED'}
                 />
               ))}
@@ -389,25 +396,45 @@ export default function ViewBookingModal({
 
             {bookingStatus === 'CONFIRMED' && (
               <>
-                <button
-                  onClick={() => setRescheduleOpen(true)}
-                  className='rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700'
-                >
-                  Reschedule
-                </button>
+                {!(booking?.rescheduleCount > 0) && (
+                  <button
+                    onClick={() => onReschedule(booking)}
+                    className='rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700'
+                  >
+                    Reschedule
+                  </button>
+                )}
 
                 <button
-                  onClick={() => setCancelOpen(true)}
+                  onClick={() => onCancel(booking)}
                   className='rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600'
                 >
                   Cancel Booking
                 </button>
 
                 <button
-                  onClick={() => setOpenMark(true)}
+                  onClick={() => onMarkComplete(booking)}
                   className='rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg'
                 >
                   Mark as Completed
+                </button>
+              </>
+            )}
+
+            {bookingStatus === 'RESCHEDULE_REQUESTED' && (
+              <>
+                <button
+                  onClick={() => onManageReschedule?.(booking)}
+                  className='rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg'
+                >
+                  Manage Reschedule Request
+                </button>
+
+                <button
+                  onClick={() => onCancel(booking)}
+                  className='rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600'
+                >
+                  Cancel Booking
                 </button>
               </>
             )}
