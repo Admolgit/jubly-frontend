@@ -10,10 +10,13 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // Only overwrites the fields that are actually present in the payload,
+    // so callers can update e.g. just the token without wiping user/refreshToken.
     setCredentials: (state, action) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.refreshToken = action.payload.refreshToken;
+      if ("user" in action.payload) state.user = action.payload.user;
+      if ("token" in action.payload) state.token = action.payload.token;
+      if ("refreshToken" in action.payload)
+        state.refreshToken = action.payload.refreshToken;
     },
     logout: () => initialState,
   },

@@ -72,10 +72,11 @@ export function ClientVendors() {
 
   const handleVendorClick = async (userId: string) => {
     try {
-      const res = await getUserById({ userId });
+      console.log("Fetching vendor slug for userId:", userId);
+      const res = await getUserById(userId).unwrap();
 
-      if (res?.data?.status === 200) {
-        const slug = res.data.data.user.slug;
+      if (res?.status === 200) {
+        const slug = res.data.user.slug;
         navigate("/vendor-booking/" + slug);
       }
     } catch (error) {

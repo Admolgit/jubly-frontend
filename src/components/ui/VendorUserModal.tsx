@@ -198,27 +198,24 @@ export default function VendorUserModal({
               payments.
             </p>
           </div>
-
-          {/* <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-3 text-red-600 hover:bg-red-50">
-            <Trash2 size={16} />
-            Deactivate Vendor
-          </button> */}
         </div>
 
         {/* Content */}
         <div>
           <div className='flex items-center justify-between border-b px-8'>
             <div className='flex gap-10'>
-              <button
-                onClick={() => setActiveTab('info')}
-                className={`border-b-2 py-5 text-sm font-medium ${
-                  activeTab === 'info'
-                    ? 'border-purple-600 text-purple-600'
-                    : 'border-transparent text-gray-500'
-                }`}
-              >
-                Edit Information
-              </button>
+              {user?.role === 'VENDOR' && (
+                <button
+                  onClick={() => setActiveTab('info')}
+                  className={`border-b-2 py-5 text-sm font-medium ${
+                    activeTab === 'info'
+                      ? 'border-purple-600 text-purple-600'
+                      : 'border-transparent text-gray-500'
+                  }`}
+                >
+                  Edit Information
+                </button>
+              )}
 
               <button
                 onClick={() => setActiveTab('activity')}
@@ -238,7 +235,7 @@ export default function VendorUserModal({
             </button> */}
           </div>
 
-          {activeTab === 'info' ? (
+          {activeTab === 'info' && user?.role === 'VENDOR' ? (
             <div className='grid grid-cols-2 gap-5 p-8'>
               <Input
                 label='Business Name'
@@ -282,20 +279,23 @@ export default function VendorUserModal({
                 onChange={handleChange}
               />
 
-              {/* <div className="col-span-2">
+              <div className='col-span-2'>
                 <Input
-                  label="Address"
-                  name="address"
+                  label='Address'
+                  name='address'
                   value={formData.address}
                   onChange={handleChange}
                 />
-              </div> */}
+              </div>
             </div>
           ) : (
             <div className='space-y-4 p-8'>
               {activityLogs?.data?.map((activity: any, index: number) => {
                 return (
-                  <div key={`${index-activity}`} className='rounded-2xl border p-5'>
+                  <div
+                    key={`${index - activity}`}
+                    className='rounded-2xl border p-5'
+                  >
                     <div className='flex items-start justify-between'>
                       <div className='flex gap-4'>
                         <div

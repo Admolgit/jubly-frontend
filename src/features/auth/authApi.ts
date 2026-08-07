@@ -9,6 +9,13 @@ export const authApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    refreshToken: builder.mutation({
+      query: (refreshToken: string) => ({
+        url: "/auth/refresh-token",
+        method: "POST",
+        body: { refreshToken },
+      }),
+    }),
     changePassword: builder.mutation({
       query: (data) => ({
         url: "/auth/change-password",
@@ -73,6 +80,7 @@ export const authApi = api.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useRefreshTokenMutation,
   useChangePasswordMutation,
   useRegisterVendorMutation,
   useVerifyOtpMutation,

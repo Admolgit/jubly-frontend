@@ -11,6 +11,7 @@ import {
 import Logo from "../logo";
 import { useSelector } from "react-redux";
 import ProfileCard from "../logoutProfile";
+import { clearStoredTokens } from "../../utils/tokenStorage";
 
 const menu = [
   { name: "Dashboard", path: "/client-dashboard", icon: LayoutDashboard },
@@ -32,6 +33,7 @@ export function ClientSidebar({
 
   const handleLogout = () => {
     localStorage.removeItem("persist:root");
+    clearStoredTokens();
     window.location.href = "/login";
   };
 
