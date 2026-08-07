@@ -7,32 +7,23 @@ import {
   useGetClientsBookingsQuery,
   useGetClientsBookingStatsQuery,
   useMarkBookingAsCompletedMutation,
-  useRescheduleBookingMutation,
 } from "../../features/booking/bookingApi";
 import { formatDate } from "../utils/dateFormatter";
-import {
-  addMinutesToTime,
-  formatTimeFromISO,
-} from "../utils/timeFormatter";
+import { formatTimeFromISO } from "../utils/timeFormatter";
 import Pagination from "../utils/pagination";
 import SelectLimit from "../utils/selectLimit";
 import Loader from "../ui/Loader";
 import Modal from "../ui/Modal";
-import Input from "../ui/Input";
 import { useSelector } from "react-redux";
 import { LinkActions } from "../ui/LinkActions";
 import BookingFilters from "../utils/BookingFilters";
 import { StatCard } from "../vendor-dashboard/dashboard/StatCard";
 import { ClipboardList } from "lucide-react";
 import ViewBookingModal from "../vendor-dashboard/booking/BookingViewModal";
+import RequestRescheduleModal from "../vendor-dashboard/booking/RequestRescheduleModal";
+import ManageRescheduleModal from "../vendor-dashboard/booking/ManageRescheduleModal";
 import Dialog from "../ui/Dialog";
-
-const statusStyles: Record<string, string> = {
-  CONFIRMED: "bg-green-100 text-green-700",
-  PENDING: "bg-amber-100 text-amber-700",
-  CANCELLED: "bg-red-100 text-red-700",
-  COMPLETED: "bg-gray-100 text-gray-600",
-};
+import { getBookingStatusBadge } from "../utils/bookingStatus";
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
@@ -45,11 +36,25 @@ const statusOptions = [
     style: "bg-green-100 text-green-700",
   },
   {
+    label: "Reschedule Requested",
+    value: "RESCHEDULE_REQUESTED",
+    style: "bg-blue-100 text-blue-700",
+  },
+  {
     label: "Completed",
     value: "COMPLETED",
     style: "bg-gray-100 text-gray-600",
   },
-  { label: "Cancelled", value: "CANCELLED", style: "bg-red-100 text-red-700" },
+  {
+    label: "Cancelled by Client",
+    value: "CANCELLED_BY_CLIENT",
+    style: "bg-red-100 text-red-700",
+  },
+  {
+    label: "Cancelled by Vendor",
+    value: "CANCELLED_BY_VENDOR",
+    style: "bg-red-100 text-red-700",
+  },
 ];
 
 function ClientBookings() {
@@ -62,11 +67,10 @@ function ClientBookings() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
   const [openMark, setOpenMark] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
-  const [rescheduleDate, setRescheduleDate] = useState("");
-  const [rescheduleStartTime, setRescheduleStartTime] = useState("");
-  const [rescheduleEndTime, setRescheduleEndTime] = useState("");
+  const [manageRescheduleOpen, setManageRescheduleOpen] = useState(false);
   const [viewVendorOpen, setViewVendorOpen] = useState(false);
   const [selectedView, setSelectedView] = useState(null);
 
@@ -83,8 +87,6 @@ function ClientBookings() {
 
   const [cancelBooking, { isLoading: cancelLoading }] =
     useCancelBookingMutation();
-  const [rescheduleBooking, { isLoading: rescheduleLoading }] =
-    useRescheduleBookingMutation();
   const [markBookingAsCompleted, { isLoading: markingLoading }] =
     useMarkBookingAsCompletedMutation();
   const { data: bookingStats, isLoading: bookingStatsIsLoading } =
@@ -109,6 +111,7 @@ function ClientBookings() {
 
   const openCancel = (booking: any) => {
     setSelectedBooking(booking);
+    setCancelReason("");
     setCancelOpen(true);
   };
 
@@ -119,69 +122,27 @@ function ClientBookings() {
 
   const openReschedule = (booking: any) => {
     setSelectedBooking(booking);
-    setRescheduleDate(booking?.date ? booking.date.split("T")[0] : "");
-
-    if (booking?.startTime) {
-      const start = new Date(booking.startTime);
-      setRescheduleStartTime(start.toISOString().slice(11, 16));
-    } else {
-      setRescheduleStartTime("");
-    }
-
-    if (booking?.endTime) {
-      const end = new Date(booking.endTime);
-      setRescheduleEndTime(end.toISOString().slice(11, 16));
-    } else {
-      setRescheduleEndTime("");
-    }
-
     setRescheduleOpen(true);
   };
 
-  const handleRescheduleStartTimeChange = (value: string) => {
-    setRescheduleStartTime(value);
-
-    const durationMins = selectedBooking?.services?.durationMins;
-    if (value && durationMins) {
-      setRescheduleEndTime(addMinutesToTime(value, durationMins));
-    }
+  const openManageReschedule = (booking: any) => {
+    setSelectedBooking(booking);
+    setManageRescheduleOpen(true);
   };
 
   const handleCancel = async () => {
     if (!selectedBooking?.id) return;
 
     try {
-      await cancelBooking(selectedBooking.id).unwrap();
+      await cancelBooking({
+        bookingId: selectedBooking.id,
+        reason: cancelReason || undefined,
+      }).unwrap();
       toast.success("Booking cancelled successfully");
       setCancelOpen(false);
       setSelectedBooking(null);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to cancel booking");
-    }
-  };
-
-  const handleReschedule = async () => {
-    if (!selectedBooking?.id) return;
-    if (!rescheduleDate || !rescheduleStartTime) {
-      toast.error("Please select a date and start time");
-      return;
-    }
-
-    const payload = {
-      bookingId: selectedBooking.id,
-      date: rescheduleDate,
-      startTime: rescheduleStartTime,
-      endTime: rescheduleEndTime || undefined,
-    };
-
-    try {
-      await rescheduleBooking(payload).unwrap();
-      toast.success("Booking rescheduled successfully");
-      setRescheduleOpen(false);
-      setSelectedBooking(null);
-    } catch (error: any) {
-      console.log({ error });
-      toast.error(error?.data?.message || "Failed to reschedule booking");
     }
   };
 
@@ -309,8 +270,7 @@ function ClientBookings() {
                         <span
                           className={
                             "rounded-full px-3 py-1 text-xs font-semibold " +
-                            (statusStyles[b.status] ||
-                              "bg-gray-100 text-gray-600")
+                            getBookingStatusBadge(b.status).wrapper
                           }
                         >
                           {b.status}
@@ -321,6 +281,7 @@ function ClientBookings() {
                         <LinkActions
                           link={b}
                           onReschedule={openReschedule}
+                          onManageReschedule={openManageReschedule}
                           setViewVendorOpen={setViewVendorOpen}
                           onCancle={openCancel}
                           onMarking={onMarking}
@@ -356,9 +317,10 @@ function ClientBookings() {
         open={viewVendorOpen}
         onClose={() => setViewVendorOpen(false)}
         booking={selectedView}
-        setCancelOpen={setCancelOpen}
-        setOpenMark={setOpenMark}
-        setRescheduleOpen={setRescheduleOpen}
+        onCancel={openCancel}
+        onMarkComplete={onMarking}
+        onReschedule={openReschedule}
+        onManageReschedule={openManageReschedule}
       />
 
       <Modal
@@ -374,6 +336,9 @@ function ClientBookings() {
                     undone."
           btnCancelText="No, keep it"
           btnKeepText="Yes, cancel"
+          showReasonInput
+          reason={cancelReason}
+          onReasonChange={setCancelReason}
         />
       </Modal>
 
@@ -393,53 +358,24 @@ function ClientBookings() {
         />
       </Modal>
 
-      <Modal
+      <RequestRescheduleModal
         open={rescheduleOpen}
-        onClose={() => setRescheduleOpen(false)}
-        title="Reschedule Booking"
-      >
-        <div className="space-y-4">
-          <Input
-            label="New Date"
-            type="date"
-            value={rescheduleDate}
-            onChange={(e) => setRescheduleDate(e.target.value)}
-            className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input
-              label="Start Time"
-              type="time"
-              value={rescheduleStartTime}
-              onChange={(e) => handleRescheduleStartTimeChange(e.target.value)}
-              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
-            />
-            <Input
-              label="End Time (optional)"
-              type="time"
-              value={rescheduleEndTime}
-              disabled
-              onChange={(e) => setRescheduleEndTime(e.target.value)}
-              className="border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]"
-            />
-          </div>
-          <div className="flex flex-wrap justify-between gap-3">
-            <button
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              onClick={() => setRescheduleOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className={`${!rescheduleDate && !rescheduleStartTime ? "bg-grey" : "bg-blue-700"} rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90`}
-              onClick={handleReschedule}
-              disabled={!rescheduleDate && !rescheduleStartTime}
-            >
-              {rescheduleLoading ? "Rescheduling..." : "Confirm Reschedule"}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => {
+          setRescheduleOpen(false);
+          setSelectedBooking(null);
+        }}
+        booking={selectedBooking}
+      />
+
+      <ManageRescheduleModal
+        open={manageRescheduleOpen}
+        onClose={() => {
+          setManageRescheduleOpen(false);
+          setSelectedBooking(null);
+        }}
+        booking={selectedBooking}
+        currentUserId={user?.id}
+      />
     </div>
   );
 }

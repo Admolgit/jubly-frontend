@@ -4,7 +4,9 @@ import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { setCredentials } from '../features/auth/authSlice';
+import { setVendorCredentials } from '../features/vendor/vendorSlice';
 import { useGetUserByIdMutation } from '../features/auth/authApi';
+import { setStoredTokens } from '../utils/tokenStorage';
 
 export default function OAuthHandler() {
   const [searchParams] = useSearchParams();
@@ -35,71 +37,46 @@ export default function OAuthHandler() {
         return;
       }
 
-      console.log({ authObj });
-
       try {
         const payload = authObj?.data?.data?.user?.id;
         const res = await getUserBySlug(payload).unwrap();
 
-        console.log({ res });
+        const user = authObj?.data?.user || authObj?.data?.data?.user;
 
-        dispatch(
-          setCredentials({
-            vendor: res.data.vendor,
-          }),
-        );
+        // Set credentials once, up front, with the full token/refreshToken/user
+        // triple — avoids the previous per-branch dispatches that each set a
+        // different partial subset (and could wipe fields set moments earlier).
+        dispatch(setCredentials({ user, token, refreshToken }));
+        dispatch(setVendorCredentials({ vendor: res.data.vendor }));
 
-        localStorage.setItem('accessToken', JSON.stringify(token));
-        localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
+        setStoredTokens(token, refreshToken);
         localStorage.setItem('auth', JSON.stringify(authObj?.data));
 
         if (
-          authObj?.data?.user?.status === 'NOT_SUBMITTED' ||
           authObj?.data?.meta?.isSignup
         ) {
           navigate('/onboarding', {
             replace: true,
             state: { fromOAuth: true, onboarding: false },
           });
-          dispatch(
-            setCredentials({
-              user: authObj?.data?.user || authObj?.data?.data?.user,
-              token: authObj?.data?.token || authObj?.data?.data?.token,
-              refreshToken:
-                authObj?.data?.refreshToken ||
-                authObj?.data?.data?.refreshToken,
-            }),
-          );
           toast.success('Please complete your KYC to continue.');
           return;
         } else if (
-          !res?.data?.vendor?.onboardingCompleted &&
-          res?.data?.vendor?.isApproved
+          !res?.data?.user?.vendor?.onboardingCompleted &&
+          res?.data?.user?.vendor?.isApproved
         ) {
-          const user = res?.data?.user;
-          const token = res?.data?.token;
           localStorage.setItem('email', user?.email);
-          dispatch(setCredentials({ user, token }));
           navigate('/vendor-availability');
           toast.success('Please set your availability.');
         } else if (
-          res?.data?.vendor?.onboardingCompleted &&
-          res?.data?.vendor?.isApproved &&
+          res?.data?.user?.vendor?.onboardingCompleted &&
+          res?.data?.user?.vendor?.isApproved &&
           authObj?.data?.meta?.alreadyExists
         ) {
           navigate('/dashboard', {
             replace: true,
             state: { fromOAuth: true, onboarding: false },
           });
-          dispatch(
-            setCredentials({
-              user: authObj?.data?.user || authObj?.data?.data?.user,
-              token: authObj?.data?.token || authObj?.data?.data?.token,
-              refreshToken:
-                authObj?.data?.refreshToken ||
-                authObj?.data?.data?.refreshToken,
-            }),
-          );
         } else {
           navigate('/login', {
             replace: true,

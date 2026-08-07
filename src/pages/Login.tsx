@@ -10,6 +10,7 @@ import LoginImage from "../assets/login-image.jpg";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../features/auth/authSlice";
+import { setStoredTokens } from "../utils/tokenStorage";
 
 type LoginFormInputs = {
   email: string;
@@ -57,6 +58,7 @@ export default function LoginPage() {
           refreshToken: res.data.refreshToken,
         }),
       );
+      setStoredTokens(res.data.token, res.data.refreshToken);
 
       if (
         res?.data.user.role === "VENDOR" &&
@@ -124,8 +126,8 @@ export default function LoginPage() {
     const role = searchParams.get("role");
 
     if (token) {
-      localStorage.setItem("accessToken", token);
-      localStorage.setItem("refreshToken", refreshToken ?? "");
+      setStoredTokens(token, refreshToken);
+      dispatch(setCredentials({ token, refreshToken }));
 
       if (role === "CLIENT") {
         navigate("/client-dashboard");
@@ -133,7 +135,7 @@ export default function LoginPage() {
         navigate("/dashboard");
       }
     }
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, dispatch]);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">

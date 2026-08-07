@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Calendar, CheckCircle, CheckSquare, Clock, Search, SlidersHorizontal, XCircle } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { BOOKING_STATUS_TAB_CONFIG } from "./bookingStatus";
 
 type Props = {
   statusFilter: string;
@@ -10,32 +11,6 @@ type Props = {
     label: string;
     value: string;
   }[];
-};
-
-const statusConfig: Record<
-  any,
-  { icon: JSX.Element; active: string }
-> = {
-  ALL: {
-    icon: <Calendar size={16} />,
-    active: "bg-blue-50 text-blue-600 border-blue-200",
-  },
-  PENDING: {
-    icon: <Clock size={16} />,
-    active: "bg-yellow-50 text-yellow-600 border-yellow-200",
-  },
-  CONFIRMED: {
-    icon: <CheckCircle size={16} />,
-    active: "bg-green-50 text-green-600 border-green-200",
-  },
-  COMPLETED: {
-    icon: <CheckSquare size={16} />,
-    active: "bg-gray-100 text-gray-700 border-gray-200",
-  },
-  CANCELLED: {
-    icon: <XCircle size={16} />,
-    active: "bg-red-50 text-red-600 border-red-200",
-  },
 };
 
 export default function BookingFilters({
@@ -51,7 +26,9 @@ export default function BookingFilters({
       <div className="flex flex-wrap gap-3">
         {statusOptions.map((option) => {
           const isActive = statusFilter === option.value;
-          const config = statusConfig[option.value as any];
+          const config =
+            BOOKING_STATUS_TAB_CONFIG[option.value] ??
+            BOOKING_STATUS_TAB_CONFIG.ALL;
 
           return (
             <button

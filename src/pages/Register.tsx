@@ -10,6 +10,7 @@ import LoginImage from "../assets/login-image.jpg";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../features/auth/authSlice";
+import { setStoredTokens } from "../utils/tokenStorage";
 
 type RegisterFormInputs = {
   email: string;
@@ -63,8 +64,10 @@ export default function RegisterPage() {
       if (res.status === 201) {
         const user = res.data.user;
         const token = res.data.token;
+        const refreshToken = res.data.refreshToken;
         localStorage.setItem("email", user.email);
-        dispatch(setCredentials({ user, token }));
+        dispatch(setCredentials({ user, token, refreshToken }));
+        setStoredTokens(token, refreshToken);
         toast.success(
           `A verification code has been sent to you email ${data.email}.`,
         );
@@ -92,11 +95,11 @@ export default function RegisterPage() {
     const refreshToken = searchParams.get("refreshToken");
 
     if (token) {
-      localStorage.setItem("accessToken", token);
-      localStorage.setItem("refreshToken", refreshToken ?? "");
+      setStoredTokens(token, refreshToken);
+      dispatch(setCredentials({ token, refreshToken }));
       navigate("/dashboard");
     }
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, dispatch]);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">

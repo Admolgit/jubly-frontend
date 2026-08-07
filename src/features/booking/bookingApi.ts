@@ -76,33 +76,71 @@ export const userApi = api.injectEndpoints({
       }),
     }),
     cancelBooking: builder.mutation({
-      query: (bookingId: string) => ({
+      query: ({ bookingId, reason }: { bookingId: string; reason?: string }) => ({
         url: `/booking/${bookingId}/cancel`,
-        method: "PATCH",
+        method: "POST",
+        body: { reason },
       }),
       invalidatesTags: ["Booking", "DashboardStats"],
+    }),
+    requestReschedule: builder.mutation({
+      query: ({
+        bookingId,
+        proposedDate,
+        reason,
+      }: {
+        bookingId: string;
+        proposedDate: string;
+        reason?: string;
+      }) => ({
+        url: `/booking/${bookingId}/reschedule`,
+        method: "POST",
+        body: { proposedDate, reason },
+      }),
+      invalidatesTags: ["Booking", "DashboardStats"],
+    }),
+    acceptReschedule: builder.mutation({
+      query: ({ bookingId, reason }: { bookingId: string; reason?: string }) => ({
+        url: `/booking/${bookingId}/reschedule/accept`,
+        method: "POST",
+        body: { reason },
+      }),
+      invalidatesTags: ["Booking", "DashboardStats"],
+    }),
+    rejectReschedule: builder.mutation({
+      query: ({ bookingId, reason }: { bookingId: string; reason?: string }) => ({
+        url: `/booking/${bookingId}/reschedule/reject`,
+        method: "POST",
+        body: { reason },
+      }),
+      invalidatesTags: ["Booking", "DashboardStats"],
+    }),
+    counterProposeReschedule: builder.mutation({
+      query: ({
+        bookingId,
+        proposedDate,
+        reason,
+      }: {
+        bookingId: string;
+        proposedDate: string;
+        reason?: string;
+      }) => ({
+        url: `/booking/${bookingId}/reschedule/counter`,
+        method: "POST",
+        body: { proposedDate, reason },
+      }),
+      invalidatesTags: ["Booking"],
+    }),
+    getRescheduleHistory: builder.query({
+      query: (bookingId: string) => ({
+        url: `/booking/${bookingId}/reschedule-history`,
+        method: "GET",
+      }),
     }),
     markBookingAsCompleted: builder.mutation({
       query: (bookingId: string) => ({
         url: `/booking/${bookingId}/mark-as-completed`,
         method: "PATCH",
-      }),
-      invalidatesTags: ["Booking", "DashboardStats"],
-    }),
-    rescheduleBooking: builder.mutation({
-      query: (data: {
-        bookingId: string;
-        date: string;
-        startTime: string;
-        endTime?: string;
-      }) => ({
-        url: `/booking/reschedule/${data.bookingId}`,
-        method: "PATCH",
-        body: {
-          date: data.date,
-          startTime: data.startTime,
-          endTime: data.endTime,
-        },
       }),
       invalidatesTags: ["Booking", "DashboardStats"],
     }),
@@ -142,7 +180,11 @@ export const {
   useGetVendorUpcomingBookingsQuery,
   useCancelBookingMutation,
   useMarkBookingAsCompletedMutation,
-  useRescheduleBookingMutation,
+  useRequestRescheduleMutation,
+  useAcceptRescheduleMutation,
+  useRejectRescheduleMutation,
+  useCounterProposeRescheduleMutation,
+  useGetRescheduleHistoryQuery,
   useGetClientUpcomingBookingsQuery,
   useGetClientBookingStatQuery,
   useLazyGetClientBookingStatQuery,

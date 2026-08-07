@@ -3,10 +3,18 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+const getStoredAuthUser = () => {
+  try {
+    const raw = localStorage.getItem('auth');
+    return raw ? JSON.parse(raw)?.data?.user ?? null : null;
+  } catch {
+    return null;
+  }
+};
+
 const ProtectedRoutes = () => {
   const user =
-    useSelector((state: any) => state.auth.user) ||
-    JSON.parse(localStorage.getItem('auth') || '').data.user;
+    useSelector((state: any) => state.auth.user) || getStoredAuthUser();
 
   const location = useLocation();
 
