@@ -3,10 +3,23 @@ import { api } from "../../app/api";
 export const transactionsAPI = api.injectEndpoints({
   endpoints: (builder) => ({
     getTransactionHistoryByVendor: builder.query({
-      query: (data) => ({
-        url: `/transactions/${data.vendorId}/?page=${data.page}&limit=${data.limit}&search=${data.search || ""}`,
-        method: "GET",
-      }),
+      query: (data) => {
+        const params = new URLSearchParams({
+          page: String(data.page),
+          limit: String(data.limit),
+          search: data.search || "",
+        });
+
+        if (data.status) params.set("status", data.status);
+        if (data.paymentMethod) params.set("paymentMethod", data.paymentMethod);
+        if (data.startDate) params.set("startDate", data.startDate);
+        if (data.endDate) params.set("endDate", data.endDate);
+
+        return {
+          url: `/transactions/${data.vendorId}/?${params.toString()}`,
+          method: "GET",
+        };
+      },
     }),
     getTransactionAmountByVendor: builder.query({
       query: (vendorId) => ({

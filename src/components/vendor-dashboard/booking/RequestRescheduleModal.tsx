@@ -7,9 +7,9 @@ import Textarea from '../../ui/Textarea';
 import { useRequestRescheduleMutation } from '../../../features/booking/bookingApi';
 
 type Props = {
-  open: boolean;
-  onClose: () => void;
-  booking: any;
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly booking: any;
 };
 
 export default function RequestRescheduleModal({

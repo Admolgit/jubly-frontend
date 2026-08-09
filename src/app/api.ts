@@ -14,11 +14,9 @@ import {
   clearStoredTokens,
 } from '../utils/tokenStorage';
 
-// ✅ Use Vite env with fallback
 export const BASE =
   import.meta.env.VITE_API_URI || 'http://localhost:4001/api/v1';
 
-// --- Base Query ---
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE,
   prepareHeaders: (headers, { getState }) => {
@@ -32,13 +30,11 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Requests that must never trigger a reauth attempt (avoids refresh loops).
 const isAuthBypassUrl = (url: string) =>
   url.includes('/auth/login') || url.includes('/auth/refresh-token');
 
-// Shared across all in-flight requests so a burst of 401s (several queries
-// firing around the same time) only triggers a single refresh call, and
-// every caller waits on that same result instead of racing the backend.
+const refreshBaseQuery = fetchBaseQuery({ baseUrl: BASE });
+
 let refreshPromise: Promise<string | null> | null = null;
 
 const refreshAccessToken = (
@@ -52,7 +48,7 @@ const refreshAccessToken = (
 
       if (!refreshToken) return null;
 
-      const refreshResult = await baseQuery(
+      const refreshResult = await refreshBaseQuery(
         {
           url: '/auth/refresh-token',
           method: 'POST',

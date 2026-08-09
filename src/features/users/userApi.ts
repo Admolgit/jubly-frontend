@@ -58,8 +58,8 @@ export const userApi = api.injectEndpoints({
       }),
     }),
     getActivityLogs: builder.query({
-      query: () => ({
-        url: `activity-logs`,
+      query: (data: { page?: number; limit?: number } = {}) => ({
+        url: `activity-logs?page=${data.page || 1}&limit=${data.limit || 10}`,
         method: 'GET',
       })
     })
