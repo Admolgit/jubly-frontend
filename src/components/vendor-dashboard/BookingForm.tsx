@@ -45,8 +45,6 @@ export function BookingFormModal({
         endTime: slot.endTime,
       };
 
-      console.log("Payload:", payload);
-
       const res = await createBookingPayment(payload).unwrap();
 
       if (res.status === 201) {
@@ -83,6 +81,7 @@ export function BookingFormModal({
             </h3>
 
             <button
+              type="button"
               onClick={onClose}
               className="text-gray-500 hover:text-black"
             >
@@ -100,8 +99,6 @@ export function BookingFormModal({
 
           {/* Form */}
           <form>
-            {/* <form onSubmit={handleSubmit(onSubmit)}> */}
-            {/* Name */}
             <Input
               type="text"
               label="Name"

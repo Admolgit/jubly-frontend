@@ -15,12 +15,16 @@ import { formatDate } from '../utils/dateFormatter';
 import { useGetActivityLogsQuery } from '../../features/users/userApi';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import SelectLimit from '../utils/selectLimit';
+import Pagination from '../utils/pagination';
+
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 interface VendorUserModalProps {
-  vendor: any;
-  onSave?: (data: any) => void;
-  user?: any;
-  handleSelectImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  readonly vendor: any;
+  readonly onSave?: (data: any) => void;
+  readonly user?: any;
+  readonly handleSelectImage?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function VendorUserModal({
@@ -30,8 +34,22 @@ export default function VendorUserModal({
   handleSelectImage,
 }: VendorUserModalProps) {
   const location = useLocation();
-  const { data: activityLogs } = useGetActivityLogsQuery({});
   const [activeTab, setActiveTab] = useState<'info' | 'activity'>('info');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
+
+  const { data: activityLogs } = useGetActivityLogsQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  const activityLogsList = activityLogs?.data || [];
+  const totalPages = Math.ceil((activityLogs?.meta?.total || 0) / itemsPerPage);
+
+  const handleItemsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
 
   const [formData, setFormData] = useState({
     businessName: vendor?.businessName || '',
@@ -54,8 +72,8 @@ export default function VendorUserModal({
     switch (color) {
       case 'green':
         return 'bg-green-100 text-green-600';
-      case 'purple':
-        return 'bg-purple-100 text-purple-600';
+      case 'orange':
+        return 'bg-orange-100 text-orange-600';
       case 'blue':
         return 'bg-blue-100 text-blue-600';
       case 'indigo':
@@ -64,6 +82,8 @@ export default function VendorUserModal({
         return 'bg-pink-100 text-pink-600';
       case 'red':
         return 'bg-red-100 text-red-600';
+      case 'yellow':
+        return 'bg-yellow-100 text-yellow-600';
       default:
         return 'bg-gray-100 text-gray-600';
     }
@@ -89,11 +109,11 @@ export default function VendorUserModal({
         <div className='border-r bg-gray-50 p-6'>
           <div className='flex flex-col items-center'>
             <div className='relative'>
-              {vendor?.profileImage ? (
+              {user?.role === 'VENDOR' && vendor?.profileImage ? (
                 <img
                   src={vendor.profileImage}
                   alt='profile image'
-                  className='flex h-24 w-24 items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-600'
+                  className='h-24 w-24 rounded-full object-cover'
                 />
               ) : (
                 <div className='flex h-24 w-24 items-center justify-center rounded-full bg-purple-100 text-3xl font-bold text-purple-600'>
@@ -104,23 +124,25 @@ export default function VendorUserModal({
                 </div>
               )}
 
-              <>
-                <input
-                  ref={fileInputRef}
-                  type='file'
-                  accept='image/*'
-                  className='hidden'
-                  onChange={handleSelectImage}
-                />
+              {user?.role === 'VENDOR' && (
+                <>
+                  <input
+                    ref={fileInputRef}
+                    type='file'
+                    accept='image/*'
+                    className='hidden'
+                    onChange={handleSelectImage}
+                  />
 
-                <button
-                  type='button'
-                  onClick={() => fileInputRef.current?.click()}
-                  className='absolute bottom-0 right-0 rounded-full border bg-white p-2 shadow hover:bg-gray-50'
-                >
-                  <Camera size={14} />
-                </button>
-              </>
+                  <button
+                    type='button'
+                    onClick={() => fileInputRef.current?.click()}
+                    className='absolute bottom-0 right-0 rounded-full border bg-white p-2 shadow hover:bg-gray-50'
+                  >
+                    <Camera size={14} />
+                  </button>
+                </>
+              )}
             </div>
 
             <h3 className='mt-4 text-lg font-semibold'>
@@ -228,11 +250,6 @@ export default function VendorUserModal({
                 Activity Log
               </button>
             </div>
-
-            {/* <button className="flex items-center gap-2 rounded-xl border border-purple-200 px-4 py-2 text-sm font-medium text-purple-600">
-              <ExternalLink size={16} />
-              View Vendor
-            </button> */}
           </div>
 
           {activeTab === 'info' && user?.role === 'VENDOR' ? (
@@ -244,12 +261,12 @@ export default function VendorUserModal({
                 onChange={handleChange}
               />
 
-              <Input
+              {/* <Input
                 label='Email'
                 name='email'
                 value={formData.email}
                 onChange={handleChange}
-              />
+              /> */}
 
               <Input
                 label='Phone Number'
@@ -279,55 +296,74 @@ export default function VendorUserModal({
                 onChange={handleChange}
               />
 
-              <div className='col-span-2'>
+              {/* <div className='col-span-2'> */}
                 <Input
                   label='Address'
                   name='address'
                   value={formData.address}
                   onChange={handleChange}
                 />
-              </div>
+              {/* </div> */}
             </div>
           ) : (
-            <div className='space-y-4 p-8'>
-              {activityLogs?.data?.map((activity: any, index: number) => {
-                return (
-                  <div
-                    key={`${index - activity}`}
-                    className='rounded-2xl border p-5'
-                  >
-                    <div className='flex items-start justify-between'>
-                      <div className='flex gap-4'>
-                        <div
-                          className={`flex h-12 w-12 items-center justify-center rounded-xl ${getColor(
-                            activity.color,
-                          )}`}
-                        >
-                          <User size={18} />
+            <div className='p-8'>
+              <div className='space-y-4'>
+                {activityLogsList.map((activity: any, index: number) => {
+                  return (
+                    <div
+                      key={`${index - activity}`}
+                      className='rounded-2xl border p-5'
+                    >
+                      <div className='flex items-start justify-between'>
+                        <div className='flex gap-4'>
+                          <div
+                            className={`flex h-12 w-12 items-center justify-center rounded-xl ${getColor(
+                              activity.color,
+                            )}`}
+                          >
+                            <User size={18} />
+                          </div>
+
+                          <div>
+                            <h4 className='font-semibold'>{activity.action}</h4>
+
+                            <p className='text-sm text-gray-500'>
+                              {activity.description}
+                            </p>
+                          </div>
                         </div>
 
-                        <div>
-                          <h4 className='font-semibold'>{activity.action}</h4>
+                        <div className='text-right'>
+                          <p className='text-sm font-medium'>
+                            {formatDate(activity.createdAt)}
+                          </p>
 
-                          <p className='text-sm text-gray-500'>
-                            {activity.description}
+                          <p className='mt-1 text-xs text-gray-500'>
+                            {activity.actor}
                           </p>
                         </div>
                       </div>
-
-                      <div className='text-right'>
-                        <p className='text-sm font-medium'>
-                          {formatDate(activity.createdAt)}
-                        </p>
-
-                        <p className='mt-1 text-xs text-gray-500'>
-                          {activity.actor}
-                        </p>
-                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              {activityLogsList.length > 0 && (
+                <div className='mt-4 flex items-center justify-between'>
+                  <SelectLimit
+                    ITEMS_OPTIONS={[5, 10, 20, 50]}
+                    itemsPerPage={itemsPerPage}
+                    handleItemsChange={handleItemsChange}
+                    text='Activities'
+                  />
+
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
             </div>
           )}
 

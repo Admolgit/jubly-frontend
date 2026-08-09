@@ -58,13 +58,12 @@ export default function ServiceBookingPage() {
     );
   }
 
-  console.log({ data })
-
   return (
     <div className="min-h-screen bg-[#faf7ff] px-4 py-5 md:px-8">
       <div className="mx-auto mb-6 flex max-w-6xl items-center justify-between rounded-3xl border border-[#efe7ff] bg-white px-6 py-5 shadow-sm">
         <div className="flex items-center gap-4">
           <button
+            type="button"
             className="flex h-8 w-10 items-center justify-center rounded-2xl border border-[#ece3ff] text-[#7c3aed] transition hover:bg-[#f7f2ff]"
             onClick={() =>
               navigate(`/booking-vendor/${location.split("/")[1]}`, {
@@ -241,6 +240,7 @@ export default function ServiceBookingPage() {
 
                   return (
                     <button
+                      type="button"
                       key={slot.startTime}
                       onClick={() => setSelectedSlot(slot)}
                       className={`h-[60px] w-[95px] rounded-2xl border text-lg font-medium transition ${
@@ -257,6 +257,7 @@ export default function ServiceBookingPage() {
             </div>
 
             <button
+              type="button"
               disabled={!selectedSlot}
               className="mt-10 flex h-10 w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7c3aed] to-[#9333ea] font-semibold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               onClick={handleBooking}

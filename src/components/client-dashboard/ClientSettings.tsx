@@ -17,7 +17,6 @@ import { useSelector } from "react-redux";
 import {
   useGetNotificationQuery,
   useUpdateNotificationMutation,
-  useUpdateProfileImageMutation,
 } from "../../features/users/userApi";
 import toast from "react-hot-toast";
 import {
@@ -52,7 +51,6 @@ export function ClientSettings() {
     (state: { vendor: { vendor: any } }) => state.vendor?.vendor,
   );
 
-  const [updateProfileImage] = useUpdateProfileImageMutation();
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
@@ -113,19 +111,6 @@ export function ClientSettings() {
     },
   ];
 
-  const handleSelectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    console.log(e.target.files);
-    const payload = {
-      profileImage: file,
-    };
-
-    const res = await updateProfileImage(payload).unwrap();
-    if (res.status === 200) {
-      toast.success("Profile image updated successfully");
-    }
-  };
-
    const handleNotification = async () => {
       try {
         // if (activeTab === "notifications") {
@@ -149,7 +134,7 @@ export function ClientSettings() {
   const handleSaveVendor = (updatedVendor: any) => {
     // Handle the updated vendor information here (e.g., send to API, update state)
     console.log("Updated Vendor Info:", updatedVendor);
-    setOpenProfile(false); // Close the modal after saving
+    setOpenProfile(false);
   };
 
   return (
@@ -199,7 +184,6 @@ export function ClientSettings() {
           onSave={handleSaveVendor}
           vendor={vendor}
           user={user}
-          handleSelectImage={handleSelectImage}
         />
       </Modal>
       <Modal

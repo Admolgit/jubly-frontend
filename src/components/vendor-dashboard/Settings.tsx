@@ -26,8 +26,8 @@ import Button from '../ui/Button';
 import {
   useGetNotificationQuery,
   useUpdateNotificationMutation,
-  useUpdateProfileImageMutation,
 } from '../../features/users/userApi';
+import { useUpdateVendorProfileImageMutation } from '../../features/vendor/vendorApi';
 import Loader from '../ui/Loader';
 import toast from 'react-hot-toast';
 import Modal from '../ui/Modal';
@@ -35,8 +35,9 @@ import PoliciesPage from '../../pages/PrivacyPage';
 import TermsOfServicePage from '../../pages/TermsOfServicesPage';
 import { useTheme } from '../../theme/ThemeContext';
 import { useChangePasswordMutation } from '../../features/auth/authApi';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import VendorUserModal from '../ui/VendorUserModal';
+import { setVendorCredentials } from '../../features/vendor/vendorSlice';
 
 type SettingsTab =
   | 'notifications'
@@ -277,7 +278,8 @@ export function Settings() {
   const vendor = useSelector(
     (state: { vendor: { vendor: any } }) => state.vendor?.vendor,
   );
-  const [updateProfileImage] = useUpdateProfileImageMutation();
+  const dispatch = useDispatch();
+  const [updateVendorProfileImage] = useUpdateVendorProfileImageMutation();
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
@@ -351,7 +353,6 @@ export function Settings() {
 
     try {
       const res = await changePassword(payload).unwrap();
-      console.log({ res, passwordFields });
       if (res.status === 200) {
         toast.success(res.message);
       }
@@ -362,22 +363,18 @@ export function Settings() {
 
   const handleSelectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(e.target.files);
+    if (!file) return;
 
-    // const formData = new FormData();
+    const formData = new FormData();
+    formData.append('profileImage', file);
 
-    // formData.append("profileImage", file as Blob);
-
-    // console.log(formData);
-    const payload = {
-      profileImage: file,
-    };
-
-    console.log({ payload });
-
-    const res = await updateProfileImage(payload).unwrap();
-    if (res.status === 200) {
+    try {
+      const res = await updateVendorProfileImage(formData).unwrap();
+      dispatch(setVendorCredentials({ vendor: { ...vendor, ...res.vendor } }));
       toast.success('Profile image updated successfully');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to update profile image');
     }
   };
 
@@ -402,9 +399,8 @@ export function Settings() {
   };
 
   const handleSaveVendor = (updatedVendor: any) => {
-    // Handle the updated vendor information here (e.g., send to API, update state)
     console.log('Updated Vendor Info:', updatedVendor);
-    setProfileView(false); // Close the modal after saving
+    setProfileView(false);
   };
 
   return (
@@ -422,6 +418,7 @@ export function Settings() {
           </div>
           <div>
             <button
+              type='button'
               onClick={handleNotification}
               className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 h-10 text-sm font-semibold text-white shadow-sm transition hover:opacity-90'
             >

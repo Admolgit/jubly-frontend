@@ -68,8 +68,6 @@ function BookingCalendar() {
 
   const [connectCalender] = useConnectCalenderMutation();
 
-  console.log({ bookingCalendarData })
-
   const events = React.useMemo(() => {
     if (!bookingCalendarData?.data?.calendar) return [];
     return Object.values(bookingCalendarData.data.calendar)

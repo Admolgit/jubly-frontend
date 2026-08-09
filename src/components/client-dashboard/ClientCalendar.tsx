@@ -40,8 +40,6 @@ function ClientCalendar() {
       }));
   }, [bookingCalendarData]);
 
-  console.log({ bookingCalendarData, events });
-
   const stats = {
     confirmed: events.filter((e) => e.status === "CONFIRMED").length,
     completed: events.filter((e) => e.status === "COMPLETED").length,
@@ -124,6 +122,7 @@ function ClientCalendar() {
             <div className='flex justify-between items-center'>
               <h3 className='font-semibold'>Upcoming Bookings</h3>
               <button
+                type='button'
                 className='text-sm text-purple-600'
                 onClick={() => navigate('/client-dashboard/bookings')}
               >
