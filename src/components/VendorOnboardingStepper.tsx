@@ -145,9 +145,6 @@ export const VendorOnboardingStepper = () => {
       skip: !shouldResolveBank,
     },
   );
-
-  // Account number hasn't finished debouncing yet — the cached result still
-  // belongs to a previous (or partial) account number, so don't show it.
   const isAccountNumberPending = normalizedAccountNumber !== debouncedAccountNumber;
 
   const stepFields: Record<number, (keyof OnboardingForm)[]> = {
@@ -174,7 +171,6 @@ export const VendorOnboardingStepper = () => {
           state: values.state,
           country: values.country,
           bio: values.bio,
-          vendorId: vendorProfileId,
         }).unwrap();
 
         if (res.status === 201) {
@@ -219,6 +215,7 @@ export const VendorOnboardingStepper = () => {
           state: data.state,
           country: data.country,
           bio: data.bio,
+          vendorId: vendorProfileId,
         }),
       );
 
@@ -506,10 +503,13 @@ export const VendorOnboardingStepper = () => {
                 />
               </div>
               <div className='w-full'>
+                <label htmlFor='settlementBank' className='text-sm font-medium'>
+                  Bank Name
+                </label>
                 <div>
                   <select
                     {...register('settlementBank')}
-                    className='w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary'
+                    className='border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full mb-3'
                   >
                     <option value=''>Select bank</option>
 
