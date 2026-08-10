@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             className={`border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
             placeholder={placeholder}
-            defaultValue={defaultValue && defaultValue}
+            defaultValue={defaultValue}
           />
         </div>
         {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
