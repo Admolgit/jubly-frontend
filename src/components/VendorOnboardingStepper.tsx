@@ -41,6 +41,47 @@ interface OnboardingForm {
   accountNumber: string;
 }
 
+const categoryOptions = [
+  { label: 'Select Option', value: '' },
+  { label: 'Makeup Artist', value: 'Makeup Artist' },
+  { label: 'Photographer', value: 'Photographer' },
+  { label: 'Hair Beautician', value: 'Hair Beautician' },
+  { label: 'Nails Beautician', value: 'Nails Beautician' },
+  { label: 'Barbing', value: 'Barbing' },
+
+  { label: 'Tailor / Fashion Designer', value: 'Tailor / Fashion Designer' },
+  { label: 'Event Planner', value: 'Event Planner' },
+  { label: 'Caterer', value: 'Caterer' },
+  { label: 'Baker', value: 'Baker' },
+  { label: 'Videographer', value: 'Videographer' },
+  { label: 'DJ', value: 'DJ' },
+  { label: 'MC / Event Host', value: 'MC / Event Host' },
+  { label: 'Decorator', value: 'Decorator' },
+  { label: 'Personal Trainer', value: 'Personal Trainer' },
+  { label: 'Fitness Coach', value: 'Fitness Coach' },
+  { label: 'Massage Therapist', value: 'Massage Therapist' },
+  { label: 'Spa Therapist', value: 'Spa Therapist' },
+  { label: 'Tattoo Artist', value: 'Tattoo Artist' },
+  { label: 'Interior Designer', value: 'Interior Designer' },
+  { label: 'Cleaning Service', value: 'Cleaning Service' },
+  { label: 'Car Wash / Detailing', value: 'Car Wash / Detailing' },
+  {
+    label: 'Phone / Computer Technician',
+    value: 'Phone / Computer Technician',
+  },
+  { label: 'Plumber', value: 'Plumber' },
+  { label: 'Electrician', value: 'Electrician' },
+  { label: 'Painter', value: 'Painter' },
+  { label: 'Tutor / Teacher', value: 'Tutor / Teacher' },
+  { label: 'Music Teacher', value: 'Music Teacher' },
+  { label: 'Driving Instructor', value: 'Driving Instructor' },
+  { label: 'Consultant', value: 'Consultant' },
+  { label: 'Graphic Designer', value: 'Graphic Designer' },
+  { label: 'Web Developer', value: 'Web Developer' },
+  { label: 'Social Media Manager', value: 'Social Media Manager' },
+  { label: 'Other', value: 'Other' },
+];
+
 export const VendorOnboardingStepper = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,6 +95,7 @@ export const VendorOnboardingStepper = () => {
   const [createVendorProfile] = useCreateVendorProfieMutation();
 
   const [step, setStep] = useState(0);
+  const [vendorProfileId, setVendorProfileId] = useState<string | null>(null);
   const {
     register,
     control,
@@ -83,24 +125,30 @@ export const VendorOnboardingStepper = () => {
   const settlementBank = watch('settlementBank');
   const documentFrontUrl = watch('documentFrontUrl');
 
-  const [debouncedAccountNumber] = useDebounce(accountNumber, 700);
+  const normalizedAccountNumber = (accountNumber ?? '').replace(/\D/g, '');
+  const [debouncedAccountNumber] = useDebounce(normalizedAccountNumber, 700);
 
   const shouldResolveBank =
-    debouncedAccountNumber?.length === 10 && Boolean(settlementBank);
+    debouncedAccountNumber.length === 10 && Boolean(settlementBank);
 
   const {
     data: bankResolve,
-    isLoading: isBankResolve,
+    isFetching: isBankResolving,
     isError: isBankResolveError,
+    error: bankResolveError,
   } = useResolveBankQuery(
     {
-      accountNumber,
+      accountNumber: debouncedAccountNumber,
       bankCode: settlementBank,
     },
     {
       skip: !shouldResolveBank,
     },
   );
+
+  // Account number hasn't finished debouncing yet — the cached result still
+  // belongs to a previous (or partial) account number, so don't show it.
+  const isAccountNumberPending = normalizedAccountNumber !== debouncedAccountNumber;
 
   const stepFields: Record<number, (keyof OnboardingForm)[]> = {
     0: ['businessName', 'category', 'city', 'state', 'country'],
@@ -126,12 +174,15 @@ export const VendorOnboardingStepper = () => {
           state: values.state,
           country: values.country,
           bio: values.bio,
+          vendorId: vendorProfileId,
         }).unwrap();
 
         if (res.status === 201) {
           toast.success('Vendor details created.');
+          console.log('Vendor profile created:', res.data);
+          setVendorProfileId(res.data.vendor.id);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Vendor profile creation failed:', error);
         return;
       }
@@ -230,9 +281,14 @@ export const VendorOnboardingStepper = () => {
 
   useEffect(() => {
     if (isBankResolveError) {
-      toast.error('Paystack resolve failed');
+      const message =
+        (bankResolveError as any)?.data?.message ||
+        'Unable to resolve account. Please check the account number and bank.';
+
+      // Fixed id: RTK Query refetches update this toast in place instead of stacking new ones.
+      toast.error(message, { id: 'bank-resolve-error' });
     }
-  }, [isBankResolveError]);
+  }, [isBankResolveError, bankResolveError]);
 
   return (
     <div className='max-w-4xl mx-auto p-6'>
@@ -310,23 +366,7 @@ export const VendorOnboardingStepper = () => {
                   render={({ field }) => (
                     <Select
                       label='Business Category'
-                      options={[
-                        { label: 'Select Option', value: '' },
-                        { label: 'Makeup Artist', value: 'Makeup Artist' },
-                        { label: 'Photographer', value: 'Photographer' },
-                        {
-                          label: 'Hair Beautician',
-                          value: 'Hair Beautician',
-                        },
-                        {
-                          label: 'Nails Beautician',
-                          value: 'Nails Beautician',
-                        },
-                        {
-                          label: 'Barbing',
-                          value: 'Barbing',
-                        },
-                      ]}
+                      options={categoryOptions}
                       value={field.value}
                       onChange={(val) => field.onChange(val)}
                     />
@@ -461,6 +501,8 @@ export const VendorOnboardingStepper = () => {
                   {...register('accountNumber', { required: true })}
                   placeholder='Account Number'
                   className='w-full'
+                  inputMode='numeric'
+                  maxLength={10}
                 />
               </div>
               <div className='w-full'>
@@ -492,9 +534,12 @@ export const VendorOnboardingStepper = () => {
                   label='Account Name'
                   className='w-full'
                   value={
-                    isBankResolve
+                    shouldResolveBank &&
+                    (isAccountNumberPending || isBankResolving)
                       ? 'Resolving account...'
-                      : bankResolve?.account_name || ''
+                      : shouldResolveBank
+                        ? bankResolve?.data?.account_name || ''
+                        : ''
                   }
                   readOnly
                 />
