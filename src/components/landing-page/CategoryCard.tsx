@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 
 interface Props {
-  icon: React.ReactNode;
-  title: string;
+  readonly icon: React.ReactNode;
+  readonly title: string;
 }
 
 export default function CategoryCard({ icon, title }: Props) {

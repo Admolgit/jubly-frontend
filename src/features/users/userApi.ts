@@ -6,8 +6,15 @@ export const userApi = api.injectEndpoints({
       query: () => "/users/me",
     }),
     getVendorClients: builder.query({
-      query: (clientVendorId: string) => ({
-        url: `/users/${clientVendorId}`,
+      query: (
+        data: {
+          vendorId: string;
+          page?: number;
+          limit?: number;
+          search?: string;
+        },
+      ) => ({
+        url: `/users/${data.vendorId}?page=${data.page || 1}&limit=${data.limit || 10}&search=${data.search ?? ''}`,
         method: "GET",
       }),
     }),

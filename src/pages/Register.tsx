@@ -60,7 +60,7 @@ export default function RegisterPage() {
       }
       const res = await registerVendor(data).unwrap();
 
-      if (res.status === 201) {
+      if (res.status === 201 || res?.status === 200) {
         const user = res.data.user;
         const token = res.data.token;
         const refreshToken = res.data.refreshToken;

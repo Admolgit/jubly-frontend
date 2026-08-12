@@ -27,9 +27,9 @@ function getInitialTheme(): Theme {
     return storedTheme;
   }
 
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  // Jubly defaults to light mode regardless of OS/browser preference.
+  // Theme only changes when a user explicitly picks one via setTheme/toggleTheme.
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

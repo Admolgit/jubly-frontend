@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import {
   useGetClientsVendorStatsQuery,
   useLazyGetClientBookingStatQuery,
-} from "../../../features/booking/bookingApi";
-import { useLazyGetVendorClientsQuery } from "../../../features/users/userApi";
-import Loader from "../../ui/Loader";
-import { useEffect, useState } from "react";
-import { formatDate } from "../../utils/dateFormatter";
-import { StatCard } from "../dashboard/StatCard";
+} from '../../../features/booking/bookingApi';
+import { useLazyGetVendorClientsQuery } from '../../../features/users/userApi';
+import Loader from '../../ui/Loader';
+import { useEffect, useState } from 'react';
+import { formatDate } from '../../utils/dateFormatter';
+import { StatCard } from '../dashboard/StatCard';
 import {
   Calendar,
   CalendarDays,
@@ -22,11 +22,11 @@ import {
   ShieldHalfIcon,
   ReplaceAll,
   UserPlus2Icon,
-} from "lucide-react";
-import SelectLimit from "../../utils/selectLimit";
-import Pagination from "../../utils/pagination";
-import Modal from "../../ui/Modal";
-import ClientProfileModal from "./ClientProfileModal";
+} from 'lucide-react';
+import SelectLimit from '../../utils/selectLimit';
+import Pagination from '../../utils/pagination';
+import Modal from '../../ui/Modal';
+import ClientProfileModal from './ClientProfileModal';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
@@ -38,6 +38,8 @@ export function Clients() {
   const [currentPage, setCurrentPage] = useState(1);
   const [openProfile, setOpenProfile] = useState(false);
   const [selectedClient, setSelectedClient] = useState<any | null>(null);
+  const [searchFilter, setSearchFilter] = useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   const { data: clientsStatsData, isLoading: clientsStatsLoading } =
     useGetClientsVendorStatsQuery({});
@@ -45,10 +47,12 @@ export function Clients() {
   const [getClients, { data: clientsData, isLoading }] =
     useLazyGetVendorClientsQuery();
 
-  const [getClientBookingStats, { data: clientStatsData, isLoading: clientStatsLoading }] =
-    useLazyGetClientBookingStatQuery();
+  const [
+    getClientBookingStats,
+    { data: clientStatsData, isLoading: clientStatsLoading },
+  ] = useLazyGetClientBookingStatQuery();
 
-  // const [statusFilter, setStatusFilter] = useState("ALL");
+  // const [statusFilter, setStatusFilter] = useState('ALL');
 
   const handleItemsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(Number(e.target.value));
@@ -56,19 +60,31 @@ export function Clients() {
   };
 
   useEffect(() => {
-    getClientBookingStats(
-      {
-        vendorId: vendor?.id,
-        clientEmail: selectedClient?.email,
-      }
-    );
+    getClientBookingStats({
+      vendorId: vendor?.id,
+      clientEmail: selectedClient?.email,
+    });
   }, [selectedClient?.email]);
 
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchValue(searchFilter.trim());
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchFilter]);
+
+  useEffect(() => {
     if (vendor?.id) {
-      getClients(vendor.id);
+      getClients({
+        vendorId: vendor.id,
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchValue || undefined,
+      });
     }
-  }, [vendor?.id]);
+  }, [vendor?.id, currentPage, itemsPerPage, searchValue]);
 
   const clients = clientsData?.data?.clients || [];
   const totalPages = Math.ceil(clientsData?.meta?.total / itemsPerPage);
@@ -91,11 +107,17 @@ export function Clients() {
         </div>
 
         <div className='flex items-center gap-3'>
-          <button className='inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50'>
+          <button
+            type='button'
+            className='inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50'
+          >
             Export
           </button>
 
-          <button className='rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90'>
+          <button
+            type='button'
+            className='rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90'
+          >
             + Add Client
           </button>
         </div>
@@ -138,16 +160,24 @@ export function Clients() {
             <input
               type='text'
               placeholder='Search clients...'
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
               className='h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none transition focus:border-blue-400'
             />
           </div>
           <div className='flex flex-wrap items-center gap-3'>
-            <button className='flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-medium text-slate-700 transition hover:bg-slate-50'>
+            <button
+              type='button'
+              className='flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-medium text-slate-700 transition hover:bg-slate-50'
+            >
               <span>All Clients</span>
               <ChevronDown size={18} />
             </button>
 
-            <button className='flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-medium text-slate-700 transition hover:bg-slate-50'>
+            <button
+              type='button'
+              className='flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-medium text-slate-700 transition hover:bg-slate-50'
+            >
               <CalendarDays size={18} />
               <span>Last 30 days</span>
               <ChevronDown size={18} />
@@ -177,7 +207,7 @@ export function Clients() {
               <tbody className='text-md text-gray-700 relative'>
                 {clients?.map((client: any, index: number) => (
                   <tr
-                    key={index}
+                    key={`${index}-${client?.id}`}
                     className='border-b border-slate-200 transition hover:bg-slate-50/50'
                   >
                     <td className='px-2 py-2 '>
@@ -232,6 +262,7 @@ export function Clients() {
                     </td>
                     <td className='px-2 py-2'>
                       <button
+                        type='button'
                         className='flex h-10 items-center gap-4 rounded-2xl border border-slate-200 bg-white px-6 font-semibold text-blue-600 transition hover:bg-blue-50'
                         onClick={() => {
                           setSelectedClient(client);
