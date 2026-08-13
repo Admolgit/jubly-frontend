@@ -59,6 +59,10 @@ export const router = createBrowserRouter([
         path: '/faq',
         element: <FAQPage />,
       },
+      {
+        path: '/search/vendors',
+        element: <ClientVendors />,
+      },
     ],
   },
   {
