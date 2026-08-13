@@ -13,7 +13,7 @@ interface Vendor {
   city: string;
   category: string;
   portfolioImages: string[];
-  description: string;
+  bio: string;
   userId: string;
 }
 
@@ -160,13 +160,13 @@ export function ClientVendors() {
                   {vendor.businessName}
                 </h2>
                 <p className='text-gray-600 mt-1'>
-                  <span className='font-medium'>Location:</span> {vendor.city}
+                  <span className='font-bold'>Location:</span> {vendor.city}
                 </p>
                 <p className='text-gray-600 mt-1'>
-                  <span className='font-medium'>Type:</span> {vendor.category}
+                  <span className='font-bold'>Type:</span> {vendor.category}
                 </p>
                 <p className='text-gray-700 mt-2'>
-                  {vendor.description || 'No description provided.'}
+                  {vendor.bio || 'No description provided.'}
                 </p>
                 <button
                   className='mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition'

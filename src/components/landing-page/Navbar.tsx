@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', id: 'hero' },
-  { label: 'About', id: 'about' },
+  { label: 'Find Vendors', id: 'vendors' },
   { label: 'Services', id: 'services' },
   { label: 'Faqs', id: 'how-it-works' },
 ];
@@ -58,6 +58,8 @@ const Navbar = () => {
                   navigate('/faq');
                 } else if (item.label === 'Home') {
                   navigate('/');
+                } else if (item.label === 'Find Vendors') {
+                  navigate('/search/vendors');
                 } else {
                   scrollTo(item.id);
                 }
