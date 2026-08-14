@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PaginationProps {
   total: number;
@@ -19,13 +19,14 @@ const Pagination: React.FC<PaginationProps> = ({
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="flex space-x-2 mt-4 justify-center">
+    <div className='flex space-x-2 mt-4 justify-center'>
       {pages.map((p) => (
         <button
+          type='button'
           key={p}
           onClick={() => onPageChange(p)}
           className={`px-3 py-1 rounded ${
-            p === page ? "bg-blue-600 text-white" : "border hover:bg-gray-100"
+            p === page ? 'bg-blue-600 text-white' : 'border hover:bg-gray-100'
           }`}
         >
           {p}
