@@ -6,6 +6,7 @@ import {
   CheckSquare,
   Clock,
   Clock3,
+  Hourglass,
   RefreshCcw,
   X,
   XCircle,
@@ -16,6 +17,7 @@ export const NON_ACTIONABLE_BOOKING_STATUSES = [
   "CANCELLED",
   "CANCELLED_BY_CLIENT",
   "CANCELLED_BY_VENDOR",
+  "COMPLETION_PENDING_APPROVAL",
 ];
 
 export const CANCELLED_BOOKING_STATUSES = [
@@ -49,6 +51,11 @@ export const BOOKING_STATUS_BADGE: Record<
     icon: "text-blue-500",
     Icon: RefreshCcw,
   },
+  COMPLETION_PENDING_APPROVAL: {
+    wrapper: "bg-amber-100 text-amber-700",
+    icon: "text-amber-600",
+    Icon: Hourglass,
+  },
   COMPLETED: {
     wrapper: "bg-gray-100 text-gray-700",
     icon: "text-gray-500",
@@ -74,6 +81,7 @@ export const BOOKING_STATUS_LABEL: Record<string, string> = {
   PENDING: "Pending",
   CONFIRMED: "Confirmed",
   RESCHEDULE_REQUESTED: "Reschedule Requested",
+  COMPLETION_PENDING_APPROVAL: "Awaiting Client Approval",
   COMPLETED: "Completed",
   CANCELLED: "Cancelled",
   CANCELLED_BY_CLIENT: "Cancelled by Client",

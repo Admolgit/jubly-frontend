@@ -178,15 +178,19 @@ export function Bookings() {
     if (!selectedBooking?.id) return;
 
     try {
-      await markBookingAsCompleted(selectedBooking.id).unwrap();
-      toast.success('Booking mark as completed successfully');
+      const result = await markBookingAsCompleted(selectedBooking.id).unwrap();
+      if (result?.data?.status === 'COMPLETION_PENDING_APPROVAL') {
+        toast.success('Completion request sent — waiting on client approval');
+      } else {
+        toast.success('Booking completed');
+      }
       setOpenMark(false);
       setSelectedBooking(null);
     } catch (error: any) {
       if (error?.status === 403) {
         toast.error(error?.data?.message);
       } else {
-        toast.error(error?.message || 'Failed to cancel booking');
+        toast.error(error?.message || 'Failed to mark booking as completed');
       }
     }
   };
@@ -436,7 +440,9 @@ export function Bookings() {
                               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${badge.wrapper}`}
                             >
                               <StatusIcon size={14} className={badge.icon} />
-                              {b.status}
+                              {b.status === 'COMPLETION_PENDING_APPROVAL'
+                                ? 'Awaiting client approval'
+                                : b.status}
                             </div>
                           );
                         })()}

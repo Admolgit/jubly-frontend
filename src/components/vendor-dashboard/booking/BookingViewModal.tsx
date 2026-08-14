@@ -8,10 +8,11 @@ import {
   MapPin,
   Wallet,
 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 import Modal from '../../ui/Modal';
 import { formatDate } from '../../utils/dateFormatter';
-import { formatTimeFromISO } from '../../utils/timeFormatter';
+import { formatTimeFromISO, timeAgo } from '../../utils/timeFormatter';
 import {
   getBookingStatusBadge,
   CANCELLED_BOOKING_STATUSES,
@@ -36,9 +37,14 @@ export default function ViewBookingModal({
   onReschedule,
   onManageReschedule,
 }: Props) {
+  const user = useSelector((state: any) => state.auth.user);
+  const isClientViewer = user?.role === 'CLIENT';
+
   if (!booking) return null;
   const bookingStatus = booking?.status;
   const isCancelled = CANCELLED_BOOKING_STATUSES.includes(bookingStatus);
+  const isPendingCompletionApproval =
+    bookingStatus === 'COMPLETION_PENDING_APPROVAL';
   const mapUrl = booking?.clientAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.clientAddress)}`
     : null;
@@ -63,7 +69,15 @@ export default function ViewBookingModal({
             description: 'Waiting for the other party to respond to a reschedule proposal',
             warning: true,
           }
-        : {
+        : isPendingCompletionApproval
+          ? {
+              title: 'Awaiting Client Approval',
+              description: isClientViewer
+                ? 'The vendor marked this complete — please review and respond'
+                : 'Waiting for the client to approve or reject this completion',
+              warning: true,
+            }
+          : {
             title: 'Awaiting Completion',
             description: 'Mark as completed after service',
             warning: true,
@@ -137,12 +151,24 @@ export default function ViewBookingModal({
               >
                 <span className='h-2 w-2 rounded-full bg-current' />
 
-                {booking?.status}
+                {isPendingCompletionApproval
+                  ? 'Awaiting Client Approval'
+                  : booking?.status}
               </div>
 
               <p className='mt-3 text-xs text-gray-500'>
-                Your appointment is {booking?.status?.toLowerCase()}
+                {isPendingCompletionApproval
+                  ? isClientViewer
+                    ? 'Vendor marked this complete — action needed'
+                    : 'Waiting on client approval'
+                  : `Your appointment is ${booking?.status?.toLowerCase()}`}
               </p>
+
+              {isPendingCompletionApproval && booking?.completionRequestedAt && (
+                <p className='mt-1 text-xs text-gray-400'>
+                  Requested {timeAgo(booking.completionRequestedAt)}
+                </p>
+              )}
             </div>
           </div>
 
@@ -213,11 +239,15 @@ export default function ViewBookingModal({
                 >
                   <span className='h-2 w-2 rounded-full bg-current' />
 
-                  {booking.status}
+                  {isPendingCompletionApproval
+                    ? 'Awaiting Client Approval'
+                    : booking.status}
                 </div>
 
                 <p className='mt-3 text-xs text-gray-400'>
-                  Appointment {booking?.status?.toLowerCase()}
+                  {isPendingCompletionApproval
+                    ? 'Awaiting client approval'
+                    : `Appointment ${booking?.status?.toLowerCase()}`}
                 </p>
               </div>
             </div>

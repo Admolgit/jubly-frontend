@@ -38,6 +38,7 @@ import FAQPage from '../components/landing-page/FAQ';
 import OAuthHandler from '../pages/OauthHandlePage';
 import { FindVendors } from '../components/landing-page/FindVendor';
 import RouteError from '../components/RouteError';
+import CompletionReviewPage from '../pages/CompletionReviewPage';
 
 export const router = createBrowserRouter([
   {
@@ -66,6 +67,11 @@ export const router = createBrowserRouter([
   {
     path: '/search/vendors',
     element: <FindVendors />,
+    errorElement: <RouteError />,
+  },
+  {
+    path: '/bookings/completion-review',
+    element: <CompletionReviewPage />,
     errorElement: <RouteError />,
   },
   {
