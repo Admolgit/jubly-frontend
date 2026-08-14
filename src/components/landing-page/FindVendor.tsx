@@ -1,0 +1,209 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useEffect, useState } from 'react';
+import debounce from 'lodash.debounce';
+import { useGetSearchedVendorMutation } from '../../features/vendor/vendorApi';
+import { useGetBusinessCategoriesQuery } from '../../features/booking/bookingApi';
+import { useGetUserByIdMutation } from '../../features/auth/authApi';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../ui/Loader';
+
+interface Vendor {
+  id: string;
+  businessName: string;
+  city: string;
+  category: string;
+  portfolioImages: string[];
+  bio: string;
+  userId: string;
+}
+
+const limits = [6, 12, 24];
+
+export function FindVendors() {
+  const navigate = useNavigate();
+  const [getSearchedVendor, { isLoading }] = useGetSearchedVendorMutation();
+  const { data: businessCategories } = useGetBusinessCategoriesQuery({});
+  const [getUserById] = useGetUserByIdMutation();
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [searchName, setSearchName] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
+  const [totalVendors, setTotalVendors] = useState(0);
+  const [searchType, setSearchType] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+
+  const businessTypes = businessCategories?.data
+
+  const fetchVendors = async () => {
+    try {
+      const res = await getSearchedVendor({
+        name: searchName,
+        location: searchLocation,
+        type: searchType,
+        page,
+        limit,
+      });
+
+      if (res.data?.status === 200) {
+        setVendors(res.data.data.data);
+        setTotalVendors(res.data.data.total);
+      }
+    } catch (err) {
+      console.error('Error fetching vendors', err);
+    }
+  };
+
+  const debouncedFetch = useCallback(debounce(fetchVendors, 500), [
+    searchName,
+    searchLocation,
+    searchType,
+    page,
+    limit,
+  ]);
+
+  const isSearched =
+    searchName.trim() !== '' ||
+    searchLocation.trim() !== '' ||
+    searchType.trim() !== '';
+
+  const handleVendorClick = async (userId: string) => {
+    try {
+      const res = await getUserById(userId).unwrap();
+
+      if (res?.status === 200) {
+        const slug = res.data.user.slug;
+        navigate('/vendor-booking/' + slug);
+      }
+    } catch (error) {
+      console.error('Failed to fetch vendor slug', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isSearched) {
+      setVendors([]);
+      return;
+    }
+
+    debouncedFetch();
+  }, [searchName, searchLocation, searchType, page, limit]);
+
+  return (
+    <div className='py-6 sm:py-8 w-full max-w-5xl mx-auto px-4 sm:px-6'>
+      <div>
+        <h1 className='text-xl sm:text-2xl font-semibold text-gray-950'>
+          Find Vendors
+        </h1>
+        <p className='mt-1 text-sm text-gray-500'>
+          Search for verified vendors and view their details.
+        </p>
+      </div>
+
+      <div className='rounded-2xl bg-white p-4 sm:p-5 shadow-sm mt-6'>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+          <input
+            type='text'
+            placeholder='Business Name'
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            className='w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+          />
+          <input
+            type='text'
+            placeholder='Location'
+            value={searchLocation}
+            onChange={(e) => setSearchLocation(e.target.value)}
+            className='w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+          />
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+            className='w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+          >
+            <option value=''>All Types</option>
+            {businessTypes?.map((type: string) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <select
+            value={limit}
+            onChange={(e) => {
+              setLimit(Number(e.target.value));
+              setPage(1);
+            }}
+            className='w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+          >
+            {limits.map((l) => (
+              <option key={l} value={l}>
+                Show {l}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className='rounded-2xl bg-white p-4 sm:p-5 shadow-sm mt-6'>
+        {isLoading ? (
+          <Loader />
+        ) : !isSearched ? (
+          <p>Please enter your search on the search bar.</p>
+        ) : vendors.length === 0 ? (
+          <p className='text-gray-500'>No vendors found.</p>
+        ) : (
+          <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3'>
+            {vendors.map((vendor) => (
+              <div
+                key={vendor.id}
+                className='border rounded-lg shadow hover:shadow-lg transition p-4 bg-white'
+              >
+                <h2 className='text-lg sm:text-xl font-semibold text-gray-800 break-words'>
+                  {vendor.businessName}
+                </h2>
+                <p className='text-gray-600 mt-1'>
+                  <span className='font-bold'>Location:</span> {vendor.city}
+                </p>
+                <p className='text-gray-600 mt-1'>
+                  <span className='font-bold'>Type:</span> {vendor.category}
+                </p>
+                <p className='text-gray-700 mt-2 break-words'>
+                  {vendor.bio || 'No description provided.'}
+                </p>
+                <button
+                  type='button'
+                  className='mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition'
+                  onClick={() => handleVendorClick(vendor.userId)}
+                >
+                  View Profile
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {totalVendors > limit && (
+          <div className='mt-6 flex flex-wrap items-center justify-between gap-3'>
+            <button
+              type='button'
+              className='rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
+            <span className='text-sm text-gray-600'>Page {page}</span>
+            <button
+              type='button'
+              className='rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={page * limit >= totalVendors}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

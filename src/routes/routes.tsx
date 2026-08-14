@@ -36,12 +36,15 @@ import PoliciesPage from '../pages/PrivacyPage';
 import TermsOfServicePage from '../pages/TermsOfServicesPage';
 import FAQPage from '../components/landing-page/FAQ';
 import OAuthHandler from '../pages/OauthHandlePage';
+import { FindVendors } from '../components/landing-page/FindVendor';
+import RouteError from '../components/RouteError';
+import CompletionReviewPage from '../pages/CompletionReviewPage';
 
 export const router = createBrowserRouter([
   {
     path: '',
     element: <RootLayout />,
-    // errorElement: <ErrorPage />,
+    errorElement: <RouteError />,
     children: [
       {
         path: '/',
@@ -59,16 +62,22 @@ export const router = createBrowserRouter([
         path: '/faq',
         element: <FAQPage />,
       },
-      {
-        path: '/search/vendors',
-        element: <ClientVendors />,
-      },
     ],
+  },
+  {
+    path: '/search/vendors',
+    element: <FindVendors />,
+    errorElement: <RouteError />,
+  },
+  {
+    path: '/bookings/completion-review',
+    element: <CompletionReviewPage />,
+    errorElement: <RouteError />,
   },
   {
     path: '',
     element: <ClientLayout />,
-    // errorElement: <ErrorPage />,
+    errorElement: <RouteError />,
     children: [
       { path: '/vendor-booking/:slug', element: <VendorBookingPage /> },
       { path: '/:slug/:serviceId', element: <ServiceBookingPage /> },
@@ -88,6 +97,7 @@ export const router = createBrowserRouter([
   {
     path: '',
     element: <AuthLayout />,
+    errorElement: <RouteError />,
     children: [
       { path: '/login', element: <Login /> },
       { path: '/register', element: <RegisterPage /> },
@@ -98,6 +108,7 @@ export const router = createBrowserRouter([
   {
     path: '',
     element: <ProtectedRoutes />,
+    errorElement: <RouteError />,
     children: [
       {
         path: 'dashboard',
@@ -120,6 +131,7 @@ export const router = createBrowserRouter([
   {
     path: '',
     element: <ProtectedRoutes />,
+    errorElement: <RouteError />,
     children: [
       {
         path: 'client-dashboard',

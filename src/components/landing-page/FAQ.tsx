@@ -17,11 +17,9 @@ import {
 export default function FAQPage() {
   const [open, setOpen] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-
-  // Store refs for each FAQ category
+  
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  // Store refs for each individual FAQ question
+  
   const faqRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const faqs = [

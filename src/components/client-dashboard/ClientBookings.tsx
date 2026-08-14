@@ -273,7 +273,9 @@ function ClientBookings() {
                             getBookingStatusBadge(b.status).wrapper
                           }
                         >
-                          {b.status}
+                          {b.status === "COMPLETION_PENDING_APPROVAL"
+                            ? "Vendor marked this complete — action needed"
+                            : b.status}
                         </span>
                       </td>
 

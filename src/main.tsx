@@ -7,6 +7,7 @@ import App from "./App";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import { ThemeProvider } from "./theme/ThemeContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
@@ -16,7 +17,9 @@ ReactDOM.createRoot(rootElement).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
           <Toaster
             position="top-right"
             toastOptions={{
