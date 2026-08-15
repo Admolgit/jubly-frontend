@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../logo';
 import { Menu, X } from 'lucide-react';
+import Seo from '../SEO';
 
 const navItems = [
   { label: 'Home', id: 'hero' },
@@ -22,9 +23,28 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
+  const handleNavClick = (item: (typeof navItems)[number]) => {
+    setIsOpen(false);
+
+    if (item.label === 'Faqs') {
+      navigate('/faq');
+    } else if (item.label === 'Home') {
+      navigate('/');
+    } else if (item.label === 'Find Vendors') {
+      navigate('/search/vendors');
+    } else {
+      scrollTo(item.id);
+    }
+  };
+
   return (
-    <nav
-      className='
+    <>
+      <Seo
+        title='Jubly – Discover & Book Trusted Service Providers in Nigeria'
+        description='Find trusted vendors for beauty, events, cakes, photography and more. Discover services, compare vendors, check availability and book securely with Jubly.'
+      />
+      <nav
+        className='
       fixed
       left-0
       right-0
@@ -35,36 +55,26 @@ const Navbar = () => {
       border-b
       border-white/10
     '
-    >
-      <div className='max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between'>
-        {/* Logo */}
+      >
+        <div className='max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between'>
+          {/* Logo */}
 
-        <div
-          className='flex items-center gap-3 cursor-pointer'
-          onClick={() => navigate('/')}
-        >
-          <Logo />
-        </div>
+          <div
+            className='flex items-center gap-3 cursor-pointer'
+            onClick={() => navigate('/')}
+          >
+            <Logo />
+          </div>
 
-        {/* Desktop Menu */}
+          {/* Desktop Menu */}
 
-        <div className='hidden lg:flex items-center gap-10'>
-          {navItems.map((item) => (
-            <button
-              type='button'
-              key={item.id}
-              onClick={() => {
-                if (item.label === 'Faqs') {
-                  navigate('/faq');
-                } else if (item.label === 'Home') {
-                  navigate('/');
-                } else if (item.label === 'Find Vendors') {
-                  navigate('/search/vendors');
-                } else {
-                  scrollTo(item.id);
-                }
-              }}
-              className='
+          <div className='hidden lg:flex items-center gap-10'>
+            {navItems.map((item) => (
+              <button
+                type='button'
+                key={item.id}
+                onClick={() => handleNavClick(item)}
+                className='
                 text-white/90
                 hover:text-white
                 transition
@@ -78,19 +88,19 @@ const Navbar = () => {
                 hover:after:w-full
                 after:transition-all
               '
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Desktop Buttons */}
+          {/* Desktop Buttons */}
 
-        <div className='hidden lg:flex gap-3'>
-          <button
-            type='button'
-            onClick={() => navigate('/login')}
-            className='
+          <div className='hidden lg:flex gap-3'>
+            <button
+              type='button'
+              onClick={() => navigate('/login')}
+              className='
               px-5
               py-2.5
               rounded-xl
@@ -100,14 +110,14 @@ const Navbar = () => {
               hover:bg-white/5
               transition
             '
-          >
-            Login
-          </button>
+            >
+              Login
+            </button>
 
-          <button
-            type='button'
-            onClick={() => navigate('/register')}
-            className='
+            <button
+              type='button'
+              onClick={() => navigate('/register')}
+              className='
               px-5
               py-2.5
               rounded-xl
@@ -120,64 +130,59 @@ const Navbar = () => {
               hover:scale-[1.02]
               transition-all
             '
+            >
+              Signup
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+
+          <button
+            type='button'
+            onClick={() => setIsOpen(!isOpen)}
+            className='lg:hidden text-white'
           >
-            Signup
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile Menu */}
 
-        <button
-          type='button'
-          onClick={() => setIsOpen(!isOpen)}
-          className='lg:hidden text-white'
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-
-      {isOpen && (
-        <div
-          className='
+        {isOpen && (
+          <div
+            className='
           lg:hidden
           border-t
           border-white/10
           bg-[#0d021f]/95
           backdrop-blur-xl
         '
-        >
-          <div className='px-6 py-6 flex flex-col gap-5'>
-            {navItems.map((item) => (
-              <button
-                type='button'
-                key={item.id}
-                onClick={() => {
-                  if (item.label === 'Faqs') {
-                    navigate('/faq');
-                  } else if (item.label === 'Home') {
-                    navigate('/');
-                  } else {
-                    scrollTo(item.id);
-                  }
-                }}
-                className='
+          >
+            <div className='px-6 py-6 flex flex-col gap-5'>
+              {navItems.map((item) => (
+                <button
+                  type='button'
+                  key={item.id}
+                  onClick={() => handleNavClick(item)}
+                  className='
                   text-left
                   text-white
                   hover:text-fuchsia-400
                   transition
                 '
-              >
-                {item.label}
-              </button>
-            ))}
+                >
+                  {item.label}
+                </button>
+              ))}
 
-            <div className='pt-4 flex flex-col gap-3'>
-              <button
-                type='button'
-                onClick={() => navigate('/login')}
-                className='
+              <div className='pt-4 flex flex-col gap-3'>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/login');
+                  }}
+                  className='
                   w-full
                   py-3
                   rounded-xl
@@ -185,14 +190,17 @@ const Navbar = () => {
                   border-white/20
                   text-white
                 '
-              >
-                Login
-              </button>
+                >
+                  Login
+                </button>
 
-              <button
-                type='button'
-                onClick={() => navigate('/register')}
-                className='
+                <button
+                  type='button'
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/register');
+                  }}
+                  className='
                   w-full
                   py-3
                   rounded-xl
@@ -201,14 +209,15 @@ const Navbar = () => {
                   to-purple-600
                   text-white
                 '
-              >
-                Signup
-              </button>
+                >
+                  Signup
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+    </>
   );
 };
 

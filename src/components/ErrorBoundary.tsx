@@ -16,8 +16,6 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // No error-tracking service (e.g. Sentry) is wired up yet — this is the
-    // hook point for one when Jubly gets one.
     console.error('Unhandled render error:', error, info.componentStack);
   }
 

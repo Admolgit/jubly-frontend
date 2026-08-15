@@ -6,6 +6,7 @@ import { useGetBusinessCategoriesQuery } from '../../features/booking/bookingApi
 import { useGetUserByIdMutation } from '../../features/auth/authApi';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../ui/Loader';
+import Seo from '../SEO';
 
 interface Vendor {
   id: string;
@@ -32,7 +33,7 @@ export function FindVendors() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
 
-  const businessTypes = businessCategories?.data
+  const businessTypes = businessCategories?.data;
 
   const fetchVendors = async () => {
     try {
@@ -90,6 +91,10 @@ export function FindVendors() {
 
   return (
     <div className='py-6 sm:py-8 w-full max-w-5xl mx-auto px-4 sm:px-6'>
+      <Seo
+        title='Jubly – Discover & Book Trusted Service Providers in Nigeria'
+        description='Find trusted vendors for beauty, events, cakes, photography and more. Discover services, compare vendors, check availability and book securely with Jubly.'
+      />
       <div>
         <h1 className='text-xl sm:text-2xl font-semibold text-gray-950'>
           Find Vendors
