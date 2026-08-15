@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Star, Heart } from 'lucide-react';
 import { useGetAllVendorsQuery } from '../../features/vendor/vendorApi';
 import { useGetUserIdMutation } from '../../features/users/userApi';
 import { useNavigate } from 'react-router-dom';
+import Seo from '../SEO';
 
 export default function RecommendedSection() {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ export default function RecommendedSection() {
 
   return (
     <section className='bg-[#090018] py-24 services'>
+      <Seo
+        title='Jubly – Discover & Book Trusted Service Providers in Nigeria'
+        description='Find trusted vendors for beauty, events, cakes, photography and more. Discover services, compare vendors, check availability and book securely with Jubly.'
+      />
       <div className='mx-auto max-w-7xl px-6'>
         {/* Header */}
         <div className='mb-12 flex items-center justify-between'>

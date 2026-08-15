@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-export function CopyDiv({ text }: { text: string }) {
+export function CopyDiv({ text }: { readonly text: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -12,14 +12,15 @@ export function CopyDiv({ text }: { text: string }) {
   };
 
   return (
-    <div className="flex justify-between items-center bg-white p-4 border rounded-xl">
-      <span className="text-sm text-gray-600">{`${window.location.host}/vendor-booking/${text}`}</span>
+    <div className='flex justify-between items-center bg-white p-4 border rounded-xl'>
+      <span className='text-sm text-gray-600'>{`${window.location.host}/vendor-booking/${text}`}</span>
 
       <button
+        type='button'
         onClick={handleCopy}
-        className="text-blue-600 text-sm font-medium"
+        className='text-blue-600 text-sm font-medium'
       >
-        {copied ? "Copied!" : "Copy"}
+        {copied ? 'Copied!' : 'Copy'}
       </button>
     </div>
   );
