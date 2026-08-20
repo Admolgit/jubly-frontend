@@ -13,8 +13,13 @@ import SelectLimit from '../../utils/selectLimit';
 import { formatTimeFromISO } from '../../utils/timeFormatter';
 import Loader from '../../ui/Loader';
 import { useSelector } from 'react-redux';
-// import { useGetTransactionAmountByVendorQuery } from "../../../features/transactions/transactionAPI";
-import { CalendarCheck, Check, ChevronDown, ClipboardList, Wallet } from 'lucide-react';
+import {
+  CalendarCheck,
+  Check,
+  ChevronDown,
+  ClipboardList,
+  Wallet,
+} from 'lucide-react';
 import { LinkActions } from '../../ui/LinkActions';
 import toast from 'react-hot-toast';
 import Modal from '../../ui/Modal';
@@ -30,6 +35,7 @@ import {
   getBookingStatusBadge,
   BOOKING_STATUS_TAB_CONFIG,
 } from '../../utils/bookingStatus';
+import { bookingStatusHelper } from '../../../utils/bookingStatusHelper';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
@@ -440,9 +446,7 @@ export function Bookings() {
                               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${badge.wrapper}`}
                             >
                               <StatusIcon size={14} className={badge.icon} />
-                              {b.status === 'COMPLETION_PENDING_APPROVAL'
-                                ? 'Awaiting client approval'
-                                : b.status}
+                              {bookingStatusHelper(b?.status)}
                             </div>
                           );
                         })()}

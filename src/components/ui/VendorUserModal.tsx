@@ -52,16 +52,16 @@ export default function VendorUserModal({
   };
 
   const [formData, setFormData] = useState({
-    businessName: vendor?.businessName || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    address: vendor?.address || '',
-    city: vendor?.city || '',
-    state: vendor?.state || '',
-    country: vendor?.country || '',
+    businessName: vendor?.businessName,
+    email: user?.email,
+    phone: user?.phone,
+    address: vendor?.address,
+    city: vendor?.city,
+    state: vendor?.state,
+    country: vendor?.country,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -228,6 +228,7 @@ export default function VendorUserModal({
             <div className='flex gap-10'>
               {user?.role === 'VENDOR' && (
                 <button
+                  type='button'
                   onClick={() => setActiveTab('info')}
                   className={`border-b-2 py-5 text-sm font-medium ${
                     activeTab === 'info'
@@ -240,6 +241,7 @@ export default function VendorUserModal({
               )}
 
               <button
+                type='button'
                 onClick={() => setActiveTab('activity')}
                 className={`border-b-2 py-5 text-sm font-medium ${
                   activeTab === 'activity'
@@ -370,6 +372,7 @@ export default function VendorUserModal({
           {activeTab === 'info' && (
             <div className='flex justify-end gap-4 border-t px-8 py-5'>
               <button
+                type='button'
                 onClick={() => onSave?.(formData)}
                 className='rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-white'
               >
