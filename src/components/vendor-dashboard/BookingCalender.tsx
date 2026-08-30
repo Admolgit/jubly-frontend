@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Loader from '../ui/Loader';
+import CreateBookingModal from './booking/CreateBookingModal';
 
 import {
   useGetCalendarLinkedQuery,
@@ -45,6 +46,7 @@ function BookingCalendar() {
   const vendor = useSelector((state: any) => state.vendor.vendor);
   const now = new Date();
   const [view, setView] = useState('');
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   const { data: bookingCalendarData, isLoading } = useGetCalendarListQuery(
     {
@@ -134,6 +136,14 @@ function BookingCalendar() {
               Sync Calendar
             </button>
           )}
+
+          <button
+            type='button'
+            onClick={() => setBookingOpen(true)}
+            className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90'
+          >
+            + Create Booking
+          </button>
         </div>
       </div>
 
@@ -270,6 +280,11 @@ function BookingCalendar() {
           </div>
         </div>
       </div>
+
+      <CreateBookingModal
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+      />
     </div>
   );
 }

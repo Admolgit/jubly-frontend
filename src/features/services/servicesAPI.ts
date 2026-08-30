@@ -23,6 +23,24 @@ export const servicesAPI = api.injectEndpoints({
         body: data,
       }),
     }),
+    vendorSubscription: builder.mutation({
+      query: () => ({
+        url: `/subscription/upgrade`,
+        method: 'POST',
+      }),
+    }),
+    getVendorSubscriptionStatus: builder.query({
+      query: () => ({
+        url: `/subscription/status`,
+        method: 'GET',
+      }),
+    }),
+    getSettings: builder.query({
+      query: () => ({
+        url: `/admin/platform-settings`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -30,4 +48,7 @@ export const {
   useGetVendorServicesQuery,
   useCreateServiceMutation,
   useUpdateActiveStatusMutation,
+  useVendorSubscriptionMutation,
+  useGetVendorSubscriptionStatusQuery,
+  useGetSettingsQuery,
 } = servicesAPI;

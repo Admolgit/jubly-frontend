@@ -442,7 +442,7 @@ export default function TransactionsPage() {
                   className='border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition'
                 >
                   <td className='px-6 py-4'>
-                    {item?.senderDetails?.senderName}
+                    {item?.senderDetails?.senderName || item?.booking?.clientName}
                   </td>
 
                   <td className='px-6 py-4'>

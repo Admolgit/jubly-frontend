@@ -91,6 +91,30 @@ export const BOOKING_STATUS_LABEL: Record<string, string> = {
 export const getBookingStatusLabel = (status?: string | null) =>
   (status && BOOKING_STATUS_LABEL[status]) || status || "Unknown";
 
+export const BOOKING_SOURCE_LABEL: Record<string, string> = {
+  MARKETPLACE: "Marketplace",
+  VENDOR_CREATED: "Vendor-created",
+  BOOKING_LINK: "Marketplace",
+};
+
+export const getBookingSourceLabel = (source?: string | null) =>
+  (source && BOOKING_SOURCE_LABEL[source]) || "Marketplace";
+
+export const getBookingPaymentLabel = (
+  paymentMethod?: string | null,
+  paymentVerification?: string | null,
+): string | null => {
+  if (paymentMethod === "PAID_BY_HAND") return "Paid outside Jubly";
+
+  if (paymentMethod === "PAY_BY_LINK") {
+    return paymentVerification === "PAYSTACK_VERIFIED"
+      ? "Paid via Jubly"
+      : "Awaiting payment";
+  }
+
+  return null;
+};
+
 export const BOOKING_STATUS_TAB_CONFIG: Record<
   string,
   { icon: JSX.Element; active: string }

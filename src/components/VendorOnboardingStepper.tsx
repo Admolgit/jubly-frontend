@@ -270,9 +270,9 @@ export const VendorOnboardingStepper = () => {
   }, [isBankResolveError, bankResolveError]);
 
   return (
-    <div className='max-w-4xl mx-auto p-6'>
+    <div className='max-w-4xl mx-auto p-4 sm:p-6'>
       <div className='sticky top-0 z-30 bg-white border-b'>
-        <div className='w-full mb-8 p-6'>
+        <div className='w-full mb-8 p-3 sm:p-6'>
           <div className='flex items-center justify-between'>
             {steps.map((label, index) => {
               const isCompleted = index < step;
@@ -285,7 +285,7 @@ export const VendorOnboardingStepper = () => {
                 >
                   {index !== steps.length - 1 && (
                     <div
-                      className={`absolute top-4 left-1/2 w-full h-[2px] 
+                      className={`absolute top-4 left-1/2 w-full h-[2px]
                     ${index < step ? 'bg-green-500' : 'bg-gray-200'}`}
                     />
                   )}
@@ -305,7 +305,7 @@ export const VendorOnboardingStepper = () => {
                     {isCompleted ? <Check size={16} /> : index + 1}
                   </div>
                   <p
-                    className={`mt-2 text-sm text-center ${
+                    className={`mt-2 px-1 text-[11px] leading-tight text-center sm:text-sm ${
                       isActive
                         ? 'text-blue-600 font-semibold'
                         : isCompleted
@@ -327,8 +327,8 @@ export const VendorOnboardingStepper = () => {
         {step === 0 && (
           <div className='space-y-4 p-4 w-full bg-white shadow rounded'>
             <h2 className='text-xl font-semibold'>Business Info</h2>
-            <div className='flex items-start gap-2 w-full '>
-              <div className='w-1/2'>
+            <div className='flex flex-col sm:flex-row items-start gap-2 w-full '>
+              <div className='w-full sm:w-1/2'>
                 <Input
                   type='text'
                   label='Business Name'
@@ -337,7 +337,7 @@ export const VendorOnboardingStepper = () => {
                   className='w-full'
                 />
               </div>
-              <div className='w-1/2'>
+              <div className='w-full sm:w-1/2'>
                 <Controller
                   control={control}
                   name='category'
@@ -360,8 +360,8 @@ export const VendorOnboardingStepper = () => {
               </div>
             </div>
 
-            <div className='flex items-start gap-2 w-full'>
-              <div className='w-1/2'>
+            <div className='flex flex-col sm:flex-row items-start gap-2 w-full'>
+              <div className='w-full sm:w-1/2'>
                 <Input
                   type='text'
                   label='State'
@@ -370,7 +370,7 @@ export const VendorOnboardingStepper = () => {
                   className='w-full'
                 />
               </div>
-              <div className='w-1/2'>
+              <div className='w-full sm:w-1/2'>
                 <Input
                   type='text'
                   label='City'
@@ -381,8 +381,8 @@ export const VendorOnboardingStepper = () => {
               </div>
             </div>
 
-            <div className='flex items-start gap-2 w-full'>
-              <div className='w-1/2'>
+            <div className='flex flex-col sm:flex-row items-start gap-2 w-full'>
+              <div className='w-full sm:w-1/2'>
                 <label htmlFor='bio'>Bio</label>
                 <textarea
                   {...register('bio')}
@@ -391,7 +391,7 @@ export const VendorOnboardingStepper = () => {
                 ></textarea>
               </div>
 
-              <div className='w-1/2'>
+              <div className='w-full sm:w-1/2'>
                 <Input
                   type='text'
                   label='Country'
@@ -406,12 +406,12 @@ export const VendorOnboardingStepper = () => {
             {serviceFields.map((service, index) => (
               <div
                 key={service.id}
-                className='space-y-2 border p-2 rounded flex items-start gap-2'
+                className='space-y-2 border p-2 rounded flex flex-col sm:flex-row sm:items-start gap-2'
               >
                 <Input
                   {...register(`services.${index}.name`, { required: true })}
                   placeholder='Service Name'
-                  className='Input'
+                  className='Input w-full sm:w-auto'
                   label='Service Name'
                 />
                 <Input
@@ -421,7 +421,7 @@ export const VendorOnboardingStepper = () => {
                     min: 0,
                   })}
                   placeholder='Price (₦)'
-                  className='Input'
+                  className='Input w-full sm:w-auto'
                   label='Price'
                 />
                 <Input
@@ -431,10 +431,10 @@ export const VendorOnboardingStepper = () => {
                     min: 1,
                   })}
                   placeholder='Duration (mins)'
-                  className='Input'
+                  className='Input w-full sm:w-auto'
                   label='Duration (mins)'
                 />
-                <div>
+                <div className='w-full sm:w-auto'>
                   <label htmlFor='description'>Description</label>
                   <textarea
                     {...register(`services.${index}.description`)}

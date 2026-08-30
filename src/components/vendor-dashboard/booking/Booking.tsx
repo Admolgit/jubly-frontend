@@ -28,14 +28,23 @@ import RequestRescheduleModal from './RequestRescheduleModal';
 import ManageRescheduleModal from './ManageRescheduleModal';
 import { StatCard } from '../dashboard/StatCard';
 import BookingSearch from './BookingSearch';
-import BookingForm from '../BookingCreationForm';
+import CreateBookingModal, {
+  SUBSCRIPTION_REQUIRED_MESSAGE,
+} from './CreateBookingModal';
 import { useExportBookingsCSVMutation } from '../../../features/vendor/vendorApi';
 import Dialog from '../../ui/Dialog';
 import {
   getBookingStatusBadge,
+  getBookingSourceLabel,
+  getBookingPaymentLabel,
   BOOKING_STATUS_TAB_CONFIG,
 } from '../../utils/bookingStatus';
 import { bookingStatusHelper } from '../../../utils/bookingStatusHelper';
+import {
+  useGetSettingsQuery,
+  useGetVendorSubscriptionStatusQuery,
+} from '../../../features/services/servicesAPI';
+import UpgradeToPremiumModal from '../UpgradeToPremiumModal';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
@@ -61,6 +70,7 @@ export function Bookings() {
   const [manageRescheduleOpen, setManageRescheduleOpen] = useState(false);
   const [viewVendorOpen, setViewVendorOpen] = useState(false);
   const [selectedView, setSelectedView] = useState(null);
+  const [openSubscription, setOpenSubscription] = useState(false);
 
   const { data: getBookingsData, isLoading: getBookingsDataLoading } =
     useGetBookingsQuery({
@@ -80,6 +90,14 @@ export function Bookings() {
   const [markBookingAsCompleted, { isLoading: markingLoading }] =
     useMarkBookingAsCompletedMutation();
   const { data: statusFilterData } = useGetStatusFilterCountQuery({});
+  const { data: getVendorSubscriptionStatus } =
+    useGetVendorSubscriptionStatusQuery({});
+  const { data: platformSettings } = useGetSettingsQuery({});
+
+  const subscriptionStatus = getVendorSubscriptionStatus?.data?.isActive;
+  const vendorSettings = platformSettings?.data;
+
+  console.log(platformSettings);
 
   const statusOptions = [
     {
@@ -201,10 +219,6 @@ export function Bookings() {
     }
   };
 
-  const handleCreateBooking = async (data: any) => {
-    console.log(data);
-  };
-
   const [exportBookingsCSV, { isLoading: exporting }] =
     useExportBookingsCSVMutation({});
 
@@ -278,16 +292,26 @@ export function Bookings() {
           <button
             type='button'
             onClick={handleExportCSV}
-            className='inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50'
+            disabled={exporting}
+            className='inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2.5 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50 disabled:opacity-50'
           >
-            Export
+            {exporting ? 'Exporting...' : 'Export'}
           </button>
           <button
             type='button'
-            onClick={() => setBookingOpen(true)}
+            // disabled={!vendorSettings.subscriptionsEnabled}
+            onClick={() => {
+              if(!vendorSettings.subscriptionsEnabled) {
+                toast.error('This feature is not available yet.')
+              } else if (subscriptionStatus) {
+                setBookingOpen(true);
+              } else {
+                setOpenSubscription(true);
+              }
+            }}
             className='rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90'
           >
-            {exporting ? 'Exporting...' : '+ New Booking'}
+            + Create Booking
           </button>
         </div>
       </div>
@@ -419,11 +443,40 @@ export function Bookings() {
                       className='border-b last:border-b-0'
                     >
                       <td className='px-3 py-4 font-semibold text-gray-900 dark:text-gray-400 flex items-center gap-3'>
-                        <div className='w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium'>
+                        <div className='w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium shrink-0'>
                           {b?.clientName?.split(' ')[0]?.charAt(0)}
                           {b?.clientName?.split(' ')[1]?.charAt(0)}
                         </div>
-                        {b.clientName || 'Client Name'}
+                        <div>
+                          <p>{b.clientName || 'Client Name'}</p>
+                          {b.source === 'VENDOR_CREATED' && (
+                            <div className='mt-1 flex flex-wrap gap-1'>
+                              <span className='rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-600'>
+                                {getBookingSourceLabel(b.source)}
+                              </span>
+                              {getBookingPaymentLabel(
+                                b.paymentMethod,
+                                b.paymentVerification,
+                              ) && (
+                                <span
+                                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                    b.paymentMethod === 'PAID_BY_HAND'
+                                      ? 'bg-gray-100 text-gray-600'
+                                      : b.paymentVerification ===
+                                          'PAYSTACK_VERIFIED'
+                                        ? 'bg-green-50 text-green-600'
+                                        : 'bg-amber-50 text-amber-600'
+                                  }`}
+                                >
+                                  {getBookingPaymentLabel(
+                                    b.paymentMethod,
+                                    b.paymentVerification,
+                                  )}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className='px-3 py-4 text-gray-600 font-semibold'>
                         {b.services?.name}
@@ -495,16 +548,10 @@ export function Bookings() {
         onReschedule={openReschedule}
         onManageReschedule={openManageReschedule}
       />
-      <Modal
+      <CreateBookingModal
         open={bookingOpen}
         onClose={() => setBookingOpen(false)}
-        title='Create Booking'
-      >
-        <BookingForm
-          setBookingOpen={setBookingOpen}
-          handleCreateBooking={handleCreateBooking}
-        />
-      </Modal>
+      />
       <Modal
         open={cancelOpen}
         onClose={() => setCancelOpen(false)}
@@ -554,6 +601,11 @@ export function Bookings() {
         }}
         booking={selectedBooking}
         currentUserId={user?.id}
+      />
+      <UpgradeToPremiumModal
+        open={openSubscription}
+        onClose={() => setOpenSubscription(false)}
+        reason={SUBSCRIPTION_REQUIRED_MESSAGE}
       />
     </div>
   );
