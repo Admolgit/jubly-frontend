@@ -13,6 +13,7 @@ export const calendarApi = api.injectEndpoints({
         url: `/google/calendar-list/${data.vendorId}/?view=${data?.view}&year=${data?.year}&month=${data?.month}`,
         method: "GET",
       }),
+      providesTags: ["Booking"],
     }),
     getClientCalendarList: builder.query({
       query: (data) => ({

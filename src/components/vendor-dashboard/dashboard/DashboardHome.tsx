@@ -25,7 +25,7 @@ import {
 import { setTransactions } from '../../../features/transactions/transactionSlice';
 import { setTransactionsList } from '../../../features/transactions/transactionsSlice';
 import ServiceForm from '../services/ServiceCreationForm';
-import BookingForm from '../BookingCreationForm';
+import CreateBookingModal from '../booking/CreateBookingModal';
 import toast from 'react-hot-toast';
 import { useCreateServiceMutation } from '../../../features/services/servicesAPI';
 import DashboardHeader from './DashboardHeader';
@@ -174,10 +174,6 @@ function DashboardHome() {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleCreateBooking = async (data: any) => {
-    console.log(data);
   };
 
   const totalEarnings =
@@ -439,16 +435,10 @@ function DashboardHome() {
         />
       </Modal>
 
-      <Modal
+      <CreateBookingModal
         open={bookingOpen}
         onClose={() => setBookingOpen(false)}
-        title='Create Booking'
-      >
-        <BookingForm
-          setBookingOpen={setBookingOpen}
-          handleCreateBooking={handleCreateBooking}
-        />
-      </Modal>
+      />
     </div>
   );
 }

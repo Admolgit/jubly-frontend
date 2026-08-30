@@ -30,7 +30,7 @@ export const availabilityApi = api.injectEndpoints({
         url: `/availability/slots/${data.vendorId}/${data.date}/${data.serviceId}`,
         method: "GET",
       }),
-      // providesTags: ["Availabilities"],
+      providesTags: ["Availabilities"],
     }),
 
     getVendorAvailability: builder.query({

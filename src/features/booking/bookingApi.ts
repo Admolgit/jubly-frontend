@@ -9,6 +9,14 @@ export const userApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    createVendorBooking: builder.mutation({
+      query: (data) => ({
+        url: '/booking/vendor-create',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Booking', 'DashboardStats', 'Availabilities'],
+    }),
     createBookingPayment: builder.mutation({
       query: (data) => ({
         url: '/booking/initialize-payment',
@@ -28,6 +36,7 @@ export const userApi = api.injectEndpoints({
         url: '/booking/upcoming',
         method: 'GET',
       }),
+      providesTags: ['Booking'],
     }),
     getServicesCounts: builder.query({
       query: () => ({
@@ -56,18 +65,21 @@ export const userApi = api.injectEndpoints({
         url: '/booking/clients/stats',
         method: 'GET',
       }),
+      providesTags: ['Booking'],
     }),
     getClientsBookingStats: builder.query({
       query: () => ({
         url: '/booking/clients/booking-stats',
         method: 'GET',
       }),
+      providesTags: ['Booking'],
     }),
     getVendorUpcomingBookings: builder.query({
       query: () => ({
         url: '/booking/upcoming-bookings',
         method: 'GET',
       }),
+      providesTags: ['Booking'],
     }),
     getClientUpcomingBookings: builder.query({
       query: () => ({
@@ -167,6 +179,7 @@ export const userApi = api.injectEndpoints({
         url: `/booking/status/filter`,
         method: 'GET',
       }),
+      providesTags: ['Booking'],
     }),
     getBusinessInsight: builder.query({
       query: () => ({
@@ -193,6 +206,7 @@ export const {
   useGetStatusFilterCountQuery,
   useGetBusinessInsightQuery,
   useCreateBookingMutation,
+  useCreateVendorBookingMutation,
   useCreateBookingPaymentMutation,
   useGetDashboardStartsQuery,
   useGetUpcomingBookingsQuery,

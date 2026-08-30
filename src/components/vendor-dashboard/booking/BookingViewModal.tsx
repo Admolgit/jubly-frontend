@@ -15,6 +15,8 @@ import { formatDate } from '../../utils/dateFormatter';
 import { formatTimeFromISO, timeAgo } from '../../utils/timeFormatter';
 import {
   getBookingStatusBadge,
+  getBookingSourceLabel,
+  getBookingPaymentLabel,
   CANCELLED_BOOKING_STATUSES,
 } from '../../utils/bookingStatus';
 
@@ -48,6 +50,16 @@ export default function ViewBookingModal({
   const mapUrl = booking?.clientAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.clientAddress)}`
     : null;
+
+  const isPaymentSettled =
+    booking?.paymentMethod === 'PAID_BY_HAND' ||
+    (booking?.paymentMethod === 'PAY_BY_LINK' &&
+      booking?.paymentVerification === 'PAYSTACK_VERIFIED') ||
+    (!booking?.paymentMethod &&
+      ['CONFIRMED', 'COMPLETED'].includes(bookingStatus));
+  const paymentStatusLabel =
+    getBookingPaymentLabel(booking?.paymentMethod, booking?.paymentVerification) ||
+    (isPaymentSettled ? 'Paid via Jubly' : 'Awaiting payment');
 
   const lastStep = isCancelled
     ? {
@@ -261,7 +273,10 @@ export default function ViewBookingModal({
 
               <InfoRow label='Email' value={booking.clientEmail} />
 
-              <InfoRow label='Phone' value='+234 801 234 5678' />
+              <InfoRow
+                label='Phone'
+                value={booking.clientPhone || 'Not provided'}
+              />
 
               <InfoRow
                 label='Service Address'
@@ -337,7 +352,12 @@ export default function ViewBookingModal({
           <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
             {/* Payment */}
             <Card title='Payment Information'>
-              <InfoRow label='Payment Status' value='PAID' badge />
+              <InfoRow
+                label='Payment Status'
+                value={paymentStatusLabel}
+                badge={isPaymentSettled}
+                warning={!isPaymentSettled}
+              />
 
               <InfoRow
                 label='Amount Paid'
@@ -376,7 +396,10 @@ export default function ViewBookingModal({
 
               <InfoRow label='Booked By' value={booking.clientName} />
 
-              <InfoRow label='Booking Source' value='Web Dashboard' />
+              <InfoRow
+                label='Booking Source'
+                value={getBookingSourceLabel(booking.source)}
+              />
             </Card>
 
             {/* Special Request */}
