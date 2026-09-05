@@ -21,7 +21,7 @@ const menu = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Bookings', path: '/dashboard/bookings', icon: BookOpen },
   { name: 'Calendar', path: '/dashboard/calendar', icon: Calendar },
-  { name: 'transactions', path: '/dashboard/transactions', icon: DollarSign },
+  { name: 'Transactions', path: '/dashboard/transactions', icon: DollarSign },
   { name: 'Availability', path: '/dashboard/availability', icon: Clock },
   { name: 'Services', path: '/dashboard/services', icon: Briefcase },
   { name: 'Clients', path: '/dashboard/clients', icon: Users },
