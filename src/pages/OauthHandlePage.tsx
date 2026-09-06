@@ -52,39 +52,48 @@ export default function OAuthHandler() {
         setStoredTokens(token, refreshToken);
         localStorage.setItem('auth', JSON.stringify(authObj?.data));
 
-        if (
-          authObj?.data?.meta?.isSignup
-        ) {
+        const vendor = res?.data?.user?.vendor;
+
+        // Vendor profile hasn't been created yet
+        if (!vendor) {
           navigate('/onboarding', {
             replace: true,
             state: { fromOAuth: true, onboarding: false },
           });
-          toast.success('Please complete your KYC to continue.');
+
+          toast.success('Please complete your onboarding to continue.');
           return;
-        } else if (
-          !res?.data?.user?.vendor?.onboardingCompleted &&
-          res?.data?.user?.vendor?.isApproved
-        ) {
-          localStorage.setItem('email', user?.email);
-          navigate('/vendor-availability');
-          toast.success('Please set your availability.');
-        } else if (
-          res?.data?.user?.vendor?.onboardingCompleted &&
-          res?.data?.user?.vendor?.isApproved &&
-          authObj?.data?.meta?.alreadyExists
-        ) {
-          navigate('/dashboard', {
-            replace: true,
-            state: { fromOAuth: true, onboarding: false },
-          });
-        } else {
+        }
+
+        // Vendor exists but hasn't been approved
+        if (!vendor.isApproved) {
           navigate('/login', {
             replace: true,
           });
+
           toast.success(
             'Your account is not verified yet. Please contact Jubly admin.',
           );
+          return;
         }
+
+        // Approved, but availability/onboarding isn't finished
+        if (!vendor.onboardingCompleted) {
+          localStorage.setItem('email', user?.email);
+
+          navigate('/vendor-availability', {
+            replace: true,
+          });
+
+          toast.success('Please set your availability.');
+          return;
+        }
+
+        // Fully onboarded + approved
+        navigate('/dashboard', {
+          replace: true,
+          state: { fromOAuth: true, onboarding: false },
+        });
       } catch (err: any) {
         const message = err?.data?.error || err?.data?.message || err?.message;
 
