@@ -25,4 +25,4 @@ export const paystackApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetBankListsQuery, useResolveBankQuery, useVerifyTransactionMutation } = paystackApi;
+export const { useGetBankListsQuery, useLazyResolveBankQuery, useVerifyTransactionMutation } = paystackApi;

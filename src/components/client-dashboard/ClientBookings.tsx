@@ -1,6 +1,5 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   useCancelBookingMutation,
@@ -58,7 +57,6 @@ const statusOptions = [
 ];
 
 function ClientBookings() {
-  const navigate = useNavigate();
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
@@ -155,7 +153,7 @@ function ClientBookings() {
       setOpenMark(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to cancel booking");
+      toast.error(error?.message || "Failed to mark booking booking as completed");
     }
   };
 
@@ -180,12 +178,12 @@ function ClientBookings() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button
+          {/* <button
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
             onClick={() => navigate("/booking")}
           >
             + Book a Service
-          </button>
+          </button> */}
         </div>
       </div>
 

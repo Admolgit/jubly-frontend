@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { Check } from 'lucide-react';
 import Input from './ui/Input';
 import {
   useGetBankListsQuery,
-  useResolveBankQuery,
+  useLazyResolveBankQuery,
 } from '../features/paystack/paystackApi';
 import toast from 'react-hot-toast';
 import { useDebounce } from 'use-debounce';
@@ -113,21 +113,43 @@ export const VendorOnboardingStepper = () => {
   const shouldResolveBank =
     debouncedAccountNumber.length === 10 && Boolean(settlementBank);
 
-  const {
-    data: bankResolve,
-    isFetching: isBankResolving,
-    isError: isBankResolveError,
-    error: bankResolveError,
-  } = useResolveBankQuery(
+  const [
+    resolveBank,
     {
-      accountNumber: debouncedAccountNumber,
-      bankCode: settlementBank,
+      data: bankResolve,
+      isFetching: isBankResolving,
+      isError: isBankResolveError,
+      error: bankResolveError,
     },
-    {
-      skip: !shouldResolveBank,
-    },
-  );
-  const isAccountNumberPending = normalizedAccountNumber !== debouncedAccountNumber;
+  ] = useLazyResolveBankQuery();
+
+  // Prevent duplicate Paystack resolve calls for the same bank/account pair.
+  // This keeps the existing UI/flow unchanged while ensuring rerenders,
+  // step changes, and unrelated state updates do not hit Paystack again.
+  const lastResolvedKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!shouldResolveBank) return;
+
+    const requestKey = `${settlementBank}:${debouncedAccountNumber}`;
+
+    if (lastResolvedKeyRef.current === requestKey) return;
+
+    lastResolvedKeyRef.current = requestKey;
+
+    // Prefer RTK Query's cached value when this exact account/bank pair
+    // has already been resolved, avoiding another network request.
+    resolveBank(
+      {
+        accountNumber: debouncedAccountNumber,
+        bankCode: settlementBank,
+      },
+      true,
+    );
+  }, [shouldResolveBank, settlementBank, debouncedAccountNumber, resolveBank]);
+
+  const isAccountNumberPending =
+    normalizedAccountNumber !== debouncedAccountNumber;
 
   const stepFields: Record<number, (keyof OnboardingForm)[]> = {
     0: ['businessName', 'category', 'city', 'state', 'country'],
