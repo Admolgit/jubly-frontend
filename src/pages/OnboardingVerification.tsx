@@ -20,7 +20,7 @@ export default function VendorOnboardingSuccessPage() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [animatedTexts?.length]);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
