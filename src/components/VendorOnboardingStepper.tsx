@@ -48,13 +48,7 @@ const categoryOptions = [
   { label: 'Hair Stylist', value: 'Hair Stylist' },
   { label: 'Nails Technicians', value: 'Nails Technicians' },
   { label: 'Barber', value: 'Barber' },
-  { label: 'Event Planner', value: 'Event Planner' },
-  { label: 'Caterer', value: 'Caterer' },
-  { label: 'Baker', value: 'Baker' },
   { label: 'Videographer', value: 'Videographer' },
-  { label: 'DJ', value: 'DJ' },
-  { label: 'MC / Event Host', value: 'MC / Event Host' },
-  { label: 'Decorator', value: 'Decorator' },
   { label: 'Brow artists', value: 'Brow artists' },
   { label: 'Lash technicians', value: 'Lash technicians' },
   { label: 'Massage Therapist', value: 'Massage Therapist' },
@@ -123,9 +117,6 @@ export const VendorOnboardingStepper = () => {
     },
   ] = useLazyResolveBankQuery();
 
-  // Prevent duplicate Paystack resolve calls for the same bank/account pair.
-  // This keeps the existing UI/flow unchanged while ensuring rerenders,
-  // step changes, and unrelated state updates do not hit Paystack again.
   const lastResolvedKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -137,8 +128,6 @@ export const VendorOnboardingStepper = () => {
 
     lastResolvedKeyRef.current = requestKey;
 
-    // Prefer RTK Query's cached value when this exact account/bank pair
-    // has already been resolved, avoiding another network request.
     resolveBank(
       {
         accountNumber: debouncedAccountNumber,
@@ -179,7 +168,6 @@ export const VendorOnboardingStepper = () => {
 
         if (res.status === 201) {
           toast.success('Vendor details created.');
-          console.log('Vendor profile created:', res.data);
           setVendorProfileId(res.data.vendor.id);
         }
       } catch (error: any) {
@@ -190,6 +178,29 @@ export const VendorOnboardingStepper = () => {
 
     setStep((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (step === 2) {
+      if (documentFrontUrl?.length) {
+        const file = documentFrontUrl[0];
+
+        const allowedTypes = ['image/jpeg', 'image/png'];
+
+        if (!allowedTypes.includes(file.type)) {
+          toast.error('Identity document must be a JPG or PNG image.');
+        }
+      }
+      if (watchProfileImage?.length) {
+        const file = watchProfileImage[0];
+
+        const allowedTypes = ['image/jpeg', 'image/png'];
+
+        if (!allowedTypes.includes(file.type)) {
+          toast.error('Portfolio image must be a JPG or PNG image.');
+        }
+      }
+    }
+  }, [step, documentFrontUrl, watchProfileImage]);
 
   const prevStep = () => {
     setStep((prev) => Math.max(prev - 1, 0));
@@ -204,6 +215,17 @@ export const VendorOnboardingStepper = () => {
 
   const onSubmit = async (data: OnboardingForm) => {
     try {
+      if (data.documentFrontUrl?.length) {
+        const file = data?.documentFrontUrl[0];
+
+        const allowedTypes = ['image/jpeg', 'image/png'];
+
+        if (!allowedTypes.includes(file.type)) {
+          toast.error('Documents must be a JPG or PNG image.');
+          return;
+        }
+      }
+
       toast.loading('Setting up your vendor account...', {
         id: 'onboarding',
       });
@@ -559,7 +581,7 @@ export const VendorOnboardingStepper = () => {
         {step === 2 && (
           <div className='space-y-4 p-4 bg-white shadow rounded'>
             <div>
-              <h2 className='text-xl font-semibold'>Profile Image</h2>
+              <h2 className='text-xl font-semibold'>Profile Image(jpg/png)</h2>
               <input type='file' {...register('profileImage')} />
               {(watchProfileImage?.length as number) > 0 && (
                 <img
@@ -602,6 +624,7 @@ export const VendorOnboardingStepper = () => {
         {step === 3 && (
           <div className='space-y-4 p-4 bg-white shadow rounded'>
             <h2 className='text-xl font-semibold'>Portfolio Images</h2>
+            <p>Upload images of your work (JPG/PNG). Should not be more than 10 images.</p>
             <Input
               label=''
               type='file'
