@@ -509,7 +509,7 @@ export default function TransactionsPage() {
                   <td className='px-6 py-4'>
                     <div className='flex items-center gap-3 text-sm font-medium text-[#344054]'>
                       <Landmark size={18} />
-                      {item?.method || 'N/A'}
+                      {item?.paymentMethod || 'N/A'}
                     </div>
                   </td>
 
