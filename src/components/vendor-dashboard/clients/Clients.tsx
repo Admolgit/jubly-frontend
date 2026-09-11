@@ -123,7 +123,7 @@ export function Clients() {
         </div>
       </div>
 
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-3 mt-6'>
         <StatCard
           title='Total Clients'
           value={clientsStatsData?.data?.totalClients?.value.toString() || '0'}

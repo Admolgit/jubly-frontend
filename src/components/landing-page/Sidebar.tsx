@@ -100,29 +100,28 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className='mt-16 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900'>
-          <div className='flex min-w-0 items-center gap-3'>
-            <img
-              src={vendor?.profileImage}
-              alt='profile'
-              className='h-12 w-12 shrink-0 rounded-full border border-gray-100 object-cover dark:border-gray-700'
-            />
-            <div className='min-w-0 leading-tight'>
-              <p className='truncate text-sm font-semibold text-gray-900 dark:text-white'>
-                {vendor?.businessName || 'Vendor'}
-              </p>
-              <p className='truncate text-sm text-gray-500 dark:text-gray-400'>
-                {vendor?.category || 'Service Provider'}
-              </p>
-            </div>
-            <ChevronDown className='ml-auto h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400' />
-          </div>
-        </div>
-
         <div className='absolute bottom-6 left-6 right-6'>
+          <div className='mt-16 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900'>
+            <div className='flex min-w-0 items-center gap-3'>
+              <img
+                src={vendor?.profileImage}
+                alt='profile'
+                className='h-12 w-12 shrink-0 rounded-full border border-gray-100 object-cover dark:border-gray-700'
+              />
+              <div className='min-w-0 leading-tight'>
+                <p className='truncate text-sm font-semibold text-gray-900 dark:text-white'>
+                  {vendor?.businessName || 'Vendor'}
+                </p>
+                <p className='truncate text-sm text-gray-500 dark:text-gray-400'>
+                  {vendor?.category || 'Service Provider'}
+                </p>
+              </div>
+              <ChevronDown className='ml-auto h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400' />
+            </div>
+          </div>
           <button
             onClick={handleLogout}
-            className='flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-red-950/30'
+            className='flex w-full items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-red-950/30 mt-4'
           >
             <LogOut size={18} />
             Logout
