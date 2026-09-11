@@ -176,11 +176,12 @@ export default function ViewBookingModal({
                   : `Your appointment is ${booking?.status?.toLowerCase()}`}
               </p>
 
-              {isPendingCompletionApproval && booking?.completionRequestedAt && (
-                <p className='mt-1 text-xs text-gray-400'>
-                  Requested {timeAgo(booking.completionRequestedAt)}
-                </p>
-              )}
+              {isPendingCompletionApproval &&
+                booking?.completionRequestedAt && (
+                  <p className='mt-1 text-xs text-gray-400'>
+                    Requested {timeAgo(booking.completionRequestedAt)}
+                  </p>
+                )}
             </div>
           </div>
 
@@ -227,7 +228,7 @@ export default function ViewBookingModal({
 
                 <p className='text-xs text-gray-500'>Booking Date</p>
 
-                <h4 className="mt-2 text-md font-semibold text-gray-900">
+                <h4 className='mt-2 text-md font-semibold text-gray-900'>
                   {formatDate(booking.date)}
                 </h4>
 
@@ -328,8 +329,8 @@ export default function ViewBookingModal({
             </Card>
 
             {/* Appointment */}
-            <Card title="Appointment Details">
-              <InfoRow label="Date" value={formatDate(booking.date)} />
+            <Card title='Appointment Details'>
+              <InfoRow label='Date' value={formatDate(booking.date)} />
 
               <InfoRow
                 label='Start Time'
@@ -380,7 +381,11 @@ export default function ViewBookingModal({
                 ).toLocaleString()}`}
               />
 
-              <InfoRow label='Settlement' value='HELD' warning />
+              <InfoRow
+                label='Settlement'
+                value={bookingStatus !== 'COMPLETED' ? 'HELD' : 'PAID'}
+                warning={bookingStatus !== 'COMPLETED'}
+              />
             </Card>
 
             {/* Booking Info */}

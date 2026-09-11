@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Calendar,
   Clock3,
@@ -14,11 +14,13 @@ import {
   Timer,
   Wand2,
   Crown,
-} from "lucide-react";
+} from 'lucide-react';
 
-import Footer from "../components/booking/Footer";
-import Loader from "../components/ui/Loader";
-import { useGetUserBySlugMutation } from "../features/vendor/vendorApi";
+import Footer from '../components/booking/Footer';
+import Loader from '../components/ui/Loader';
+import VendorReviews from '../components/reviews/VendorReviews';
+import { useGetUserBySlugMutation } from '../features/vendor/vendorApi';
+import { useGetVendorPublicStatsQuery } from '../features/reviews/reviewApi';
 
 export default function VendorBookingPage() {
   const slug = useParams().slug;
@@ -47,6 +49,12 @@ export default function VendorBookingPage() {
   const vendor = vendorDetails?.vendor;
   const services = vendorDetails?.services;
 
+  const { data: publicStatsResponse } = useGetVendorPublicStatsQuery(
+    { vendorId: vendor?.id },
+    { skip: !vendor?.id },
+  );
+  const publicStats = publicStatsResponse?.data ?? publicStatsResponse;
+
   useEffect(() => {
     if (vendor?.portfolioImages?.length > 0) {
       const randomImage =
@@ -54,12 +62,12 @@ export default function VendorBookingPage() {
           Math.floor(Math.random() * vendor.portfolioImages.length)
         ];
 
-      localStorage.setItem("vendorRandomImage", randomImage);
+      localStorage.setItem('vendorRandomImage', randomImage);
     }
   }, [vendor]);
 
   useEffect(() => {
-    localStorage.setItem("businessName", JSON.stringify(vendor?.businessName));
+    localStorage.setItem('businessName', JSON.stringify(vendor?.businessName));
   }, [vendor]);
 
   const vendorUser = {
@@ -73,7 +81,7 @@ export default function VendorBookingPage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className='h-screen flex items-center justify-center'>
         <Loader />
       </div>
     );
@@ -81,39 +89,39 @@ export default function VendorBookingPage() {
 
   const stats = [
     {
-      icon: <Star className="w-5 h-5 text-violet-600" />,
-      title: "50+",
-      subtitle: "Happy Clients",
+      icon: <Star className='w-5 h-5 text-violet-600' />,
+      title: publicStats?.happyClients ?? '0',
+      subtitle: 'Happy Clients',
     },
     {
-      icon: <Calendar className="w-5 h-5 text-violet-600" />,
-      title: "5+",
-      subtitle: "Years Experience",
+      icon: <Calendar className='w-5 h-5 text-violet-600' />,
+      title: '5+',
+      subtitle: 'Years Experience',
     },
     {
-      icon: <Sparkles className="w-5 h-5 text-violet-600" />,
-      title: "100%",
-      subtitle: "Satisfaction",
+      icon: <Sparkles className='w-5 h-5 text-violet-600' />,
+      title: `${publicStats?.satisfactionRate ?? 0}%`,
+      subtitle: 'Satisfaction',
     },
     {
-      icon: <Timer className="w-5 h-5 text-violet-600" />,
-      title: "Fast",
-      subtitle: "Response",
+      icon: <Timer className='w-5 h-5 text-violet-600' />,
+      title: 'Fast',
+      subtitle: 'Response',
     },
   ];
 
   const getServiceIcon = (name: string) => {
     const lower = name?.toLowerCase();
 
-    if (lower?.includes("birthday")) {
-      return <Gift className="w-7 h-7 text-violet-600" />;
+    if (lower?.includes('birthday')) {
+      return <Gift className='w-7 h-7 text-violet-600' />;
     }
 
-    if (lower?.includes("wedding")) {
-      return <Crown className="w-7 h-7 text-violet-600" />;
+    if (lower?.includes('wedding')) {
+      return <Crown className='w-7 h-7 text-violet-600' />;
     }
 
-    return <Wand2 className="w-7 h-7 text-violet-600" />;
+    return <Wand2 className='w-7 h-7 text-violet-600' />;
   };
 
   return (
@@ -288,9 +296,7 @@ export default function VendorBookingPage() {
                     </div>
                   </div>
                   <div className=' bg-violet-600 mt-2 w-full rounded-[10px] '>
-                    <p className='text-white py-2 px-4 text-center'>
-                      Book Now
-                    </p>
+                    <p className='text-white py-2 px-4 text-center'>Book Now</p>
                   </div>
                 </div>
               ))}
@@ -298,6 +304,12 @@ export default function VendorBookingPage() {
           )}
         </section>
       </div>
+
+      {vendor?.id && (
+        <div className='mx-auto max-w-7xl px-4 pb-8 md:px-8'>
+          <VendorReviews key={vendor.id} vendorId={vendor.id} />
+        </div>
+      )}
 
       {selectedImage && (
         <div

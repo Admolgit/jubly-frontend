@@ -79,9 +79,10 @@ export default function PaymentSuccessPage() {
 
   const transaction = {
     receipt: `JUB-${verifyData?.data?.reference}-${new Date().toLocaleString()}`,
-    amount: Number(verifyData?.data?.amount / 100).toLocaleString(),
+    amount: Number(verifyData?.data?.amount ?? 0) / 100,
     status: verifyData?.data?.status === 'success' ? 'Paid' : 'Failed',
     customer: verifyData?.customer?.first_name,
+    fees: Number(verifyData?.data?.fees ?? 0) / 100,
     email: verifyData?.customer?.email,
     service: 'Payment for service',
     date: new Date().toLocaleString(),
@@ -89,6 +90,11 @@ export default function PaymentSuccessPage() {
     txId: 'txn_8F72K3L9eXJ2Pq',
     title: verifyData?.data?.metadata?.title || 'Service Payment',
   };
+
+  const amount = Number(transaction.amount);
+  const fees = Number(transaction.fees);
+
+  const vendorAmount = amount - fees;
 
   if (isLoading) {
     return (
@@ -252,7 +258,10 @@ export default function PaymentSuccessPage() {
                 </div>
 
                 <div className='col-span-3 text-right font-semibold text-[#0f172a]'>
-                  {transaction.amount}
+                  {vendorAmount.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'NGN',
+                  })}
                 </div>
               </div>
 
@@ -263,14 +272,24 @@ export default function PaymentSuccessPage() {
                     <span className='text-gray-500'>Subtotal</span>
 
                     <span className='font-medium text-[#0f172a]'>
-                      {transaction.amount}
+                      {vendorAmount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'NGN',
+                      })}
                     </span>
                   </div>
 
                   <div className='flex items-center justify-between text-sm'>
-                    <span className='text-gray-500'>Tax</span>
+                    <span className='text-gray-500'>Processing Fee</span>
 
-                    <span className='font-medium text-[#0f172a]'>₦0</span>
+                    <span className='font-medium text-[#0f172a]'>
+                      {transaction.fees
+                        ? transaction.fees.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'NGN',
+                          })
+                        : '₦0'}
+                    </span>
                   </div>
 
                   <div className='border-t border-dashed pt-4'>
@@ -280,7 +299,10 @@ export default function PaymentSuccessPage() {
                       </span>
 
                       <span className='text-2xl font-semibold text-green-600'>
-                        {transaction.amount}
+                        {transaction.amount.toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'NGN',
+                        })}
                       </span>
                     </div>
                   </div>
