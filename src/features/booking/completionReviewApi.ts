@@ -2,6 +2,7 @@ import { BASE } from '../../app/api';
 
 export interface CompletionReviewData {
   bookingId: string;
+  clientId: string;
   status: string;
   serviceName: string;
   vendorName: string;

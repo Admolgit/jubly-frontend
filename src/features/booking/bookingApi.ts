@@ -213,6 +213,7 @@ export const {
   useGetServicesCountsQuery,
   useGetBookingsQuery,
   useGetClientsBookingsQuery,
+  useLazyGetClientsBookingsQuery,
   useGetClientsVendorStatsQuery,
   useGetClientsBookingStatsQuery,
   useGetVendorUpcomingBookingsQuery,
