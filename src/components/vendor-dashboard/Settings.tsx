@@ -10,6 +10,7 @@ import {
   Eye,
   EyeOff,
   FileText,
+  Images,
   Lock,
   Mail,
   MapPin,
@@ -22,6 +23,7 @@ import {
   User,
 } from 'lucide-react';
 import Input from '../ui/Input';
+import ManagePortfolio from './ManagePortfolio';
 import Button from '../ui/Button';
 import {
   useGetNotificationQuery,
@@ -40,6 +42,7 @@ import VendorUserModal from '../ui/VendorUserModal';
 import { setVendorCredentials } from '../../features/vendor/vendorSlice';
 
 type SettingsTab =
+  | 'portfolio'
   | 'notifications'
   | 'password'
   | 'security'
@@ -60,24 +63,6 @@ const tabs: {
   icon: typeof Bell;
 }[] = [
   {
-    id: 'notifications',
-    label: 'Notifications',
-    description: 'Booking alerts and channel preferences',
-    icon: Bell,
-  },
-  {
-    id: 'password',
-    label: 'Change Password',
-    description: 'Update account access',
-    icon: Lock,
-  },
-  {
-    id: 'security',
-    label: 'Security',
-    description: 'Devices and account protection',
-    icon: ShieldCheck,
-  },
-  {
     id: 'account',
     label: 'Account Information',
     description: 'Profile, address, and payment methods',
@@ -88,6 +73,30 @@ const tabs: {
     label: 'Appearance',
     description: 'Workspace display preferences',
     icon: Palette,
+  },
+  {
+    id: 'password',
+    label: 'Change Password',
+    description: 'Update account access',
+    icon: Lock,
+  },
+  {
+    id: 'portfolio',
+    label: 'Manage Portfolio',
+    description: 'View and update images of your work',
+    icon: Images,
+  },
+  {
+    id: 'notifications',
+    label: 'Notifications',
+    description: 'Booking alerts and channel preferences',
+    icon: Bell,
+  },
+  {
+    id: 'security',
+    label: 'Security',
+    description: 'Devices and account protection',
+    icon: ShieldCheck,
   },
   {
     id: 'support',
@@ -489,6 +498,7 @@ export function Settings() {
           </aside>
 
           <section className='overflow-hidden md:w-[70%] lg:w-[70%] rounded-[10px] border border-gray-200 bg-white shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950'>
+            {activeTab === 'portfolio' && <ManagePortfolio />}
             {activeTab === 'notifications' && (
               <>
                 <SectionHeader
