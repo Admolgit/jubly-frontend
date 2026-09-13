@@ -52,10 +52,16 @@ export default function ReviewModal({
     setError('');
     try {
       if (!booking.clientId) {
-        setError('Client details are missing from this completion request. Please reopen your completion link.');
+        setError('Vendor created bookings cannot be reviewed');
+        toast.error('Vendor created bookings cannot be reviewed');
         return;
       }
-      await createReview({ bookingId: booking.id, clientId: booking.clientId, rating, comment }).unwrap();
+      await createReview({
+        bookingId: booking.id,
+        clientId: booking.clientId,
+        rating,
+        comment,
+      }).unwrap();
       toast.success('Thank you! Your review has been submitted.');
       onClose();
     } catch (err) {
