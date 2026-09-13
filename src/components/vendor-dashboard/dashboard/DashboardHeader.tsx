@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bell, CheckCircle2, Plus } from 'lucide-react';
-import {
-  useGetSettingsQuery,
-  useGetVendorSubscriptionStatusQuery,
-} from '../../../features/services/servicesAPI';
+import { useGetSettingsQuery } from '../../../features/services/servicesAPI';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
-import UpgradeToPremiumModal from '../UpgradeToPremiumModal';
-import { SUBSCRIPTION_REQUIRED_MESSAGE } from '../booking/CreateBookingModal';
 
 export default function DashboardHeader({
   setServiceOpen,
@@ -18,13 +12,8 @@ export default function DashboardHeader({
   setBookingOpen: (value: boolean) => void;
   vendorData: any;
 }) {
-  const [openSubscription, setOpenSubscription] = useState(false);
-
-  const { data: getVendorSubscriptionStatus } =
-    useGetVendorSubscriptionStatusQuery({});
+  
   const { data: platformSettings } = useGetSettingsQuery({});
-
-  const subscriptionStatus = getVendorSubscriptionStatus?.data?.isActive;
   const vendorSettings = platformSettings?.data;
   return (
     <>
@@ -59,14 +48,11 @@ export default function DashboardHeader({
 
             <button
               type='button'
-              // onClick={() => setBookingOpen(true)}
               onClick={() => {
                 if (!vendorSettings.subscriptionsEnabled) {
                   toast.error('This feature is not available yet.');
-                } else if (subscriptionStatus) {
-                  setBookingOpen(true);
                 } else {
-                  setOpenSubscription(true);
+                  setBookingOpen(true);
                 }
               }}
               className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90'
@@ -99,11 +85,6 @@ export default function DashboardHeader({
           </div>
         </div>
       </div>
-      <UpgradeToPremiumModal
-        open={openSubscription}
-        onClose={() => setOpenSubscription(false)}
-        reason={SUBSCRIPTION_REQUIRED_MESSAGE}
-      />
     </>
   );
 }
