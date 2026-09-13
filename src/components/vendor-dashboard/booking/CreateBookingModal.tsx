@@ -81,7 +81,6 @@ export default function CreateBookingModal({
   const { data: getVendorSubscriptionFee } = useGetVendorSubscriptionFeeQuery(
     {},
   );
-  console.log('getVendorSubscriptionFee', getVendorSubscriptionFee?.data);
 
   const subscriptionStatus = getVendorSubscriptionStatus?.data?.isActive;
   const subscriptionFee = getVendorSubscriptionFee?.data;
@@ -91,8 +90,6 @@ export default function CreateBookingModal({
 
   const [successResult, setSuccessResult] =
     useState<CreateBookingSuccessResult | null>(null);
-
-  console.log('subscriptionStatus', subscriptionStatus);
 
   const {
     register,
@@ -207,14 +204,6 @@ export default function CreateBookingModal({
         refetchSlots();
         return;
       }
-
-      // if (
-      //   status === 403 &&
-      //   message?.toLowerCase().includes('subscription is required')
-      // ) {
-      //   setShowUpgradeModal(true);
-      //   return;
-      // }
 
       if (status === 400 || status === 403 || status === 404) {
         toast.error(message || 'Could not create this booking.');

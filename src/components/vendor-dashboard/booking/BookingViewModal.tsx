@@ -9,7 +9,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
-
+import toast from 'react-hot-toast';
 import Modal from '../../ui/Modal';
 import { formatDate } from '../../utils/dateFormatter';
 import { formatTimeFromISO, timeAgo } from '../../utils/timeFormatter';
@@ -58,8 +58,10 @@ export default function ViewBookingModal({
     (!booking?.paymentMethod &&
       ['CONFIRMED', 'COMPLETED'].includes(bookingStatus));
   const paymentStatusLabel =
-    getBookingPaymentLabel(booking?.paymentMethod, booking?.paymentVerification) ||
-    (isPaymentSettled ? 'Paid via Jubly' : 'Awaiting payment');
+    getBookingPaymentLabel(
+      booking?.paymentMethod,
+      booking?.paymentVerification,
+    ) || (isPaymentSettled ? 'Paid via Jubly' : 'Awaiting payment');
 
   const lastStep = isCancelled
     ? {
@@ -78,7 +80,8 @@ export default function ViewBookingModal({
       : bookingStatus === 'RESCHEDULE_REQUESTED'
         ? {
             title: 'Reschedule Pending',
-            description: 'Waiting for the other party to respond to a reschedule proposal',
+            description:
+              'Waiting for the other party to respond to a reschedule proposal',
             warning: true,
           }
         : isPendingCompletionApproval
@@ -90,10 +93,10 @@ export default function ViewBookingModal({
               warning: true,
             }
           : {
-            title: 'Awaiting Completion',
-            description: 'Mark as completed after service',
-            warning: true,
-          };
+              title: 'Awaiting Completion',
+              description: 'Mark as completed after service',
+              warning: true,
+            };
 
   const timeline = [
     {
@@ -123,6 +126,15 @@ export default function ViewBookingModal({
     },
     lastStep,
   ];
+
+  const handleCopyPaymentLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Payment link copied');
+    } catch {
+      toast.error('Failed to copy payment link');
+    }
+  };
 
   return (
     <Modal open={open} onClose={onClose} title='Booking Details' size='lg'>
@@ -405,6 +417,23 @@ export default function ViewBookingModal({
                 label='Booking Source'
                 value={getBookingSourceLabel(booking.source)}
               />
+
+              {booking?.paymentUrl && (
+                <div className='flex w-full items-center flex justify-between gap-2'>
+                  <div className='min-w-0 flex-1 break-all'>
+                    <InfoRow label='Payment Link' value={booking.paymentUrl} />
+                  </div>
+
+                  <button
+                    type='button'
+                    onClick={() => handleCopyPaymentLink(booking.paymentUrl)}
+                    className='shrink-0 cursor-pointer'
+                    title='Copy payment link'
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+              )}
             </Card>
 
             {/* Special Request */}
@@ -537,15 +566,17 @@ function InfoRow({
       <p className='text-sm text-gray-500'>{label}</p>
 
       {badge ? (
-        <span className='rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700'>
+        <span className='rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 word-wrap'>
           {value}
         </span>
       ) : warning ? (
-        <span className='rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600'>
+        <span className='rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600 word-wrap'>
           {value}
         </span>
       ) : (
-        <p className='text-right font-medium text-gray-900'>{value}</p>
+        <p className='text-right font-medium text-gray-900 word-wrap'>
+          {value}
+        </p>
       )}
     </div>
   );

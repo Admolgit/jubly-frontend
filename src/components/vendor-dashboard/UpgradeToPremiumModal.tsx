@@ -5,8 +5,6 @@ import Modal from '../ui/Modal';
 import { useVendorSubscriptionMutation } from '../../features/services/servicesAPI';
 import toast from 'react-hot-toast';
 
-const PREMIUM_PRICE = 3000;
-
 const PREMIUM_BENEFITS = [
   'Record cash, transfer or POS payments with Paid by hand',
   'Lower platform fees on every booking you take',
