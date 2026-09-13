@@ -18,10 +18,12 @@ export default function UpgradeToPremiumModal({
   open,
   onClose,
   reason,
+  subscriptionFee,
 }: {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly reason?: string;
+  subscriptionFee?: { priceNaira: number; durationDays: number };
 }) {
   const [vendorSubscription, { isLoading }] = useVendorSubscriptionMutation();
   const handleUpgrade = async () => {
@@ -56,7 +58,7 @@ export default function UpgradeToPremiumModal({
 
           <div className='mt-2 flex items-baseline justify-center gap-1'>
             <span className='text-4xl font-bold text-gray-900'>
-              ₦{PREMIUM_PRICE.toLocaleString()}
+              ₦{subscriptionFee?.priceNaira.toLocaleString()}
             </span>
             <span className='text-sm font-medium text-gray-500'>/month</span>
           </div>

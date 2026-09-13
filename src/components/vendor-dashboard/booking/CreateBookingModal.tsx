@@ -22,12 +22,17 @@ import Modal from '../../ui/Modal';
 import Input from '../../ui/Input';
 import Select from '../../ui/Select';
 import Loader from '../../ui/Loader';
-import { useGetVendorServicesQuery } from '../../../features/services/servicesAPI';
+import {
+  useGetVendorServicesQuery,
+  useGetVendorSubscriptionFeeQuery,
+  useGetVendorSubscriptionStatusQuery,
+} from '../../../features/services/servicesAPI';
 import { useGetVendorAvailabilitySlotsQuery } from '../../../features/availability/availability';
 import { useCreateVendorBookingMutation } from '../../../features/booking/bookingApi';
 import CreateBookingSuccessView, {
   type CreateBookingSuccessResult,
 } from './CreateBookingSuccessView';
+import UpgradeToPremiumModal from '../UpgradeToPremiumModal';
 
 export const SUBSCRIPTION_REQUIRED_MESSAGE =
   'Paid-by-hand bookings are available on your Jubly subscription plan.';
@@ -70,11 +75,24 @@ export default function CreateBookingModal({
   readonly onClose: () => void;
 }) {
   const navigate = useNavigate();
+
+  const { data: getVendorSubscriptionStatus } =
+    useGetVendorSubscriptionStatusQuery({});
+  const { data: getVendorSubscriptionFee } = useGetVendorSubscriptionFeeQuery(
+    {},
+  );
+  console.log('getVendorSubscriptionFee', getVendorSubscriptionFee?.data);
+
+  const subscriptionStatus = getVendorSubscriptionStatus?.data?.isActive;
+  const subscriptionFee = getVendorSubscriptionFee?.data;
+
   const user = useSelector((state: any) => state.auth.user);
+  const [openSubscription, setOpenSubscription] = useState(false);
 
   const [successResult, setSuccessResult] =
     useState<CreateBookingSuccessResult | null>(null);
-  // const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  console.log('subscriptionStatus', subscriptionStatus);
 
   const {
     register,
@@ -259,24 +277,25 @@ export default function CreateBookingModal({
                   error={errors.clientEmail?.message}
                 />
               </div>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+                <Input
+                  label='Phone number (optional)'
+                  type='tel'
+                  placeholder='e.g. 08012345678'
+                  className='h-11 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500'
+                  {...register('clientPhone')}
+                  error={errors.clientPhone?.message}
+                />
 
-              <Input
-                label='Phone number (optional)'
-                type='tel'
-                placeholder='e.g. 08012345678'
-                className='h-11 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500'
-                {...register('clientPhone')}
-                error={errors.clientPhone?.message}
-              />
-
-              <Input
-                label='Client Address (optional)'
-                type='text'
-                placeholder='e.g. 8, Adewale Street, Coker, Surulere, Lagos State.'
-                className='h-11 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500'
-                {...register('clientAddress')}
-                error={errors.clientAddress?.message}
-              />
+                <Input
+                  label='Client Address (optional)'
+                  type='text'
+                  placeholder='e.g. 8, Adewale Street, Coker, Surulere, Lagos State.'
+                  className='h-11 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500'
+                  {...register('clientAddress')}
+                  error={errors.clientAddress?.message}
+                />
+              </div>
             </Section>
 
             {/* Service */}
@@ -428,7 +447,15 @@ export default function CreateBookingModal({
                   title='Paid by hand'
                   description='Use this if the client has already paid you directly by cash, transfer, POS or another method.'
                   selected={paymentOption === 'PAID_BY_HAND'}
-                  onSelect={() => setValue('paymentOption', 'PAID_BY_HAND')}
+                  onSelect={() => {
+                    if (subscriptionStatus === false) {
+                      toast.error('Subscribe to a plan to use this feature.');
+                      setOpenSubscription(true);
+                      return;
+                    } else {
+                      setValue('paymentOption', 'PAID_BY_HAND');
+                    }
+                  }}
                 />
               </div>
             </Section>
@@ -491,6 +518,12 @@ export default function CreateBookingModal({
           </form>
         )}
       </Modal>
+      <UpgradeToPremiumModal
+        open={openSubscription}
+        onClose={() => setOpenSubscription(false)}
+        reason={SUBSCRIPTION_REQUIRED_MESSAGE}
+        subscriptionFee={subscriptionFee}
+      />
     </>
   );
 }
