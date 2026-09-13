@@ -49,8 +49,6 @@ export default function Hero() {
 
         <div className='max-w-7xl mx-auto px-8 py-20'>
           <div className='grid lg:grid-cols-2 gap-20 items-center'>
-            {/* LEFT */}
-
             <div>
               <p className='text-pink-300 uppercase tracking-[5px]'>
                 Beauty. Confidence. You.
