@@ -35,6 +35,6 @@ jobs:
       - name: Deploy dist to cPanel
         run: |
           rsync -avz \
-            -e "ssh -i ~/.ssh/cpanel_key -p ${{ secrets.CPANEL_PORT }}" \
+            -e "ssh -o IdentitiesOnly=yes -i ~/.ssh/cpanel_key -p ${{ secrets.CPANEL_PORT }}" \
             dist/ \
             ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:/home/${{ secrets.CPANEL_USER }}/public_html/
