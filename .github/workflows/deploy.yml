@@ -1,32 +1,54 @@
-- name: Setup SSH
-  run: |
-    mkdir -p ~/.ssh
-    printf '%s\n' "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/cpanel_key
-    chmod 600 ~/.ssh/cpanel_key
+name: Deploy Jubly Frontend
 
-    ssh-keyscan -p ${{ secrets.CPANEL_PORT }} \
-      ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
+on:
+  push:
+    branches:
+      - main
 
-- name: Test SSH connection
-  run: |
-    ssh \
-      -i ~/.ssh/cpanel_key \
-      -p ${{ secrets.CPANEL_PORT }} \
-      -o IdentitiesOnly=yes \
-      -o PreferredAuthentications=publickey \
-      -o PasswordAuthentication=no \
-      -o BatchMode=yes \
-      ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }} \
-      "echo SSH_CONNECTION_SUCCESS"
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-- name: Deploy dist to cPanel
-  run: |
-    rsync -avz \
-      -e "ssh -i ~/.ssh/cpanel_key \
-      -p ${{ secrets.CPANEL_PORT }} \
-      -o IdentitiesOnly=yes \
-      -o PreferredAuthentications=publickey \
-      -o PasswordAuthentication=no \
-      -o BatchMode=yes" \
-      dist/ \
-      ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:/home/${{ secrets.CPANEL_USER }}/public_html/
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/cpanel_key
+          chmod 600 ~/.ssh/cpanel_key
+
+          ssh-keyscan -p ${{ secrets.CPANEL_PORT }} \
+            ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh \
+            -i ~/.ssh/cpanel_key \
+            -p ${{ secrets.CPANEL_PORT }} \
+            -o IdentitiesOnly=yes \
+            -o PreferredAuthentications=publickey \
+            -o PasswordAuthentication=no \
+            -o BatchMode=yes \
+            ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }} \
+            "echo SSH_CONNECTION_SUCCESS"
+
+      - name: Deploy dist to cPanel
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/cpanel_key -p ${{ secrets.CPANEL_PORT }} -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -o PasswordAuthentication=no -o BatchMode=yes" \
+            dist/ \
+            ${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:/home/${{ secrets.CPANEL_USER }}/public_html/
