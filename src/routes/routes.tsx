@@ -1,6 +1,8 @@
 ﻿import { createBrowserRouter } from 'react-router-dom';
 import AuthLayout from '../layouts/AuthLayout';
 import Login from '../pages/Login';
+import ForgotPassword from '../pages/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword';
 import RootLayout from '../layouts/RootLayout';
 import RegisterPage from '../pages/Register';
 import ProtectedRoutes from './ProtectedRoutes';
@@ -100,6 +102,8 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: [
       { path: '/login', element: <Login /> },
+      { path: '/forgot-password', element: <ForgotPassword /> },
+      { path: '/reset-password', element: <ResetPassword /> },
       { path: '/register', element: <RegisterPage /> },
       { path: '/oauth', element: <OAuthHandler /> },
     ],

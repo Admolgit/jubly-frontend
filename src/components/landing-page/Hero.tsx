@@ -40,7 +40,7 @@ export default function Hero() {
         title='Jubly – Discover & Book Trusted Service Providers in Nigeria'
         description='Find trusted vendors for beauty, events, cakes, photography and more. Discover services, compare vendors, check availability and book securely with Jubly.'
       />
-      <section className='relative bg-[#0F0223] font-sans'>
+      <section className='relative bg-[#0F0223] font-sans mt-[20px]'>
         <div className='absolute inset-0'>
           <div className='absolute left-20 h-96 w-96% rounded-full bg-pink-600/20 blur-[150px]' />
 
@@ -49,8 +49,6 @@ export default function Hero() {
 
         <div className='max-w-7xl mx-auto px-8 py-20'>
           <div className='grid lg:grid-cols-2 gap-20 items-center'>
-            {/* LEFT */}
-
             <div>
               <p className='text-pink-300 uppercase tracking-[5px]'>
                 Beauty. Confidence. You.
@@ -72,9 +70,9 @@ export default function Hero() {
                 <SearchBar />
               </div>
 
-              <div className='grid grid-cols-5 gap-4 mt-10'>
+              <div className='grid grid-cols-2 md:grid-cols-5 gap-4 mt-10'>
                 <CategoryCard icon={<Scissors />} title='Hair' />
-
+                
                 <CategoryCard icon={<Hand />} title='Massage' />
 
                 <CategoryCard icon={<Paintbrush />} title='Makeup' />

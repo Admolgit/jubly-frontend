@@ -160,6 +160,7 @@ export const LinkActions = ({
             )}
 
             {component !== 'transaction' &&
+              link?.status !== 'PENDING' &&
               isActionable &&
               !hasActiveReschedule && (
                 <button

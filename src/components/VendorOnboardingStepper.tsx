@@ -4,6 +4,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { Check } from 'lucide-react';
 import Input from './ui/Input';
 import {
+  useCreateSubaccountMutation,
   useGetBankListsQuery,
   useLazyResolveBankQuery,
 } from '../features/paystack/paystackApi';
@@ -11,7 +12,9 @@ import toast from 'react-hot-toast';
 import { useDebounce } from 'use-debounce';
 import {
   useCompleteVendorOnboardingMutation,
+  useCreateProfileImageMutation,
   useCreateVendorProfieMutation,
+  useSubmitVendorIdentityImageMutation,
 } from '../features/vendor/vendorApi';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -69,9 +72,14 @@ export const VendorOnboardingStepper = () => {
     { isLoading: completeVendorOnboardingIsLoading },
   ] = useCompleteVendorOnboardingMutation();
   const [createVendorProfile] = useCreateVendorProfieMutation();
+  const [createSubaccount] = useCreateSubaccountMutation();
+  const [submitIdentityImage, { isLoading: isIdentityUploading }] =
+    useSubmitVendorIdentityImageMutation();
+  const [createProfileImage] = useCreateProfileImageMutation();
+  const identityUploadPending = useRef(false);
 
   const [step, setStep] = useState(0);
-  const [vendorProfileId, setVendorProfileId] = useState<string | null>(null);
+  // const [vendorProfileId, setVendorProfileId] = useState<string | null>(null);
   const {
     register,
     control,
@@ -143,6 +151,7 @@ export const VendorOnboardingStepper = () => {
   const stepFields: Record<number, (keyof OnboardingForm)[]> = {
     0: ['businessName', 'category', 'city', 'state', 'country'],
     1: ['accountNumber', 'settlementBank'],
+    2: ['identityType', 'documentFrontUrl'],
   };
 
   const nextStep = async () => {
@@ -168,11 +177,57 @@ export const VendorOnboardingStepper = () => {
 
         if (res.status === 201) {
           toast.success('Vendor details created.');
-          setVendorProfileId(res.data.vendor.id);
+          // setVendorProfileId(res.data.vendor.id);
         }
       } catch (error: any) {
         console.error('Vendor profile creation failed:', error);
         return;
+      }
+    }
+
+    if (step === 1) {
+      try {
+        const res = await createSubaccount({
+          businessName: values.businessName,
+          settlementBank: values.settlementBank,
+          accountNumber: values.accountNumber,
+        }).unwrap();
+
+        if (res.status === 201) {
+          toast.success('Subaccount details created.');
+          // setVendorProfileId(res.data.vendor.id);
+        }
+      } catch (error: any) {
+        console.error('Subaccount creation failed:', error);
+        return;
+      }
+    }
+
+    if (step === 2) {
+      if (identityUploadPending.current) return;
+      const documentFront = values.documentFrontUrl?.[0];
+      if (!values.identityType?.trim() || !documentFront) return;
+      identityUploadPending.current = true;
+      try {
+        const formData = new FormData();
+        const profileImageData = new FormData();
+        formData.append('identityType', values.identityType.trim());
+        formData.append('documentFrontUrl', documentFront);
+        if (values.profileImage?.length) {
+          profileImageData.append('profileImage', values.profileImage[0]);
+        }
+        if (profileImageData.has('profileImage')) {
+          await createProfileImage(profileImageData).unwrap();
+        }
+        await submitIdentityImage(formData).unwrap();
+        toast.success('Identity document uploaded successfully.');
+      } catch (error: any) {
+        toast.error(
+          error?.data?.message || 'Identity upload failed. Please try again.',
+        );
+        return;
+      } finally {
+        identityUploadPending.current = false;
       }
     }
 
@@ -215,35 +270,24 @@ export const VendorOnboardingStepper = () => {
 
   const onSubmit = async (data: OnboardingForm) => {
     try {
-      if (data.documentFrontUrl?.length) {
-        const file = data?.documentFrontUrl[0];
-
-        const allowedTypes = ['image/jpeg', 'image/png'];
-
-        if (!allowedTypes.includes(file.type)) {
-          toast.error('Documents must be a JPG or PNG image.');
-          return;
-        }
-      }
-
       toast.loading('Setting up your vendor account...', {
         id: 'onboarding',
       });
 
       const formData = new FormData();
 
-      formData.append(
-        'profile',
-        JSON.stringify({
-          businessName: data.businessName,
-          category: data.category,
-          city: data.city,
-          state: data.state,
-          country: data.country,
-          bio: data.bio,
-          vendorId: vendorProfileId,
-        }),
-      );
+      // formData.append(
+      //   'profile',
+      //   JSON.stringify({
+      //     businessName: data.businessName,
+      //     category: data.category,
+      //     city: data.city,
+      //     state: data.state,
+      //     country: data.country,
+      //     bio: data.bio,
+      //     vendorId: vendorProfileId,
+      //   }),
+      // );
 
       formData.append(
         'services',
@@ -257,25 +301,25 @@ export const VendorOnboardingStepper = () => {
         ),
       );
 
-      formData.append(
-        'subaccount',
-        JSON.stringify({
-          settlementBank: data.settlementBank,
-          accountNumber: data.accountNumber,
-          businessName: data.businessName,
-        }),
-      );
+      // formData.append(
+      //   'subaccount',
+      //   JSON.stringify({
+      //     settlementBank: data.settlementBank,
+      //     accountNumber: data.accountNumber,
+      //     businessName: data.businessName,
+      //   }),
+      // );
 
-      formData.append('identityType', data.identityType as any);
+      // formData.append('identityType', data.identityType as any);
 
-      if (data.profileImage?.length) {
-        formData.append('profileImage', data.profileImage[0]);
-      }
+      // if (data.profileImage?.length) {
+      //   formData.append('profileImage', data.profileImage[0]);
+      // }
 
-      // Identity Documents
-      if (data.documentFrontUrl?.length) {
-        formData.append('documentFrontUrl', data.documentFrontUrl[0]);
-      }
+      // // Identity Documents
+      // if (data.documentFrontUrl?.length) {
+      //   formData.append('documentFrontUrl', data.documentFrontUrl[0]);
+      // }
 
       // Portfolio Images
       if (data.portfolioImages?.length) {
@@ -599,7 +643,11 @@ export const VendorOnboardingStepper = () => {
                 <Input
                   type='text'
                   label='Document Type'
-                  {...register('identityType', { required: true })}
+                  {...register('identityType', {
+                    validate: (value) =>
+                      !!value?.trim() || 'Document type is required.',
+                  })}
+                  error={errors.identityType?.message}
                   placeholder='Document Type'
                   className='w-full'
                 />
@@ -607,7 +655,18 @@ export const VendorOnboardingStepper = () => {
               <Input
                 label='Document'
                 type='file'
-                {...register('documentFrontUrl')}
+                accept='image/jpeg,image/png'
+                {...register('documentFrontUrl', {
+                  validate: (files) => {
+                    const file = files?.[0];
+                    if (!file) return 'Identity document is required.';
+                    return (
+                      ['image/jpeg', 'image/png'].includes(file.type) ||
+                      'Identity document must be a JPG or PNG image.'
+                    );
+                  },
+                })}
+                error={errors.documentFrontUrl?.message}
               />
               {(documentFrontUrl?.length as number) > 0 && (
                 <img
@@ -624,7 +683,10 @@ export const VendorOnboardingStepper = () => {
         {step === 3 && (
           <div className='space-y-4 p-4 bg-white shadow rounded'>
             <h2 className='text-xl font-semibold'>Portfolio Images</h2>
-            <p>Upload images of your work (JPG/PNG). Should not be more than 10 images.</p>
+            <p>
+              Upload images of your work (JPG/PNG). Should not be more than 10
+              images.
+            </p>
             <Input
               label=''
               type='file'
@@ -652,6 +714,7 @@ export const VendorOnboardingStepper = () => {
             <button
               type='button'
               onClick={prevStep}
+              disabled={isIdentityUploading}
               className='px-4 py-2 bg-gray-200 rounded'
             >
               Previous
@@ -662,9 +725,10 @@ export const VendorOnboardingStepper = () => {
             <button
               type='button'
               onClick={nextStep}
+              disabled={isIdentityUploading}
               className='px-4 py-2 bg-blue-500 text-white rounded'
             >
-              Next
+              {isIdentityUploading ? 'Uploading...' : 'Next'}
             </button>
           )}
 

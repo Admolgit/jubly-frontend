@@ -42,10 +42,7 @@ export default function OAuthHandler() {
         const res = await getUserBySlug(payload).unwrap();
 
         const user = authObj?.data?.user || authObj?.data?.data?.user;
-
-        // Set credentials once, up front, with the full token/refreshToken/user
-        // triple — avoids the previous per-branch dispatches that each set a
-        // different partial subset (and could wipe fields set moments earlier).
+        
         dispatch(setCredentials({ user, token, refreshToken }));
         dispatch(setVendorCredentials({ vendor: res.data.vendor }));
 
@@ -53,47 +50,42 @@ export default function OAuthHandler() {
         localStorage.setItem('auth', JSON.stringify(authObj?.data));
 
         const vendor = res?.data?.user?.vendor;
+        console.log('vendor', vendor);
 
-        // Vendor profile hasn't been created yet
-        if (!vendor) {
+        if (
+          authObj?.data?.meta?.isSignup ||
+          (vendor?.onboardingCompleted === false &&
+            vendor?.isApproved === false &&
+            vendor.isActive === false &&
+            vendor?.kycStatus === 'NOT_SUBMITTED')
+        ) {
           navigate('/onboarding', {
             replace: true,
             state: { fromOAuth: true, onboarding: false },
           });
-
-          toast.success('Please complete your onboarding to continue.');
+          toast.success('Please complete your KYC to continue.');
           return;
-        }
-
-        // Vendor exists but hasn't been approved
-        if (!vendor.isApproved) {
+        } else if (!vendor?.onboardingCompleted && vendor?.isApproved) {
+          localStorage.setItem('email', user?.email);
+          navigate('/vendor-availability');
+          toast.success('Please set your availability.');
+        } else if (
+          vendor?.onboardingCompleted &&
+          vendor?.isApproved &&
+          authObj?.data?.meta?.alreadyExists
+        ) {
+          navigate('/dashboard', {
+            replace: true,
+            state: { fromOAuth: true, onboarding: false },
+          });
+        } else {
           navigate('/login', {
             replace: true,
           });
-
           toast.success(
             'Your account is not verified yet. Please contact Jubly admin.',
           );
-          return;
         }
-
-        // Approved, but availability/onboarding isn't finished
-        if (!vendor.onboardingCompleted) {
-          localStorage.setItem('email', user?.email);
-
-          navigate('/vendor-availability', {
-            replace: true,
-          });
-
-          toast.success('Please set your availability.');
-          return;
-        }
-
-        // Fully onboarded + approved
-        navigate('/dashboard', {
-          replace: true,
-          state: { fromOAuth: true, onboarding: false },
-        });
       } catch (err: any) {
         const message = err?.data?.error || err?.data?.message || err?.message;
 
