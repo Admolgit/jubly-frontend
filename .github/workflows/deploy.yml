@@ -33,6 +33,11 @@ jobs:
 
           ssh-keyscan -p ${{ secrets.CPANEL_PORT }} \
             ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Check SSH key fingerprint
+        run: |
+          ssh-keygen -y -f ~/.ssh/cpanel_key > /tmp/cpanel_key.pub
+          ssh-keygen -lf /tmp/cpanel_key.pub
 
       - name: Test SSH connection
         run: |
