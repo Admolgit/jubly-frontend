@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Modal from '../../ui/Modal';
 import Input from '../../ui/Input';
+import Select from '../../ui/Select';
 import Textarea from '../../ui/Textarea';
 import { useRequestRescheduleMutation } from '../../../features/booking/bookingApi';
+import { useGetVendorAvailabilitySlotsQuery } from '../../../features/availability/availability';
 
 type Props = {
   readonly open: boolean;
@@ -22,33 +24,61 @@ export default function RequestRescheduleModal({
   const [reason, setReason] = useState('');
 
   const [requestReschedule, { isLoading }] = useRequestRescheduleMutation();
+  const alreadyRescheduled = booking?.rescheduleCount > 0;
+  const shouldSkip = !date || !booking?.serviceId || !booking?.services?.userId;
+
+  const {
+    data: slotsData,
+    isFetching: slotsFetching,
+    isError: slotsError,
+  } = useGetVendorAvailabilitySlotsQuery(
+    {
+      vendorId: booking?.services?.userId,
+      serviceId: booking?.serviceId,
+      date: date,
+    },
+    {
+      skip: shouldSkip,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  
+  const availableSlots: { startTime: string }[] =
+    shouldSkip || slotsFetching
+      ? []
+      : slotsData?.data?.availableSlots || [];
+  const selectedSlot = availableSlots.find((slot) => slot.startTime === time);
+  const timePlaceholder = !date
+    ? 'Select a proposed date first'
+    : !booking?.services?.userId || !booking?.serviceId || slotsError
+      ? 'Unable to load available times'
+      : slotsFetching
+        ? 'Loading available times...'
+        : availableSlots.length === 0
+          ? 'No available times for this date'
+          : 'Select an available time';
 
   useEffect(() => {
     if (!open) return;
     const newDate = booking?.date ? booking.date.split('T')[0] : '';
-    const newTime = booking?.startTime
-      ? new Date(booking.startTime).toISOString().slice(11, 16)
-      : '';
 
     // Defer state updates to avoid synchronous setState within the effect
     const t = window.setTimeout(() => {
       setDate(newDate);
-      setTime(newTime);
+      setTime('');
       setReason('');
     }, 0);
 
     return () => clearTimeout(t);
   }, [open, booking]);
 
-  const alreadyRescheduled = booking?.rescheduleCount > 0;
-
   const handleSubmit = async () => {
-    if (!booking?.id || !date || !time) {
+    if (!booking?.id || !date || !selectedSlot) {
       toast.error('Please select a date and time');
       return;
     }
 
-    const proposedDate = new Date(`${date}T${time}`).toISOString();
+    const proposedDate = new Date(selectedSlot.startTime).toISOString();
 
     try {
       await requestReschedule({
@@ -87,14 +117,32 @@ export default function RequestRescheduleModal({
             label='Proposed Date'
             type='date'
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setTime('');
+            }}
             className='border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]'
           />
-          <Input
+          <Select
             label='Proposed Time'
-            type='time'
-            value={time}
+            value={selectedSlot ? time : ''}
             onChange={(e) => setTime(e.target.value)}
+            disabled={
+              shouldSkip ||
+              slotsFetching ||
+              slotsError ||
+              !availableSlots.length
+            }
+            options={[
+              { value: '', label: timePlaceholder },
+              ...availableSlots.map((slot) => ({
+                value: slot.startTime,
+                label: new Date(slot.startTime).toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }),
+              })),
+            ]}
             className='border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]'
           />
           <Textarea
@@ -116,7 +164,7 @@ export default function RequestRescheduleModal({
               type='button'
               className='rounded-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60'
               onClick={handleSubmit}
-              disabled={!date || !time || isLoading}
+              disabled={!date || !selectedSlot || isLoading}
             >
               {isLoading ? 'Requesting...' : 'Send Reschedule Request'}
             </button>
