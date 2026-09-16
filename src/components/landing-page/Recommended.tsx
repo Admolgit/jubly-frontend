@@ -41,6 +41,8 @@ export default function RecommendedSection() {
     fetchUser();
   }, [userId, navigate, getUserId]);
 
+  console.log('vendors', vendors?.services?.name);
+
   return (
     <section className='bg-[#090018] py-24 services'>
       <Seo
@@ -126,7 +128,7 @@ export default function RecommendedSection() {
                     {/* CONTENT */}
                     <div className='p-5'>
                       <h3 className='text-2xl font-semibold text-white'>
-                        {vendor?.category || 'Beauty Service'}
+                        {vendor?.services[0]?.name || 'Beauty Service'}
                       </h3>
 
                       <p className='mt-1 text-gray-300'>
