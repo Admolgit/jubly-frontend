@@ -2,106 +2,127 @@ import { api } from "../../app/api";
 
 export const vendorApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    updatePortfolio: builder.mutation({
+      query: (formData: FormData) => ({
+        url: '/vendor/onboarding/update-portfolio-images',
+        method: 'PATCH',
+        body: formData,
+      }),
+    }),
+    submitVendorIdentityImage: builder.mutation({
+      query: (formData: FormData) => ({
+        url: '/vendor/onboarding/identity-image',
+        method: 'PATCH',
+        body: formData,
+      }),
+    }),
     createVendorProfie: builder.mutation({
       query: (formData) => ({
-        url: "/vendor/onboarding/profile",
-        method: "POST",
+        url: '/vendor/onboarding/profile',
+        method: 'POST',
         body: formData,
       }),
     }),
     completeVendorOnboarding: builder.mutation({
       query: (formData) => ({
-        url: "/vendor/onboarding/complete-onboarding",
-        method: "POST",
+        url: '/vendor/onboarding/complete-onboarding',
+        method: 'POST',
         body: formData,
       }),
     }),
     setVendorAvailability: builder.mutation({
       query: (data) => ({
-        url: "/availability",
-        method: "POST",
+        url: '/availability',
+        method: 'POST',
         body: data,
       }),
     }),
     getVendorProfileById: builder.query({
       query: () => ({
-        url: "/vendor",
-        method: "GET",
+        url: '/vendor',
+        method: 'GET',
       }),
     }),
     getServiceById: builder.query({
       query: (serviceId: string) => ({
         url: `/vendor/service/${serviceId}`,
-        method: "GET",
+        method: 'GET',
       }),
     }),
     getSearchedVendor: builder.mutation({
       query: (query) => ({
         url: `/vendor/search-vendor?name=${query?.name}&location=${query?.location}&type=${query?.type}&page=${query.page}&limit=${query.limit}`,
-        method: "GET",
+        method: 'GET',
       }),
     }),
     getUserBySlug: builder.mutation({
       query: (data) => ({
         url: `/vendor/booking-vendor/${data.slug}`,
-        method: "GET",
+        method: 'GET',
       }),
     }),
     getDashboardBookings: builder.query({
       query: () => ({
-        url: "/vendor/dashboard/bookings",
-        method: "GET",
+        url: '/vendor/dashboard/bookings',
+        method: 'GET',
       }),
     }),
     getDashboardServices: builder.query({
       query: () => ({
-        url: "/vendor/dashboard/services",
-        method: "GET",
+        url: '/vendor/dashboard/services',
+        method: 'GET',
       }),
     }),
     getDashboardWallet: builder.query({
       query: () => ({
-        url: "/vendor/dashboard/wallet",
-        method: "GET",
+        url: '/vendor/dashboard/wallet',
+        method: 'GET',
       }),
     }),
     getDashboardClients: builder.query({
       query: () => ({
-        url: "/vendor/dashboard/clients",
-        method: "GET",
+        url: '/vendor/dashboard/clients',
+        method: 'GET',
       }),
     }),
     getAllVendors: builder.query({
       query: () => ({
-        url: "/vendor/all-vendors",
-        method: "GET",
+        url: '/vendor/all-vendors',
+        method: 'GET',
       }),
     }),
     searchVendors: builder.mutation({
       query: (data) => ({
         url: `search-vendor?name=${data.name}&location=${data.location}&type=${data.type}&page=${data.page}&limit=${data.limit}`,
-        method: "GET",
+        method: 'GET',
       }),
     }),
     updateBankDetails: builder.mutation({
       query: (data: { accountNumber: string; settlementBank: string }) => ({
-        url: "/vendor/bank-details",
-        method: "PATCH",
+        url: '/vendor/bank-details',
+        method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ['User'],
     }),
     exportBookingsCSV: builder.mutation({
       query: () => ({
         url: `/vendor/export/csv`,
-        method: "GET",
+        method: 'GET',
         responseHandler: async (response) => response.blob(),
       }),
     }),
     updateVendorProfileImage: builder.mutation({
       query: (formData: FormData) => ({
-        url: "/vendor/onboarding/profile-update",
-        method: "PATCH",
+        url: '/vendor/onboarding/profile-update',
+        method: 'PATCH',
+        body: formData,
+      }),
+    }),
+    createProfileImage: builder.mutation({
+      query: (formData: FormData) => ({
+        url: '/vendor/onboarding/profile-image',
+        method: 'PATCH',
         body: formData,
       }),
     }),
@@ -109,6 +130,8 @@ export const vendorApi = api.injectEndpoints({
 });
 
 export const {
+  useUpdatePortfolioMutation,
+  useSubmitVendorIdentityImageMutation,
   useCreateVendorProfieMutation,
   useCompleteVendorOnboardingMutation,
   useSetVendorAvailabilityMutation,
@@ -125,4 +148,5 @@ export const {
   useUpdateBankDetailsMutation,
   useExportBookingsCSVMutation,
   useUpdateVendorProfileImageMutation,
+  useCreateProfileImageMutation,
 } = vendorApi;

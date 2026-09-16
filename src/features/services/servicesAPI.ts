@@ -35,6 +35,12 @@ export const servicesAPI = api.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getVendorSubscriptionFee: builder.query({
+      query: () => ({
+        url: `/subscription/fee`,
+        method: 'GET',
+      }),
+    }),
     getSettings: builder.query({
       query: () => ({
         url: `/admin/platform-settings`,
@@ -51,4 +57,5 @@ export const {
   useVendorSubscriptionMutation,
   useGetVendorSubscriptionStatusQuery,
   useGetSettingsQuery,
+  useGetVendorSubscriptionFeeQuery,
 } = servicesAPI;

@@ -31,7 +31,8 @@ const baseQuery = fetchBaseQuery({
 });
 
 const isAuthBypassUrl = (url: string) =>
-  url.includes('/auth/login') || url.includes('/auth/refresh-token');
+  url.includes('/auth/login') || url.includes('/auth/refresh-token') ||
+  url.includes('/auth/forgot-password') || url.includes('/auth/reset-password');
 
 const refreshBaseQuery = fetchBaseQuery({ baseUrl: BASE });
 

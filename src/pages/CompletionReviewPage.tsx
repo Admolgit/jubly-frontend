@@ -13,6 +13,7 @@ import { formatDate } from '../components/utils/dateFormatter';
 import { formatTimeFromISO } from '../components/utils/timeFormatter';
 import Loader from '../components/ui/Loader';
 import Textarea from '../components/ui/Textarea';
+import ReviewModal from '../components/reviews/ReviewModal';
 
 const REASON_MAX_LENGTH = 500;
 
@@ -40,6 +41,7 @@ function Card({ children }: { readonly children: React.ReactNode }) {
 }
 
 export default function CompletionReviewPage() {
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 
@@ -80,12 +82,13 @@ export default function CompletionReviewPage() {
     setSubmitting(true);
     try {
       const res = await approveCompletion(token);
+      if (res.data?.status === 'COMPLETED') setReviewOpen(true);
       setResultMessage(
         res.message || 'Approved — payment has been released to the vendor.',
       );
       setReview((prev) =>
         prev
-          ? { ...prev, canAct: false, status: res.data?.status || prev.status }
+          ? { ...prev, clientId: res.data?.clientId || prev.clientId, canAct: false, status: res.data?.status || prev.status }
           : prev,
       );
     } catch (err) {
@@ -156,6 +159,18 @@ export default function CompletionReviewPage() {
 
   return (
     <Card>
+      {review.status === 'COMPLETED' && (
+        <div className='mt-4'>
+          <button className='text-sm font-medium text-purple-600 hover:underline' onClick={() => setReviewOpen(true)}>Leave a Review</button>
+          {reviewOpen && (
+            <ReviewModal
+              checkExistingReview={false}
+              booking={{ id: review.bookingId, ...review }}
+              onClose={() => setReviewOpen(false)}
+            />
+          )}
+        </div>
+      )}
       <h1 className='mt-3 text-2xl font-bold tracking-tight text-gray-900'>
         Review completion request
       </h1>
@@ -254,9 +269,9 @@ function SummaryRow({
   value,
   icon,
 }: {
- readonly label: string;
- readonly value: string;
- readonly icon?: React.ReactNode;
+  readonly label: string;
+  readonly value: string;
+  readonly icon?: React.ReactNode;
 }) {
   return (
     <div className='flex items-center justify-between gap-4'>

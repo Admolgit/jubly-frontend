@@ -179,6 +179,31 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <div className='flex items-center justify-between mt-2'>
+                <div>
+                  Remember me
+                  <input
+                    type='checkbox'
+                    className='ml-2'
+                    onClick={() => {
+                      const rememberMe =
+                        localStorage.getItem('rememberMe') === 'true';
+                      localStorage.setItem(
+                        'rememberMe',
+                        (!rememberMe).toString(),
+                      );
+                    }}
+                  />
+                </div>
+                <div className=''>
+                  <Link
+                    to='/forgot-password'
+                    className='text-sm font-medium text-blue-600 hover:underline'
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
 
               <Button type='submit' disabled={isLoading} className='mt-6'>
                 {isLoading ? 'Logging in...' : 'Login'}

@@ -70,6 +70,8 @@ export function ClientVendors() {
     try {
       const res = await getUserById(userId).unwrap();
 
+      console.log('Vendor slug response:', res);
+
       if (res?.status === 200) {
         const slug = res.data.user.slug;
         navigate('/vendor-booking/' + slug);

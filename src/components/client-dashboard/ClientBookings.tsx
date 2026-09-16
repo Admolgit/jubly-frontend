@@ -1,71 +1,79 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   useCancelBookingMutation,
   useGetClientsBookingsQuery,
+  useLazyGetClientsBookingsQuery,
   useGetClientsBookingStatsQuery,
   useMarkBookingAsCompletedMutation,
-} from "../../features/booking/bookingApi";
-import { formatDate } from "../utils/dateFormatter";
-import { formatTimeFromISO } from "../utils/timeFormatter";
-import Pagination from "../utils/pagination";
-import SelectLimit from "../utils/selectLimit";
-import Loader from "../ui/Loader";
-import Modal from "../ui/Modal";
-import { useSelector } from "react-redux";
-import { LinkActions } from "../ui/LinkActions";
-import BookingFilters from "../utils/BookingFilters";
-import { StatCard } from "../vendor-dashboard/dashboard/StatCard";
-import { ClipboardList } from "lucide-react";
-import ViewBookingModal from "../vendor-dashboard/booking/BookingViewModal";
-import RequestRescheduleModal from "../vendor-dashboard/booking/RequestRescheduleModal";
-import ManageRescheduleModal from "../vendor-dashboard/booking/ManageRescheduleModal";
-import Dialog from "../ui/Dialog";
-import { getBookingStatusBadge } from "../utils/bookingStatus";
+} from '../../features/booking/bookingApi';
+import { formatDate } from '../utils/dateFormatter';
+import { formatTimeFromISO } from '../utils/timeFormatter';
+import Pagination from '../utils/pagination';
+import SelectLimit from '../utils/selectLimit';
+import Loader from '../ui/Loader';
+import Modal from '../ui/Modal';
+import { useSelector } from 'react-redux';
+import { LinkActions } from '../ui/LinkActions';
+import BookingFilters from '../utils/BookingFilters';
+import { StatCard } from '../vendor-dashboard/dashboard/StatCard';
+import { ClipboardList } from 'lucide-react';
+import ViewBookingModal from '../vendor-dashboard/booking/BookingViewModal';
+import RequestRescheduleModal from '../vendor-dashboard/booking/RequestRescheduleModal';
+import ManageRescheduleModal from '../vendor-dashboard/booking/ManageRescheduleModal';
+import Dialog from '../ui/Dialog';
+import { getBookingStatusBadge } from '../utils/bookingStatus';
+import ReviewModal from '../reviews/ReviewModal';
+import BookingReviewAction from '../reviews/BookingReviewAction';
+import type { ReviewBooking } from '../../features/reviews/reviewApi';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
 const statusOptions = [
-  { label: "All", value: "ALL", style: "bg-blue-50 text-blue-700" },
-  { label: "Upcoming", value: "PENDING", style: "bg-amber-100 text-amber-700" },
+  { label: 'All', value: 'ALL', style: 'bg-blue-50 text-blue-700' },
+  { label: 'Upcoming', value: 'PENDING', style: 'bg-amber-100 text-amber-700' },
   {
-    label: "Confirmed",
-    value: "CONFIRMED",
-    style: "bg-green-100 text-green-700",
+    label: 'Confirmed',
+    value: 'CONFIRMED',
+    style: 'bg-green-100 text-green-700',
   },
   {
-    label: "Reschedule Requested",
-    value: "RESCHEDULE_REQUESTED",
-    style: "bg-blue-100 text-blue-700",
+    label: 'Reschedule Requested',
+    value: 'RESCHEDULE_REQUESTED',
+    style: 'bg-blue-100 text-blue-700',
   },
   {
-    label: "Completed",
-    value: "COMPLETED",
-    style: "bg-gray-100 text-gray-600",
+    label: 'Completed',
+    value: 'COMPLETED',
+    style: 'bg-gray-100 text-gray-600',
   },
   {
-    label: "Cancelled by Client",
-    value: "CANCELLED_BY_CLIENT",
-    style: "bg-red-100 text-red-700",
+    label: 'Cancelled by Client',
+    value: 'CANCELLED_BY_CLIENT',
+    style: 'bg-red-100 text-red-700',
   },
   {
-    label: "Cancelled by Vendor",
-    value: "CANCELLED_BY_VENDOR",
-    style: "bg-red-100 text-red-700",
+    label: 'Cancelled by Vendor',
+    value: 'CANCELLED_BY_VENDOR',
+    style: 'bg-red-100 text-red-700',
   },
 ];
 
 function ClientBookings() {
+  const [reviewBooking, setReviewBooking] = useState<ReviewBooking | null>(
+    null,
+  );
+  const [getCompletedBookings] = useLazyGetClientsBookingsQuery();
   const user = useSelector((state: { auth: { user: any } }) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [searchFilter, setSearchFilter] = useState("");
-  const [searchValue, setSearchValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [searchFilter, setSearchFilter] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
+  const [cancelReason, setCancelReason] = useState('');
   const [openMark, setOpenMark] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [manageRescheduleOpen, setManageRescheduleOpen] = useState(false);
@@ -77,7 +85,7 @@ function ClientBookings() {
       email: user?.email,
       page: currentPage,
       limit: itemsPerPage,
-      status: statusFilter === "ALL" ? "" : statusFilter,
+      status: statusFilter === 'ALL' ? '' : statusFilter,
       dateFilter: undefined,
       search: searchValue || undefined,
       date: undefined,
@@ -109,7 +117,7 @@ function ClientBookings() {
 
   const openCancel = (booking: any) => {
     setSelectedBooking(booking);
-    setCancelReason("");
+    setCancelReason('');
     setCancelOpen(true);
   };
 
@@ -136,11 +144,11 @@ function ClientBookings() {
         bookingId: selectedBooking.id,
         reason: cancelReason || undefined,
       }).unwrap();
-      toast.success("Booking cancelled successfully");
+      toast.success('Booking cancelled successfully');
       setCancelOpen(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to cancel booking");
+      toast.error(error?.data?.message || 'Failed to cancel booking');
     }
   };
 
@@ -148,12 +156,53 @@ function ClientBookings() {
     if (!selectedBooking?.id) return;
 
     try {
-      await markBookingAsCompleted(selectedBooking.id).unwrap();
-      toast.success("Booking mark as completed successfully");
+      const completed = await markBookingAsCompleted(
+        selectedBooking.id,
+      ).unwrap();
+      if (user?.role === 'CLIENT') {
+        if (completed?.data?.status === 'COMPLETED') {
+          setViewVendorOpen(false);
+          setReviewBooking({ ...selectedBooking, status: 'COMPLETED' });
+        } else {
+          // Approval succeeded, but older responses may omit status. Confirm it
+          // independently of the dashboard's active filters before prompting.
+          void (async () => {
+            try {
+              let page = 1;
+              let totalPages = 1;
+              do {
+                const result = await getCompletedBookings({
+                  email: user.email,
+                  page,
+                  limit: 50,
+                  status: 'COMPLETED',
+                }).unwrap();
+                const booking = result.data?.find(
+                  (item: ReviewBooking) =>
+                    item.id === selectedBooking.id &&
+                    item.status === 'COMPLETED',
+                );
+                if (booking) {
+                  setViewVendorOpen(false);
+                  setReviewBooking(booking);
+                  return;
+                }
+                totalPages = Math.ceil((result.meta?.total || 0) / 50);
+                page += 1;
+              } while (page <= totalPages);
+            } catch {
+              // Completion remains successful; review later is still available.
+            }
+          })();
+        }
+      }
+      toast.success('Booking mark as completed successfully');
       setOpenMark(false);
       setSelectedBooking(null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to mark booking booking as completed");
+      toast.error(
+        error?.message || 'Failed to mark booking booking as completed',
+      );
     }
   };
 
@@ -166,18 +215,18 @@ function ClientBookings() {
     return <Loader />;
   }
   return (
-    <div className="py-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+    <div className='py-4'>
+      <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6'>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-950">
+          <h1 className='text-2xl font-semibold text-gray-950'>
             Your Bookings
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className='mt-1 text-sm text-gray-500'>
             Manage your appointments, track vendor status, and schedule new
             beauty sessions.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className='flex flex-wrap gap-3'>
           {/* <button
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
             onClick={() => navigate("/booking")}
@@ -187,31 +236,31 @@ function ClientBookings() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4 pb-6">
+      <div className='grid md:grid-cols-3 gap-4 pb-6'>
         <StatCard
-          title="Total Spent"
-          value={`₦ ${bookingStats?.data?.total?.toLocaleString() || "0"}`}
-          icon={<ClipboardList className="w-5 h-5" />}
-          color="purple"
+          title='Total Spent'
+          value={`₦ ${bookingStats?.data?.total?.toLocaleString() || '0'}`}
+          icon={<ClipboardList className='w-5 h-5' />}
+          color='purple'
           // change={`${stats?.data?.bookingCount?.growth}% from last month`}
         />
         <StatCard
-          title="Active Sessions"
-          value={`${bookingStats?.data?.activeBooking ?? "0"} Bookings`}
-          icon={<ClipboardList className="w-5 h-5" />}
-          color="purple"
+          title='Active Sessions'
+          value={`${bookingStats?.data?.activeBooking ?? '0'} Bookings`}
+          icon={<ClipboardList className='w-5 h-5' />}
+          color='purple'
           // change={`${stats?.data?.bookingCount?.growth}% from last month`}
         />
         <StatCard
-          title="Loyalty Points"
+          title='Loyalty Points'
           value={`1,450 pts`}
-          icon={<ClipboardList className="w-5 h-5" />}
-          color="purple"
+          icon={<ClipboardList className='w-5 h-5' />}
+          color='purple'
           // change={`${stats?.data?.bookingCount?.growth}% from last month`}
         />
       </div>
 
-      <div className="rounded-2xl p-4 shadow-sm">
+      <div className='rounded-2xl p-4 shadow-sm'>
         <BookingFilters
           statusFilter={statusFilter}
           statusOptions={statusOptions}
@@ -220,64 +269,64 @@ function ClientBookings() {
           setSearchFilter={setSearchFilter}
         />
 
-        <div className="mt-4 w-full">
-          <div className="overflow-x-auto scrollbar-thin">
+        <div className='mt-4 w-full'>
+          <div className='overflow-x-auto scrollbar-thin'>
             {getBookingsDataLoading ? (
               <Loader />
             ) : (
-              <table className="min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm">
-                <thead className="text-xs bg-gray-50 text-gray-500 uppercase tracking-wider">
-                  <tr className="border-b">
-                    <th className="px-3 py-3">Vendor</th>
-                    <th className="px-3 py-3">Service</th>
-                    <th className="px-3 py-3">Date</th>
-                    <th className="px-3 py-3">Time</th>
-                    <th className="px-3 py-3">Amount</th>
-                    <th className="px-3 py-3">Status</th>
-                    <th className="px-3 py-3">Actions</th>
+              <table className='min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm'>
+                <thead className='text-xs bg-gray-50 text-gray-500 uppercase tracking-wider'>
+                  <tr className='border-b'>
+                    <th className='px-3 py-3'>Vendor</th>
+                    <th className='px-3 py-3'>Service</th>
+                    <th className='px-3 py-3'>Date</th>
+                    <th className='px-3 py-3'>Time</th>
+                    <th className='px-3 py-3'>Amount</th>
+                    <th className='px-3 py-3'>Status</th>
+                    <th className='px-3 py-3'>Actions</th>
                   </tr>
                 </thead>
 
-                <tbody className="text-sm">
+                <tbody className='text-sm'>
                   {bookingRows.map((b: any) => (
-                    <tr key={b.id} className="border-b last:border-b-0">
-                      <td className="px-3 py-4 font-medium text-gray-900">
-                        {b.vendor?.businessName || b.vendorName || "Vendor"}
+                    <tr key={b.id} className='border-b last:border-b-0'>
+                      <td className='px-3 py-4 font-medium text-gray-900'>
+                        {b.vendor?.businessName || b.vendorName || 'Vendor'}
                       </td>
 
-                      <td className="px-3 py-4 text-gray-600">
-                        {b.services?.name || "Service"}
+                      <td className='px-3 py-4 text-gray-600'>
+                        {b.services?.name || 'Service'}
                       </td>
 
-                      <td className="px-3 py-4 text-gray-600">
-                        {formatDate(b.date, "DD/MM/YYYY")}
+                      <td className='px-3 py-4 text-gray-600'>
+                        {formatDate(b.date, 'DD/MM/YYYY')}
                       </td>
 
-                      <td className="px-3 py-4 text-gray-600">
+                      <td className='px-3 py-4 text-gray-600'>
                         {formatTimeFromISO(b.startTime as string)}
                       </td>
 
-                      <td className="px-3 py-4 font-semibold text-gray-900">
-                        ₦{" "}
+                      <td className='px-3 py-4 font-semibold text-gray-900'>
+                        ₦{' '}
                         {Number(
                           b.services?.price || b.amount || 0,
                         ).toLocaleString()}
                       </td>
 
-                      <td className="px-3 py-4">
+                      <td className='px-3 py-4'>
                         <span
                           className={
-                            "rounded-full px-3 py-1 text-xs font-semibold " +
+                            'rounded-full px-3 py-1 text-xs font-semibold ' +
                             getBookingStatusBadge(b.status).wrapper
                           }
                         >
-                          {b.status === "COMPLETION_PENDING_APPROVAL"
-                            ? "Vendor marked this complete — action needed"
+                          {b.status === 'COMPLETION_PENDING_APPROVAL'
+                            ? 'Vendor marked this complete — action needed'
                             : b.status}
                         </span>
                       </td>
 
-                      <td className="px-3 py-4">
+                      <td className='px-3 py-4'>
                         <LinkActions
                           link={b}
                           onReschedule={openReschedule}
@@ -288,6 +337,13 @@ function ClientBookings() {
                           setSelectedView={setSelectedView}
                           setOpenMark={setOpenMark}
                         />
+                        {b.status === 'COMPLETED' &&
+                          user?.role === 'CLIENT' && (
+                            <BookingReviewAction
+                              booking={b}
+                              onReview={setReviewBooking}
+                            />
+                          )}
                       </td>
                     </tr>
                   ))}
@@ -297,12 +353,12 @@ function ClientBookings() {
           </div>
         </div>
         {bookingRows.length > 0 && (
-          <div className="mt-4 bg-[#F8F8FE] flex items-center align-center justify-between">
+          <div className='mt-4 bg-[#F8F8FE] flex items-center align-center justify-between'>
             <SelectLimit
               ITEMS_OPTIONS={[5, 10, 20, 50]}
               itemsPerPage={itemsPerPage}
               handleItemsChange={handleItemsChange}
-              text="Bookings"
+              text='Bookings'
             />
             <Pagination
               currentPage={currentPage}
@@ -312,6 +368,17 @@ function ClientBookings() {
           </div>
         )}
       </div>
+
+      {reviewBooking && user?.role === 'CLIENT' && (
+        <ReviewModal
+          key={reviewBooking.id}
+          booking={{
+            ...reviewBooking,
+            clientId: reviewBooking.clientId || user.id,
+          }}
+          onClose={() => setReviewBooking(null)}
+        />
+      )}
 
       <ViewBookingModal
         open={viewVendorOpen}
@@ -326,16 +393,16 @@ function ClientBookings() {
       <Modal
         open={cancelOpen}
         onClose={() => setCancelOpen(false)}
-        title="Cancel Booking"
+        title='Cancel Booking'
       >
         <Dialog
           setCancelOpen={setCancelOpen}
           cancelLoading={cancelLoading}
           handleCancel={handleCancel}
-          headerText="Are you sure you want to cancel this booking? This action cannot be
-                    undone."
-          btnCancelText="No, keep it"
-          btnKeepText="Yes, cancel"
+          headerText='Are you sure you want to cancel this booking? This action cannot be
+                    undone.'
+          btnCancelText='No, keep it'
+          btnKeepText='Yes, cancel'
           showReasonInput
           reason={cancelReason}
           onReasonChange={setCancelReason}
@@ -345,16 +412,16 @@ function ClientBookings() {
       <Modal
         open={openMark}
         onClose={() => setOpenMark(false)}
-        title="Mark Booking as Complete"
+        title='Mark Booking as Complete'
       >
         <Dialog
           setCancelOpen={setOpenMark}
           cancelLoading={markingLoading}
           handleCancel={handleMarkAsCompleted}
-          headerText="Are you sure you want to mark this booking as completed? This action
-                    cannot be undone."
-          btnCancelText="No, keep it"
-          btnKeepText="Yes, mark as completed"
+          headerText='Are you sure you want to mark this booking as completed? This action
+                    cannot be undone.'
+          btnCancelText='No, keep it'
+          btnKeepText='Yes, mark as completed'
         />
       </Modal>
 
