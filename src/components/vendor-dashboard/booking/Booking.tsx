@@ -137,7 +137,7 @@ export function Bookings() {
       count: statusFilterData?.data?.cancelled ?? 0,
     },
     {
-      label: 'Cancelled By Vendor',
+      label: 'Cancelled by You',
       value: 'CANCELLED_BY_VENDOR',
       style: 'bg-red-100 text-red-700',
       count: statusFilterData?.data?.cancelled_by_vendor ?? 0,
