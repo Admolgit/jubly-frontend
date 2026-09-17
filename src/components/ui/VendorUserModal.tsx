@@ -25,7 +25,7 @@ interface VendorUserModalProps {
   readonly onSave?: (data: any) => void;
   readonly user?: any;
   readonly handleSelectImage?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  readonly isLoading: boolean;
+  readonly isLoading?: boolean;
 }
 
 export default function VendorUserModal({
