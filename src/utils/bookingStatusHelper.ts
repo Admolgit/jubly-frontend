@@ -6,7 +6,7 @@ export const bookingStatusHelper = (status: string) => {
   } else if (status === 'CANCELLED_BY_CLIENT') {
     return 'Cancelled by client';
   } else if (status === 'CANCELLED_BY_VENDOR') {
-    return 'Cancelled by vendor';
+    return 'Cancelled by You';
   } else if (status === 'CANCELLED') {
     return 'Cancelled';
   } else if (status === 'CONFIRMED') {
