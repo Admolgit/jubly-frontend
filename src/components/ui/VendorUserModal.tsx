@@ -25,6 +25,7 @@ interface VendorUserModalProps {
   readonly onSave?: (data: any) => void;
   readonly user?: any;
   readonly handleSelectImage?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  readonly isLoading?: boolean;
 }
 
 export default function VendorUserModal({
@@ -32,6 +33,7 @@ export default function VendorUserModal({
   onSave,
   user,
   handleSelectImage,
+  isLoading,
 }: VendorUserModalProps) {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<'info' | 'activity'>('info');
@@ -53,15 +55,13 @@ export default function VendorUserModal({
 
   const [formData, setFormData] = useState({
     businessName: vendor?.businessName,
-    email: user?.email,
     phone: user?.phone,
-    address: vendor?.address,
     city: vendor?.city,
     state: vendor?.state,
     country: vendor?.country,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -263,13 +263,6 @@ export default function VendorUserModal({
                 onChange={handleChange}
               />
 
-              {/* <Input
-                label='Email'
-                name='email'
-                value={formData.email}
-                onChange={handleChange}
-              /> */}
-
               <Input
                 label='Phone Number'
                 name='phone'
@@ -297,15 +290,6 @@ export default function VendorUserModal({
                 value={formData.city}
                 onChange={handleChange}
               />
-
-              {/* <div className='col-span-2'> */}
-                <Input
-                  label='Address'
-                  name='address'
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              {/* </div> */}
             </div>
           ) : (
             <div className='p-8'>
@@ -376,7 +360,7 @@ export default function VendorUserModal({
                 onClick={() => onSave?.(formData)}
                 className='rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-white'
               >
-                Save Changes
+                {isLoading ? 'Loading...' : 'Save Changes'}
               </button>
             </div>
           )}

@@ -143,11 +143,24 @@ export default function RegisterPage() {
               />
 
               <Input
-                label='Phone'
-                type='text'
-                {...register('phone', { required: 'Phone is required' })}
+                label='Phone Number'
+                type='tel'
+                inputMode='numeric'
+                {...register('phone', {
+                  required: 'Phone is required',
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Phone number must contain numbers only',
+                  },
+                })}
+                onInput={(e) => {
+                  e.currentTarget.value = e.currentTarget.value.replace(
+                    /\D/g,
+                    '',
+                  );
+                }}
                 error={errors.phone?.message as any}
-                className='border p-3 rounded w-full mb-1 border border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]'
+                className='border p-3 rounded w-full mb-1 border-[#d9c7ff] outline-none transition focus:border-[#7c3aed]'
               />
 
               {/* PASSWORD WITH ICON */}
