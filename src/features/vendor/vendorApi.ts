@@ -126,6 +126,13 @@ export const vendorApi = api.injectEndpoints({
         body: formData,
       }),
     }),
+    updateVendorProfile: builder.mutation({
+      query: (FormData) => ({
+        url: '/vendor/onboarding/vendor-profile-update',
+        method: 'PATCH',
+        body: FormData,
+      }),
+    }),
   }),
 });
 
@@ -149,4 +156,5 @@ export const {
   useExportBookingsCSVMutation,
   useUpdateVendorProfileImageMutation,
   useCreateProfileImageMutation,
+  useUpdateVendorProfileMutation,
 } = vendorApi;
