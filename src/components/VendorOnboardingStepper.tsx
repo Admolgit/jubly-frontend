@@ -71,11 +71,14 @@ export const VendorOnboardingStepper = () => {
     completeVendorOnboarding,
     { isLoading: completeVendorOnboardingIsLoading },
   ] = useCompleteVendorOnboardingMutation();
-  const [createVendorProfile] = useCreateVendorProfieMutation();
-  const [createSubaccount] = useCreateSubaccountMutation();
+  const [createVendorProfile, { isLoading: profileLoading }] =
+    useCreateVendorProfieMutation();
+  const [createSubaccount, { isLoading: subaccountLoading }] =
+    useCreateSubaccountMutation();
   const [submitIdentityImage, { isLoading: isIdentityUploading }] =
     useSubmitVendorIdentityImageMutation();
-  const [createProfileImage] = useCreateProfileImageMutation();
+  const [createProfileImage, { isLoading: imageLoading }] =
+    useCreateProfileImageMutation();
   const identityUploadPending = useRef(false);
 
   const [step, setStep] = useState(0);
@@ -725,10 +728,20 @@ export const VendorOnboardingStepper = () => {
             <button
               type='button'
               onClick={nextStep}
-              disabled={isIdentityUploading}
+              disabled={
+                isIdentityUploading ||
+                profileLoading ||
+                subaccountLoading ||
+                imageLoading
+              }
               className='px-4 py-2 bg-blue-500 text-white rounded'
             >
-              {isIdentityUploading ? 'Uploading...' : 'Next'}
+              {isIdentityUploading ||
+              profileLoading ||
+              subaccountLoading ||
+              imageLoading
+                ? 'Loading...'
+                : 'Next'}
             </button>
           )}
 
