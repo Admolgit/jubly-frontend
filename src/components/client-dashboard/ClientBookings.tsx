@@ -54,7 +54,7 @@ const statusOptions = [
     style: 'bg-red-100 text-red-700',
   },
   {
-    label: 'Cancelled by Vendor',
+    label: 'Cancelled by You',
     value: 'CANCELLED_BY_VENDOR',
     style: 'bg-red-100 text-red-700',
   },
