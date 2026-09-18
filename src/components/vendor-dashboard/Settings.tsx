@@ -29,7 +29,10 @@ import {
   useGetNotificationQuery,
   useUpdateNotificationMutation,
 } from '../../features/users/userApi';
-import { useUpdateVendorProfileImageMutation } from '../../features/vendor/vendorApi';
+import {
+  useUpdateVendorProfileImageMutation,
+  useUpdateVendorProfileMutation,
+} from '../../features/vendor/vendorApi';
 import Loader from '../ui/Loader';
 import toast from 'react-hot-toast';
 import Modal from '../ui/Modal';
@@ -289,6 +292,7 @@ export function Settings() {
   );
   const dispatch = useDispatch();
   const [updateVendorProfileImage] = useUpdateVendorProfileImageMutation();
+  const [updateVendorProfile, { isLoading }] = useUpdateVendorProfileMutation();
   const { data: notificationData, isLoading: notificationLoading } =
     useGetNotificationQuery({});
   const [updateNotification, { isLoading: updatingNotification }] =
@@ -404,12 +408,20 @@ export function Settings() {
       }
     } catch (error) {
       console.log(error);
+      toast.error('Failed to set notification.');
     }
   };
 
-  const handleSaveVendor = (updatedVendor: any) => {
-    console.log('Updated Vendor Info:', updatedVendor);
-    setProfileView(false);
+  const handleSaveVendor = async (updatedVendor: any) => {
+    try {
+      console.log('Updated Vendor Info:', updatedVendor);
+      const res = await updateVendorProfile(updatedVendor).unwrap();
+
+      if (res.status === 200) setProfileView(false);
+    } catch (error) {
+      console.log(error)
+      toast.error("Failed to update profile.");
+    }
   };
 
   return (
@@ -775,6 +787,7 @@ export function Settings() {
             vendor={vendor}
             user={user}
             handleSelectImage={handleSelectImage}
+            isLoading={isLoading}
           />
         </Modal>
       </div>
