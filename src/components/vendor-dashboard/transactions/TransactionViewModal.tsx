@@ -224,7 +224,7 @@ export default function TransactionViewModal({
               <div className="space-y-2 p-2">
                 <InfoRow
                   label="Name"
-                  value={transaction?.senderDetails?.senderName}
+                  value={transaction?.senderDetails?.senderName || transaction?.booking?.clientName || transaction?.name || 'N/A'}
                 />
 
                 <InfoRow
@@ -256,7 +256,7 @@ export default function TransactionViewModal({
                 />
                 <InfoRow
                   label="Client Name"
-                  value={transaction?.booking?.clientName}
+                  value={transaction?.booking?.clientName || transaction?.name || 'N/A'}
                 />
                 <InfoRow
                   label="Booking Name"

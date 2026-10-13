@@ -2,23 +2,26 @@
 
 import {
   CalendarDays,
-  Clock3,
   Copy,
   Download,
   MapPin,
   Wallet,
-} from 'lucide-react';
-import { useSelector } from 'react-redux';
-import toast from 'react-hot-toast';
-import Modal from '../../ui/Modal';
-import { formatDate } from '../../utils/dateFormatter';
-import { formatTimeFromISO, timeAgo } from '../../utils/timeFormatter';
+  WalletCards,
+  // CreditCard,
+  Clock3,
+  // CheckCircle2,
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import Modal from "../../ui/Modal";
+import { formatDate } from "../../utils/dateFormatter";
+import { formatTimeFromISO, timeAgo } from "../../utils/timeFormatter";
 import {
   getBookingStatusBadge,
   getBookingSourceLabel,
   getBookingPaymentLabel,
   CANCELLED_BOOKING_STATUSES,
-} from '../../utils/bookingStatus';
+} from "../../utils/bookingStatus";
 
 type Props = {
   open: boolean;
@@ -28,6 +31,9 @@ type Props = {
   onMarkComplete: (booking: any) => void;
   onReschedule: (booking: any) => void;
   onManageReschedule?: (booking: any) => void;
+  onPayOutstanding?: (booking: any) => void | Promise<void>;
+  isPayingOutstanding?: boolean;
+  paymentUrl?: string | null;
 };
 
 export default function ViewBookingModal({
@@ -38,90 +44,105 @@ export default function ViewBookingModal({
   onMarkComplete,
   onReschedule,
   onManageReschedule,
+  onPayOutstanding,
+  isPayingOutstanding = false,
+  paymentUrl = null,
 }: Props) {
   const user = useSelector((state: any) => state.auth.user);
-  const isClientViewer = user?.role === 'CLIENT';
+  const isClientViewer = user?.role === "CLIENT" || user?.role === "VENDOR";
 
   if (!booking) return null;
   const bookingStatus = booking?.status;
   const isCancelled = CANCELLED_BOOKING_STATUSES.includes(bookingStatus);
   const isPendingCompletionApproval =
-    bookingStatus === 'COMPLETION_PENDING_APPROVAL';
+    bookingStatus === "COMPLETION_PENDING_APPROVAL";
   const mapUrl = booking?.clientAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.clientAddress)}`
     : null;
 
   const isPaymentSettled =
-    booking?.paymentMethod === 'PAID_BY_HAND' ||
-    (booking?.paymentMethod === 'PAY_BY_LINK' &&
-      booking?.paymentVerification === 'PAYSTACK_VERIFIED') ||
+    booking?.paymentMethod === "PAID_BY_HAND" ||
+    (booking?.paymentMethod === "PAY_BY_LINK" &&
+      booking?.paymentVerification === "PAYSTACK_VERIFIED") ||
     (!booking?.paymentMethod &&
-      ['CONFIRMED', 'COMPLETED'].includes(bookingStatus));
+      ["CONFIRMED", "COMPLETED"].includes(bookingStatus));
   const paymentStatusLabel =
     getBookingPaymentLabel(
       booking?.paymentMethod,
       booking?.paymentVerification,
-    ) || (isPaymentSettled ? 'Paid via Jubly' : 'Awaiting payment');
+    ) || (isPaymentSettled ? "Paid via Jubly" : "Awaiting payment");
+
+  const totalAmount = Number(booking?.services?.price ?? 0);
+  const amountPaid = Number(booking?.amount ?? 0);
+  const outstandingBalance = Math.max(0, totalAmount - amountPaid);
+
+  const hasOutstandingBalance =
+    isClientViewer &&
+    outstandingBalance > 0 &&
+    !isCancelled &&
+    bookingStatus !== "COMPLETED";
+
+  console.log({ hasOutstandingBalance, booking });
 
   const lastStep = isCancelled
     ? {
-        title: 'Booking Cancelled',
-        description: 'This booking was cancelled',
+        title: "Booking Cancelled",
+        description: "This booking was cancelled",
         active: true,
         cancelled: true,
       }
-    : bookingStatus === 'COMPLETED'
+    : bookingStatus === "COMPLETED"
       ? {
-          title: 'Completed',
-          description: 'Service completed successfully',
+          title: "Completed",
+          description: "Service completed successfully",
           active: true,
           completed: true,
         }
-      : bookingStatus === 'RESCHEDULE_REQUESTED'
+      : bookingStatus === "RESCHEDULE_REQUESTED"
         ? {
-            title: 'Reschedule Pending',
+            title: "Reschedule Pending",
             description:
-              'Waiting for the other party to respond to a reschedule proposal',
+              "Waiting for the other party to respond to a reschedule proposal",
             warning: true,
           }
         : isPendingCompletionApproval
           ? {
-              title: 'Awaiting Client Approval',
+              title: "Awaiting Client Approval",
               description: isClientViewer
-                ? 'The vendor marked this complete — please review and respond'
-                : 'Waiting for the client to approve or reject this completion',
+                ? "The vendor marked this complete — please review and respond"
+                : "Waiting for the client to approve or reject this completion",
               warning: true,
             }
           : {
-              title: 'Awaiting Completion',
-              description: 'Mark as completed after service',
+              title: "Awaiting Completion",
+              description: "Mark as completed after service",
               warning: true,
             };
 
   const timeline = [
     {
-      title: 'Booking Created',
-      description: 'Your booking was created successfully',
+      title: "Booking Created",
+      description: "Your booking was created successfully",
       active: true,
       warning: false,
     },
     {
-      title: 'Payment Confirmed',
-      description: 'Payment received and confirmed',
+      title: "Payment Confirmed",
+      description: "Payment received and confirmed",
       active:
-        bookingStatus === 'CONFIRMED' ||
-        bookingStatus === 'COMPLETED' ||
-        bookingStatus === 'RESCHEDULE_REQUESTED' ||
+        bookingStatus === "CONFIRMED" ||
+        bookingStatus === "COMPLETED" ||
+        bookingStatus === "RESCHEDULE_REQUESTED" ||
         isCancelled,
       // warning: false,
     },
     {
-      title: 'Appointment Scheduled',
-      description: 'Vendor confirmed your appointment',
+      title: "Appointment Scheduled",
+      description: "Vendor confirmed your appointment",
       active:
-        bookingStatus === 'CONFIRMED' ||
-        bookingStatus === 'COMPLETED' ||
-        bookingStatus === 'RESCHEDULE_REQUESTED' ||
+        bookingStatus === "CONFIRMED" ||
+        bookingStatus === "COMPLETED" ||
+        bookingStatus === "RESCHEDULE_REQUESTED" ||
         isCancelled,
     },
     lastStep,
@@ -130,67 +151,67 @@ export default function ViewBookingModal({
   const handleCopyPaymentLink = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success('Payment link copied');
+      toast.success("Payment link copied");
     } catch {
-      toast.error('Failed to copy payment link');
+      toast.error("Failed to copy payment link");
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose} title='Booking Details' size='lg'>
-      <div className='-mx-6 -my-5'>
-        <div className='space-y-4 p-4'>
+    <Modal open={open} onClose={onClose} title="Booking Details" size="lg">
+      <div className="-mx-6 -my-5">
+        <div className="space-y-4 p-4">
           {/* Top */}
-          <div className='flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between'>
-            <div className='flex items-center gap-5'>
-              <div className='flex h-12 w-12 items-center justify-center rounded-full bg-violet-100'>
-                <CalendarDays className='h-7 w-7 text-violet-600' />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100">
+                <CalendarDays className="h-7 w-7 text-violet-600" />
               </div>
 
               <div>
-                <p className='mb-1 text-xs text-gray-500'>Booking ID</p>
+                <p className="mb-1 text-xs text-gray-500">Booking ID</p>
 
-                <div className='flex items-center gap-2'>
-                  <h3 className='text-xl font-semibold text-gray-900'>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {booking?.id}
                   </h3>
 
-                  <Copy className='h-4 w-4 cursor-pointer text-gray-400' />
+                  <Copy className="h-4 w-4 cursor-pointer text-gray-400" />
                 </div>
 
-                <p className='mt-2 text-sm text-gray-500'>
-                  {formatDate(booking?.createdAt)} •{' '}
+                <p className="mt-2 text-sm text-gray-500">
+                  {formatDate(booking?.createdAt)} •{" "}
                   {formatTimeFromISO(booking?.createdAt)}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className='mb-2 text-xs text-gray-500'>Booking Status</p>
+              <p className="mb-2 text-xs text-gray-500">Booking Status</p>
 
               <div
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold ${
                   getBookingStatusBadge(booking?.status).wrapper
                 }`}
               >
-                <span className='h-2 w-2 rounded-full bg-current' />
+                <span className="h-2 w-2 rounded-full bg-current" />
 
                 {isPendingCompletionApproval
-                  ? 'Awaiting Client Approval'
+                  ? "Awaiting Client Approval"
                   : booking?.status}
               </div>
 
-              <p className='mt-3 text-xs text-gray-500'>
+              <p className="mt-3 text-xs text-gray-500">
                 {isPendingCompletionApproval
                   ? isClientViewer
-                    ? 'Vendor marked this complete — action needed'
-                    : 'Waiting on client approval'
+                    ? "Vendor marked this complete — action needed"
+                    : "Waiting on client approval"
                   : `Your appointment is ${booking?.status?.toLowerCase()}`}
               </p>
 
               {isPendingCompletionApproval &&
                 booking?.completionRequestedAt && (
-                  <p className='mt-1 text-xs text-gray-400'>
+                  <p className="mt-1 text-xs text-gray-400">
                     Requested {timeAgo(booking.completionRequestedAt)}
                   </p>
                 )}
@@ -198,237 +219,309 @@ export default function ViewBookingModal({
           </div>
 
           {/* Summary */}
-          <div className='overflow-hidden rounded-3xl border border-gray-200'>
-            <div className='grid grid-cols-1 divide-y divide-gray-100 md:grid-cols-4 md:divide-x md:divide-y-0'>
+          <div className="overflow-hidden rounded-3xl border border-gray-200">
+            <div className="grid grid-cols-1 divide-y divide-gray-100 md:grid-cols-4 md:divide-x md:divide-y-0">
               {/* Service */}
-              <div className='p-6 flex flex-col items-center'>
-                <div className='mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100'>
-                  <Wallet className='h-5 w-5 text-violet-600' />
+              <div className="p-6 flex flex-col items-center">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-100">
+                  <Wallet className="h-5 w-5 text-violet-600" />
                 </div>
 
-                <p className='text-xs text-gray-500'>Service</p>
+                <p className="text-xs text-gray-500">Service</p>
 
-                <h4 className='mt-2 text-md font-semibold text-gray-900'>
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   {booking.services?.name}
                 </h4>
 
-                <p className='mt-2 text-xs text-gray-500'>
+                <p className="mt-2 text-xs text-gray-500">
                   Beauty appointment booking
                 </p>
               </div>
 
               {/* Amount */}
-              <div className='p-6 flex flex-col items-center'>
-                <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100'>
-                  <Wallet className='h-5 w-5 text-green-600' />
+              <div className="p-6 flex flex-col items-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100">
+                  <Wallet className="h-5 w-5 text-green-600" />
                 </div>
 
-                <p className='text-xs text-gray-500'>Total Amount</p>
+                <p className="text-xs text-gray-500">Total Amount</p>
 
-                <h4 className='mt-2 text-md font-semibold text-gray-900'>
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   ₦{Number(booking.services?.price || 0).toLocaleString()}
                 </h4>
 
-                <p className='mt-1 text-xs text-gray-400'>NGN</p>
+                <p className="mt-1 text-xs text-gray-400">NGN</p>
+              </div>
+
+              <div className="p-6 flex flex-col items-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100">
+                  <WalletCards className="h-5 w-5 text-green-600" />
+                </div>
+
+                <p className="text-xs text-gray-500">Amount Paid</p>
+
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
+                  ₦{Number(booking?.amount || 0).toLocaleString()}
+                </h4>
+
+                <p className="mt-1 text-xs text-gray-400">NGN</p>
               </div>
 
               {/* Date */}
-              <div className='p-6 flex flex-col items-center'>
-                <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100'>
-                  <CalendarDays className='h-5 w-5 text-violet-600' />
+              <div className="p-6 flex flex-col items-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100">
+                  <CalendarDays className="h-5 w-5 text-violet-600" />
                 </div>
 
-                <p className='text-xs text-gray-500'>Booking Date</p>
+                <p className="text-xs text-gray-500">Booking Date</p>
 
-                <h4 className='mt-2 text-md font-semibold text-gray-900'>
+                <h4 className="mt-2 text-md font-semibold text-gray-900">
                   {formatDate(booking.date)}
                 </h4>
 
-                <p className='mt-1 text-xs text-gray-400'>
+                <p className="mt-1 text-xs text-gray-400">
                   {formatTimeFromISO(booking.startTime)}
-                </p>
-              </div>
-
-              {/* Status */}
-              <div className='p-6 flex flex-col items-center'>
-                <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100'>
-                  <Clock3 className='h-5 w-5 text-orange-500' />
-                </div>
-
-                <p className='text-xs text-gray-500'>Status</p>
-
-                <div
-                  className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                    getBookingStatusBadge(booking.status).wrapper
-                  }`}
-                >
-                  <span className='h-2 w-2 rounded-full bg-current' />
-
-                  {isPendingCompletionApproval
-                    ? 'Awaiting Client Approval'
-                    : booking.status}
-                </div>
-
-                <p className='mt-3 text-xs text-gray-400'>
-                  {isPendingCompletionApproval
-                    ? 'Awaiting client approval'
-                    : `Appointment ${booking?.status?.toLowerCase()}`}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Middle */}
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-            {/* Client */}
-            <Card title='Client Information'>
-              <InfoRow label='Name' value={booking.clientName} />
+          {/* Client Repayment */}
+          {hasOutstandingBalance && (
+            <div className="overflow-hidden rounded-3xl border border-violet-200 bg-white">
+              <div className="border-b border-gray-100 px-6 py-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100">
+                    <WalletCards className="h-5 w-5 text-violet-600" />
+                  </div>
 
-              <InfoRow label='Email' value={booking.clientEmail} />
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Repayment Details
+                    </h3>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Track your outstanding booking payment
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-5 p-6">
+                <div className="rounded-2xl bg-violet-50 p-5">
+                  <p className="text-sm text-violet-700">Outstanding Balance</p>
+
+                  <h4 className="mt-2 text-3xl font-bold text-gray-900">
+                    ₦{outstandingBalance.toLocaleString("en-NG")}
+                  </h4>
+
+                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-violet-100">
+                    <div
+                      className="h-full rounded-full bg-violet-600 transition-all"
+                      style={{
+                        width: `${
+                          totalAmount > 0
+                            ? Math.min(100, (amountPaid / totalAmount) * 100)
+                            : 0
+                        }%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="mt-2 flex justify-between gap-3 text-xs text-gray-600">
+                    <span>Paid: ₦{amountPaid.toLocaleString("en-NG")}</span>
+                    <span>Total: ₦{totalAmount.toLocaleString("en-NG")}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
+
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {amountPaid > 0 ? "Partially paid" : "Payment pending"}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-gray-500">
+                      Complete your outstanding payment to settle this booking.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={!onPayOutstanding || isPayingOutstanding}
+                  onClick={() => onPayOutstanding?.(booking)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Wallet className="h-4 w-4" />
+                  {isPayingOutstanding
+                    ? "Initializing payment..."
+                    : "Pay Outstanding Balance"}
+                </button>
+
+                <p className="text-center text-xs text-gray-400">
+                  Your payment will be confirmed after Paystack verification.
+                </p>
+
+                {paymentUrl && (
+                  <p className="text-center text-sm text-gray-400">
+                    {paymentUrl}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Middle */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* Client */}
+            <Card title="Client Information">
+              <InfoRow label="Name" value={booking.clientName} />
+
+              <InfoRow label="Email" value={booking.clientEmail} />
 
               <InfoRow
-                label='Phone'
-                value={booking.clientPhone || 'Not provided'}
+                label="Phone"
+                value={booking.clientPhone || "Not provided"}
               />
 
               <InfoRow
-                label='Service Address'
-                value={booking.clientAddress || 'Not provided'}
+                label="Service Address"
+                value={booking.clientAddress || "Not provided"}
               />
 
               {mapUrl && (
                 <a
                   href={mapUrl}
-                  target='_blank'
-                  rel='noreferrer'
-                  className='inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-100'
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-100"
                 >
-                  <MapPin className='h-4 w-4' />
+                  <MapPin className="h-4 w-4" />
                   Open in Google Maps
                 </a>
               )}
-              <InfoRow label='Notes' value='Please arrive 15 minutes early.' />
+              <InfoRow label="Notes" value="Please arrive 15 minutes early." />
             </Card>
 
             {/* Vendor */}
-            <Card title='Vendor Information'>
+            <Card title="Vendor Information">
               <InfoRow
-                label='Vendor Name'
+                label="Vendor Name"
                 value={
                   booking?.user?.firstName ||
-                  'Jane' + ' ' + booking?.user?.lastName ||
-                  'Doe'
+                  "Jane" + " " + booking?.user?.lastName ||
+                  "Doe"
                 }
               />
 
               <InfoRow
-                label='Business Name'
-                value={booking.vendor?.businessName || 'Beauty Studio'}
+                label="Business Name"
+                value={booking.vendor?.businessName || "Beauty Studio"}
               />
 
-              <InfoRow label='Phone' value={booking.vendor?.phone || '-'} />
+              <InfoRow label="Phone" value={booking.vendor?.phone || "-"} />
 
               <InfoRow
-                label='Location'
+                label="Location"
                 value={
                   booking.vendor?.city +
-                  ', ' +
+                  ", " +
                   booking.vendor?.state +
-                  ', ' +
+                  ", " +
                   booking.vendor?.country
                 }
               />
             </Card>
 
             {/* Appointment */}
-            <Card title='Appointment Details'>
-              <InfoRow label='Date' value={formatDate(booking.date)} />
+            <Card title="Appointment Details">
+              <InfoRow label="Date" value={formatDate(booking.date)} />
 
               <InfoRow
-                label='Start Time'
+                label="Start Time"
                 value={formatTimeFromISO(booking.startTime)}
               />
 
               <InfoRow
-                label='End Time'
+                label="End Time"
                 value={formatTimeFromISO(booking.endTime)}
               />
 
               <InfoRow
-                label='Duration'
+                label="Duration"
                 value={`${booking.services?.durationMins} mins`}
               />
             </Card>
           </div>
 
           {/* Bottom */}
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Payment */}
-            <Card title='Payment Information'>
+            <Card title="Payment Information">
               <InfoRow
-                label='Payment Status'
+                label="Payment Status"
                 value={paymentStatusLabel}
                 badge={isPaymentSettled}
                 warning={!isPaymentSettled}
               />
 
               <InfoRow
-                label='Amount Paid'
+                label="Amount Paid"
                 value={`₦${Number(
                   booking.services?.price || 0,
                 ).toLocaleString()}`}
               />
 
               <InfoRow
-                label='Platform Fee'
+                label="Platform Fee"
                 value={`₦${(
                   Number(booking.services?.price || 0) * 0.05
                 ).toLocaleString()}`}
               />
 
               <InfoRow
-                label='Vendor Amount'
+                label="Vendor Amount"
                 value={`₦${(
                   Number(booking.services?.price || 0) * 0.95
                 ).toLocaleString()}`}
               />
 
               <InfoRow
-                label='Settlement'
-                value={bookingStatus !== 'COMPLETED' ? 'HELD' : 'PAID'}
-                warning={bookingStatus !== 'COMPLETED'}
+                label="Settlement"
+                value={bookingStatus !== "COMPLETED" ? "HELD" : "PAID"}
+                warning={bookingStatus !== "COMPLETED"}
               />
             </Card>
 
             {/* Booking Info */}
-            <Card title='Booking Information'>
-              <InfoRow label='Booking Type' value='Service Booking' />
+            <Card title="Booking Information">
+              <InfoRow label="Booking Type" value="Service Booking" />
 
               <InfoRow
-                label='Booked On'
+                label="Booked On"
                 value={`${formatDate(booking.createdAt)} • ${formatTimeFromISO(
                   booking.createdAt,
                 )}`}
               />
 
-              <InfoRow label='Booked By' value={booking.clientName} />
+              <InfoRow label="Booked By" value={booking.clientName} />
 
               <InfoRow
-                label='Booking Source'
+                label="Booking Source"
                 value={getBookingSourceLabel(booking.source)}
               />
 
               {booking?.paymentUrl && (
-                <div className='flex w-full items-center flex justify-between gap-2'>
-                  <div className='min-w-0 flex-1 break-all'>
-                    <InfoRow label='Payment Link' value={booking.paymentUrl} />
+                <div className="flex w-full items-center flex justify-between gap-2">
+                  <div className="min-w-0 flex-1 break-all">
+                    <InfoRow label="Payment Link" value={booking.paymentUrl} />
                   </div>
 
                   <button
-                    type='button'
+                    type="button"
                     onClick={() => handleCopyPaymentLink(booking.paymentUrl)}
-                    className='shrink-0 cursor-pointer'
-                    title='Copy payment link'
+                    className="shrink-0 cursor-pointer"
+                    title="Copy payment link"
                   >
                     <Copy size={16} />
                   </button>
@@ -437,9 +530,9 @@ export default function ViewBookingModal({
             </Card>
 
             {/* Special Request */}
-            <Card title='Special Requests'>
-              <div className='rounded-2xl bg-violet-50 p-5'>
-                <p className='text-gray-700'>
+            <Card title="Special Requests">
+              <div className="rounded-2xl bg-violet-50 p-5">
+                <p className="text-gray-700">
                   Make it soft and natural. Prefer pink tones.
                 </p>
               </div>
@@ -447,12 +540,12 @@ export default function ViewBookingModal({
           </div>
 
           {/* Timeline */}
-          <div className='rounded-3xl border border-gray-200 p-6'>
-            <h3 className='mb-8 text-sm font-semibold text-gray-900'>
+          <div className="rounded-3xl border border-gray-200 p-6">
+            <h3 className="mb-8 text-sm font-semibold text-gray-900">
               Booking Timeline
             </h3>
 
-            <div className='grid grid-cols-1 gap-8 md:grid-cols-4'>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
               {timeline.map((item, index) => (
                 <TimelineItem
                   key={index}
@@ -462,7 +555,7 @@ export default function ViewBookingModal({
                   warning={item.warning}
                   isLast={index === timeline.length - 1}
                   cancelled={isCancelled}
-                  completed={bookingStatus === 'COMPLETED'}
+                  completed={bookingStatus === "COMPLETED"}
                 />
               ))}
             </div>
@@ -470,23 +563,23 @@ export default function ViewBookingModal({
         </div>
 
         {/* Footer */}
-        <div className='flex flex-col gap-4 border-t border-gray-100 px-8 py-6 lg:flex-row lg:items-center lg:justify-between'>
-          <button className='inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100'>
-            <Download className='h-4 w-4' />
+        <div className="flex flex-col gap-4 border-t border-gray-100 px-8 py-6 lg:flex-row lg:items-center lg:justify-between">
+          <button className="inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100">
+            <Download className="h-4 w-4" />
             Download Receipt
           </button>
 
-          <div className='grid grid-cols-1 gap-8 md:grid-cols-4'>
-            <button className='rounded-2xl border border-violet-200 bg-violet-50 px-5 py-3 text-xs font-semibold text-violet-700'>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+            <button className="rounded-2xl border border-violet-200 bg-violet-50 px-5 py-3 text-xs font-semibold text-violet-700">
               Contact Vendor
             </button>
 
-            {bookingStatus === 'CONFIRMED' && (
+            {bookingStatus === "CONFIRMED" && (
               <>
                 {!(booking?.rescheduleCount > 0) && (
                   <button
                     onClick={() => onReschedule(booking)}
-                    className='rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700'
+                    className="rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-semibold text-gray-700"
                   >
                     Reschedule
                   </button>
@@ -494,32 +587,32 @@ export default function ViewBookingModal({
 
                 <button
                   onClick={() => onCancel(booking)}
-                  className='rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600'
+                  className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600"
                 >
                   Cancel Booking
                 </button>
 
                 <button
                   onClick={() => onMarkComplete(booking)}
-                  className='rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg'
+                  className="rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg"
                 >
                   Mark as Completed
                 </button>
               </>
             )}
 
-            {bookingStatus === 'RESCHEDULE_REQUESTED' && (
+            {bookingStatus === "RESCHEDULE_REQUESTED" && (
               <>
                 <button
                   onClick={() => onManageReschedule?.(booking)}
-                  className='rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg'
+                  className="rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-3 text-xs font-semibold text-white shadow-lg"
                 >
                   Manage Reschedule Request
                 </button>
 
                 <button
                   onClick={() => onCancel(booking)}
-                  className='rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600'
+                  className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-xs font-semibold text-red-600"
                 >
                   Cancel Booking
                 </button>
@@ -540,12 +633,12 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className='overflow-hidden rounded-3xl border border-gray-200'>
-      <div className='border-b border-gray-100 px-6 py-5'>
-        <h3 className='text-sm font-semibold text-gray-900'>{title}</h3>
+    <div className="overflow-hidden rounded-3xl border border-gray-200">
+      <div className="border-b border-gray-100 px-6 py-5">
+        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
       </div>
 
-      <div className='space-y-3 p-4'>{children}</div>
+      <div className="space-y-3 p-4">{children}</div>
     </div>
   );
 }
@@ -562,19 +655,19 @@ function InfoRow({
   warning?: boolean;
 }) {
   return (
-    <div className='flex items-start justify-between gap-4'>
-      <p className='text-sm text-gray-500'>{label}</p>
+    <div className="flex items-start justify-between gap-4">
+      <p className="text-sm text-gray-500">{label}</p>
 
       {badge ? (
-        <span className='rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 word-wrap'>
+        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 word-wrap">
           {value}
         </span>
       ) : warning ? (
-        <span className='rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600 word-wrap'>
+        <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600 word-wrap">
           {value}
         </span>
       ) : (
-        <p className='text-right font-medium text-gray-900 word-wrap'>
+        <p className="text-right font-medium text-gray-900 word-wrap">
           {value}
         </p>
       )}
@@ -602,18 +695,18 @@ export function TimelineItem({
   completed,
 }: TimelineItemProps) {
   return (
-    <div className='relative flex flex-col items-center text-center'>
+    <div className="relative flex flex-col items-center text-center">
       {!isLast && (
         <div
           className={`absolute top-5 left-1/2 h-[2px] w-full 
             ${
               cancelled
-                ? 'bg-red-500'
+                ? "bg-red-500"
                 : completed
-                  ? 'bg-gray-500'
+                  ? "bg-gray-500"
                   : active
-                    ? 'bg-green-500'
-                    : 'bg-gray-200'
+                    ? "bg-green-500"
+                    : "bg-gray-200"
             }`}
         />
       )}
@@ -622,22 +715,22 @@ export function TimelineItem({
         className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-4
         ${
           cancelled
-            ? 'border-red-100 bg-red-500'
+            ? "border-red-100 bg-red-500"
             : completed
-              ? 'border-gray-200 bg-gray-500'
+              ? "border-gray-200 bg-gray-500"
               : active
-                ? 'border-green-100 bg-green-500'
+                ? "border-green-100 bg-green-500"
                 : warning
-                  ? 'border-orange-100 bg-orange-400'
-                  : 'border-gray-100 bg-gray-300'
+                  ? "border-orange-100 bg-orange-400"
+                  : "border-gray-100 bg-gray-300"
         }`}
       >
-        <div className='h-2.5 w-2.5 rounded-full bg-white' />
+        <div className="h-2.5 w-2.5 rounded-full bg-white" />
       </div>
 
-      <h4 className='mt-4 text-sm font-semibold text-gray-900'>{title}</h4>
+      <h4 className="mt-4 text-sm font-semibold text-gray-900">{title}</h4>
 
-      <p className='mt-1 text-xs leading-relaxed text-gray-500'>
+      <p className="mt-1 text-xs leading-relaxed text-gray-500">
         {description}
       </p>
     </div>

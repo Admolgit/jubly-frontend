@@ -442,7 +442,7 @@ export default function TransactionsPage() {
                   className='border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition'
                 >
                   <td className='px-6 py-4'>
-                    {item?.senderDetails?.senderName || item?.booking?.clientName}
+                    {item?.senderDetails?.senderName || item?.booking?.clientName || item?.name || 'N/A'}
                   </td>
 
                   <td className='px-6 py-4'>
@@ -457,7 +457,7 @@ export default function TransactionsPage() {
 
                   <td className='px-6 py-4'>
                     <div className='text-sm font-semibold text-[#101828] mb-1'>
-                      {item?.senderDetails?.senderDescription}
+                      {item?.senderDetails?.senderDescription || 'Pending Payment'}
                     </div>
 
                     <div className='text-xs text-[#667085] font-medium'>
