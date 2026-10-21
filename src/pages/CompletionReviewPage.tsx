@@ -63,6 +63,7 @@ export default function CompletionReviewPage() {
     (async () => {
       try {
         const res = await getCompletionReview(token);
+        console.log({res})
         setReview(res.data);
       } catch (err) {
         setLoadError(

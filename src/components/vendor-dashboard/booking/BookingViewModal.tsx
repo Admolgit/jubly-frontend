@@ -82,8 +82,6 @@ export default function ViewBookingModal({
     !isCancelled &&
     bookingStatus !== "COMPLETED";
 
-  console.log({ hasOutstandingBalance, booking });
-
   const lastStep = isCancelled
     ? {
         title: "Booking Cancelled",

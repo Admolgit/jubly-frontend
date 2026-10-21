@@ -101,8 +101,6 @@ export function Bookings() {
   const subscriptionStatus = getVendorSubscriptionStatus?.data?.isActive;
   const vendorSettings = platformSettings?.data;
 
-  console.log(platformSettings);
-
   const statusOptions = [
     {
       label: "All",
@@ -256,28 +254,28 @@ export function Bookings() {
   };
 
   const handlePayOutstanding = async (booking: any) => {
+    console.log({ selectedView });
     try {
       const totalAmount = Number(booking?.services?.price ?? 0);
       const amountPaid = Number(booking?.amount ?? 0);
       const outstandingBalance = Math.max(0, totalAmount - amountPaid);
       const response = await outstandingPayment({
         bookingId: booking.id,
-        clientId: booking?.clientId,
+        clientId: booking?.clientId ?? (selectedView as any).userId,
         vendorId: vendor.id,
         dto: {
           amount: Number(outstandingBalance),
         },
       }).unwrap();
 
-      const authorizationUrl =
-        response?.data?.authorizationUrl;
+      const authorizationUrl = response?.data?.authorizationUrl;
 
       if (!authorizationUrl) {
         toast.error("Unable to initialize payment.");
         return;
       }
-      
-      if(user?.role === "VENDOR") {
+
+      if (user?.role === "VENDOR") {
         setPaymentUrl(authorizationUrl);
       } else {
         window.open(authorizationUrl, "_blank");
@@ -335,7 +333,6 @@ export function Bookings() {
           </button>
           <button
             type="button"
-            // disabled={!vendorSettings.subscriptionsEnabled}
             onClick={() => {
               if (!vendorSettings.subscriptionsEnabled) {
                 toast.error("This feature is not available yet.");
