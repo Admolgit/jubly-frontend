@@ -4,12 +4,14 @@ import Input from "../ui/Input";
 import { useCreateBookingPaymentMutation } from "../../features/booking/bookingApi";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 type FormValues = {
   name: string;
   email: string;
   phone: string;
   address: string;
+  amount?: number;
 };
 
 export function BookingFormModal({
@@ -19,9 +21,12 @@ export function BookingFormModal({
   serviceId,
   open,
   onClose,
+  serviceAmount,
 }: any) {
   const [createBookingPayment, { isLoading }] =
     useCreateBookingPaymentMutation();
+
+  const [payingAmount, setPayingAmount] = useState<boolean>(false);
 
   const {
     register,
@@ -43,6 +48,7 @@ export function BookingFormModal({
         clientAddress: data.address,
         startTime: slot.startTime,
         endTime: slot.endTime,
+        amount: data.amount ? data.amount : serviceAmount,
       };
 
       const res = await createBookingPayment(payload).unwrap();
@@ -51,7 +57,6 @@ export function BookingFormModal({
         window.open(res.data.authorizationUrl, "_self");
       }
     } catch (error: any) {
-      console.log(error);
       toast.error(error?.data?.message || error.message);
     }
   };
@@ -133,7 +138,7 @@ export function BookingFormModal({
             {/* Phone */}
             <Input
               type="tel"
-              label="Phone"
+              label="Phone Number"
               placeholder="Enter phone number"
               className="border p-3 rounded w-full mb-1"
               {...register("phone", { required: "Phone number is required" })}
@@ -141,6 +146,31 @@ export function BookingFormModal({
             {errors.phone && (
               <p className="text-red-500 text-sm mb-3">
                 {errors.phone.message}
+              </p>
+            )}
+
+            <div className="flex items-center mb-3">
+              <input
+                type="checkbox"
+                onChange={(e) => setPayingAmount(e.target.checked)}
+              />
+              <span className="ml-2 text-xs text-gray-500">
+                Make part payment (atleast 50%) to secure your slot
+              </span>
+            </div>
+
+            {payingAmount && (
+              <Input
+                type="number"
+                label="Amount"
+                placeholder={serviceAmount.toString().toLocaleString().concat(" NGN").concat(" (Full payment)")}
+                className="border p-3 rounded w-full mb-1"
+                {...register("amount")}
+              />
+            )}
+            {errors.amount && (
+              <p className="text-red-500 text-sm mb-3">
+                {errors.amount.message}
               </p>
             )}
 

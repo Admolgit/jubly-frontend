@@ -1,90 +1,98 @@
-﻿import { api } from '../../app/api';
+﻿import { api } from "../../app/api";
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createBooking: builder.mutation({
       query: (data) => ({
-        url: '/booking',
-        method: 'POST',
+        url: "/booking",
+        method: "POST",
         body: data,
       }),
     }),
     createVendorBooking: builder.mutation({
       query: (data) => ({
-        url: '/booking/vendor-create',
-        method: 'POST',
+        url: "/booking/vendor-create",
+        method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Booking', 'DashboardStats', 'Availabilities'],
+      invalidatesTags: ["Booking", "DashboardStats", "Availabilities"],
     }),
     createBookingPayment: builder.mutation({
       query: (data) => ({
-        url: '/booking/initialize-payment',
-        method: 'POST',
+        url: "/booking/initialize-payment",
+        method: "POST",
         body: data,
       }),
+    }),
+    outstandingPayment: builder.mutation({
+      query: ({ bookingId, clientId, vendorId, dto }) => ({
+        url: `/booking/${bookingId}/pay-outstanding/${clientId}/${vendorId}`,
+        method: "POST",
+        body: dto,
+      }),
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     getDashboardStarts: builder.query({
       query: (vendorId) => ({
         url: `/booking/dashboard-stats/${vendorId}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: () => [{ type: 'DashboardStats' }],
+      providesTags: () => [{ type: "DashboardStats" }],
     }),
     getUpcomingBookings: builder.query({
       query: () => ({
-        url: '/booking/upcoming',
-        method: 'GET',
+        url: "/booking/upcoming",
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
     getServicesCounts: builder.query({
       query: () => ({
-        url: '/booking/services-count',
-        method: 'GET',
+        url: "/booking/services-count",
+        method: "GET",
       }),
     }),
     getBookings: builder.query({
       query: (data) => ({
-        url: `/booking?page=${data.page}&limit=${data.limit}&search=${data.search ?? ''}&dateFilter=${data.dateFilter ?? ''}&status=${data.status ?? ''}&date=${data.date ?? ''}`,
-        method: 'GET',
+        url: `/booking?page=${data.page}&limit=${data.limit}&search=${data.search ?? ""}&dateFilter=${data.dateFilter ?? ""}&status=${data.status ?? ""}&date=${data.date ?? ""}`,
+        method: "GET",
       }),
-      providesTags: () => [{ type: 'Booking' }],
+      providesTags: () => [{ type: "Booking" }],
     }),
 
     getClientsBookings: builder.query({
       query: (data) => ({
-        url: `/booking/clients?email=${data.email}&page=${data.page}&limit=${data.limit}&search=${data.search ?? ''}&dateFilter=${data.dateFilter ?? ''}&status=${data.status ?? ''}&date=${data.date ?? ''}`,
-        method: 'GET',
+        url: `/booking/clients?email=${data.email}&page=${data.page}&limit=${data.limit}&search=${data.search ?? ""}&dateFilter=${data.dateFilter ?? ""}&status=${data.status ?? ""}&date=${data.date ?? ""}`,
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
 
     getClientsVendorStats: builder.query({
       query: () => ({
-        url: '/booking/clients/stats',
-        method: 'GET',
+        url: "/booking/clients/stats",
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
     getClientsBookingStats: builder.query({
       query: () => ({
-        url: '/booking/clients/booking-stats',
-        method: 'GET',
+        url: "/booking/clients/booking-stats",
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
     getVendorUpcomingBookings: builder.query({
       query: () => ({
-        url: '/booking/upcoming-bookings',
-        method: 'GET',
+        url: "/booking/upcoming-bookings",
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
     getClientUpcomingBookings: builder.query({
       query: () => ({
-        url: '/booking/client/upcoming-bookings',
-        method: 'GET',
+        url: "/booking/client/upcoming-bookings",
+        method: "GET",
       }),
     }),
     cancelBooking: builder.mutation({
@@ -96,10 +104,10 @@ export const userApi = api.injectEndpoints({
         reason?: string;
       }) => ({
         url: `/booking/${bookingId}/cancel`,
-        method: 'POST',
+        method: "POST",
         body: { reason },
       }),
-      invalidatesTags: ['Booking', 'DashboardStats'],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     requestReschedule: builder.mutation({
       query: ({
@@ -112,10 +120,10 @@ export const userApi = api.injectEndpoints({
         reason?: string;
       }) => ({
         url: `/booking/${bookingId}/reschedule`,
-        method: 'POST',
+        method: "POST",
         body: { proposedDate, reason },
       }),
-      invalidatesTags: ['Booking', 'DashboardStats'],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     acceptReschedule: builder.mutation({
       query: ({
@@ -126,10 +134,10 @@ export const userApi = api.injectEndpoints({
         reason?: string;
       }) => ({
         url: `/booking/${bookingId}/reschedule/accept`,
-        method: 'POST',
+        method: "POST",
         body: { reason },
       }),
-      invalidatesTags: ['Booking', 'DashboardStats'],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     rejectReschedule: builder.mutation({
       query: ({
@@ -140,10 +148,10 @@ export const userApi = api.injectEndpoints({
         reason?: string;
       }) => ({
         url: `/booking/${bookingId}/reschedule/reject`,
-        method: 'POST',
+        method: "POST",
         body: { reason },
       }),
-      invalidatesTags: ['Booking', 'DashboardStats'],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     counterProposeReschedule: builder.mutation({
       query: ({
@@ -156,47 +164,47 @@ export const userApi = api.injectEndpoints({
         reason?: string;
       }) => ({
         url: `/booking/${bookingId}/reschedule/counter`,
-        method: 'POST',
+        method: "POST",
         body: { proposedDate, reason },
       }),
-      invalidatesTags: ['Booking'],
+      invalidatesTags: ["Booking"],
     }),
     getRescheduleHistory: builder.query({
       query: (bookingId: string) => ({
         url: `/booking/${bookingId}/reschedule-history`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     markBookingAsCompleted: builder.mutation({
       query: (bookingId: string) => ({
         url: `/booking/${bookingId}/mark-as-completed`,
-        method: 'PATCH',
+        method: "PATCH",
       }),
-      invalidatesTags: ['Booking', 'DashboardStats'],
+      invalidatesTags: ["Booking", "DashboardStats"],
     }),
     getStatusFilterCount: builder.query({
       query: () => ({
         url: `/booking/status/filter`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['Booking'],
+      providesTags: ["Booking"],
     }),
     getBusinessInsight: builder.query({
       query: () => ({
         url: `/booking/insights`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getClientBookingStat: builder.query({
       query: (data) => ({
         url: `/booking/client/${data?.vendorId}/${data?.clientEmail}/booking-stats`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
     getBusinessCategories: builder.query({
       query: () => ({
         url: `/booking/business-categories`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
   }),
@@ -206,6 +214,7 @@ export const {
   useGetStatusFilterCountQuery,
   useGetBusinessInsightQuery,
   useCreateBookingMutation,
+  useOutstandingPaymentMutation,
   useCreateVendorBookingMutation,
   useCreateBookingPaymentMutation,
   useGetDashboardStartsQuery,

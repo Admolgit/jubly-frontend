@@ -45,7 +45,7 @@ it('sends only review fields, omits empty comments, and refreshes booking and ve
     .dispatch(
       reviewApi.endpoints.createReview.initiate({
         bookingId: 'b1',
-        clientId: 'client-1',
+        // clientId: 'client-1',
         rating: 5,
         comment: '  ',
       }),

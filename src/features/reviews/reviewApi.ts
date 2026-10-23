@@ -36,13 +36,12 @@ export const reviewApi = api
         { data: Review },
         {
           bookingId: string;
-          clientId: string;
           rating: number;
           comment?: string;
         }
       >({
-        query: ({ bookingId, clientId, rating, comment }) => ({
-          url: `/reviews/${encodeURIComponent(clientId)}`,
+        query: ({ bookingId, rating, comment }) => ({
+          url: `/reviews`,
           method: 'POST',
           body: {
             bookingId,
