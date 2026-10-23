@@ -33,6 +33,15 @@ jobs:
           ssh-keyscan -p ${{ secrets.CPANEL_PORT }} \
             ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Diagnose cPanel SSH and rsync
+        run: |
+          ssh -i ~/.ssh/cpanel_key \
+            -p "${{ secrets.CPANEL_PORT }}" \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" \
+            'printf "SSH_TEST_OK\n"; command -v rsync; rsync --version | head -n 1'
+
       - name: Deploy dist to cPanel
         run: |
           rsync -avz \
