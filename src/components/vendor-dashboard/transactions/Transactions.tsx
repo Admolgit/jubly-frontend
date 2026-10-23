@@ -8,49 +8,49 @@ import {
   X,
   Landmark,
   CheckCircle2,
-} from 'lucide-react';
-import { StatCard } from '../dashboard/StatCard';
-import { useSelector } from 'react-redux';
-import { useEffect, useRef, useState } from 'react';
+} from "lucide-react";
+import { StatCard } from "../dashboard/StatCard";
+import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
 import {
   useExportTransactionsCSVMutation,
   useGetTransactionDashStatsQuery,
   useGetTransactionHistoryByVendorQuery,
   useRefundClientTransactionMutation,
-} from '../../../features/transactions/transactionAPI';
-import Loader from '../../ui/Loader';
-import { formatDate } from '../../utils/dateFormatter';
-import { formatTimeFromISO } from '../../utils/timeFormatter';
-import SelectLimit from '../../utils/selectLimit';
-import Pagination from '../../utils/pagination';
-import { LinkActions } from '../../ui/LinkActions';
-import BookingSearch from '../booking/BookingSearch';
-import toast from 'react-hot-toast';
-import Modal from '../../ui/Modal';
-import TransactionViewModal from './TransactionViewModal';
-import Dialog from '../../ui/Dialog';
+} from "../../../features/transactions/transactionAPI";
+import Loader from "../../ui/Loader";
+import { formatDate } from "../../utils/dateFormatter";
+import { formatTimeFromISO } from "../../utils/timeFormatter";
+import SelectLimit from "../../utils/selectLimit";
+import Pagination from "../../utils/pagination";
+import { LinkActions } from "../../ui/LinkActions";
+import BookingSearch from "../booking/BookingSearch";
+import toast from "react-hot-toast";
+import Modal from "../../ui/Modal";
+import TransactionViewModal from "./TransactionViewModal";
+import Dialog from "../../ui/Dialog";
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
 
 const STATUS_OPTIONS = [
-  { label: 'All Status', value: '' },
-  { label: 'Confirmed', value: 'CONFIRMED' },
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Failed', value: 'FAILED' },
-  { label: 'Refund Pending', value: 'REFUND_PENDING' },
-  { label: 'Cancelled', value: 'CANCELLED' },
+  { label: "All Status", value: "" },
+  { label: "Confirmed", value: "CONFIRMED" },
+  { label: "Pending", value: "PENDING" },
+  { label: "Completed", value: "COMPLETED" },
+  { label: "Failed", value: "FAILED" },
+  { label: "Refund Pending", value: "REFUND_PENDING" },
+  { label: "Cancelled", value: "CANCELLED" },
 ];
 
 const PAYMENT_METHOD_OPTIONS = [
-  { label: 'All Methods', value: '' },
-  { label: 'Card', value: 'card' },
-  { label: 'Bank', value: 'bank' },
-  { label: 'Bank Transfer', value: 'bank_transfer' },
-  { label: 'USSD', value: 'ussd' },
-  { label: 'QR', value: 'qr' },
-  { label: 'Mobile Money', value: 'mobile_money' },
-  { label: 'EFT', value: 'eft' },
+  { label: "All Methods", value: "" },
+  { label: "Card", value: "card" },
+  { label: "Bank", value: "bank" },
+  { label: "Bank Transfer", value: "bank_transfer" },
+  { label: "USSD", value: "ussd" },
+  { label: "QR", value: "qr" },
+  { label: "Mobile Money", value: "mobile_money" },
+  { label: "EFT", value: "eft" },
 ];
 
 export default function TransactionsPage() {
@@ -59,19 +59,19 @@ export default function TransactionsPage() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
-  const [searchFilter, setSearchFilter] = useState('');
-  const [searchValue, setSearchValue] = useState('');
+  const [searchFilter, setSearchFilter] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [selectedView, setSelectedView] = useState(null);
   const [openTransaction, setOpenTransaction] = useState(false);
   const [openRefund, setOpenRefund] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
-  const [statusFilterValue, setStatusFilterValue] = useState('');
-  const [paymentMethodFilter, setPaymentMethodFilter] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [draftStartDate, setDraftStartDate] = useState('');
-  const [draftEndDate, setDraftEndDate] = useState('');
+  const [statusFilterValue, setStatusFilterValue] = useState("");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [draftStartDate, setDraftStartDate] = useState("");
+  const [draftEndDate, setDraftEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
   const dateFilterRef = useRef<HTMLDivElement>(null);
 
@@ -85,8 +85,8 @@ export default function TransactionsPage() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleOpenDateFilter = () => {
@@ -103,10 +103,10 @@ export default function TransactionsPage() {
   };
 
   const clearDateFilter = () => {
-    setDraftStartDate('');
-    setDraftEndDate('');
-    setStartDate('');
-    setEndDate('');
+    setDraftStartDate("");
+    setDraftEndDate("");
+    setStartDate("");
+    setEndDate("");
     setCurrentPage(1);
     setIsDateFilterOpen(false);
   };
@@ -136,28 +136,28 @@ export default function TransactionsPage() {
 
   const statusStyles: any = {
     CONFIRMED: {
-      wrapper: 'bg-green-100 text-green-700',
-      icon: 'fill-green-600 text-white',
+      wrapper: "bg-green-100 text-green-700",
+      icon: "fill-green-600 text-white",
     },
     PENDING: {
-      wrapper: 'bg-blue-100 text-blue-600',
-      icon: 'text-blue-500',
+      wrapper: "bg-blue-100 text-blue-600",
+      icon: "text-blue-500",
     },
     COMPLETED: {
-      wrapper: 'bg-grey-100 text-grey-700',
-      dot: 'bg-grey-500',
+      wrapper: "bg-grey-100 text-grey-700",
+      dot: "bg-grey-500",
     },
     FAILED: {
-      wrapper: 'bg-red-100 text-red-600',
-      icon: 'text-red-500',
+      wrapper: "bg-red-100 text-red-600",
+      icon: "text-red-500",
     },
     REFUND_PENDING: {
-      wrapper: 'bg-orange-100 text-orange-600',
-      icon: 'text-orange-500',
+      wrapper: "bg-orange-100 text-orange-600",
+      icon: "text-orange-500",
     },
     CANCELLED: {
-      wrapper: 'bg-red-100 text-red-700',
-      dot: 'bg-red-500',
+      wrapper: "bg-red-100 text-red-700",
+      dot: "bg-red-500",
     },
   };
 
@@ -197,11 +197,11 @@ export default function TransactionsPage() {
 
       const url = window.URL.createObjectURL(blob);
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
 
       link.href = url;
 
-      link.setAttribute('download', `transactions-${Date.now()}.csv`);
+      link.setAttribute("download", `transactions-${Date.now()}.csv`);
 
       document.body.appendChild(link);
 
@@ -211,10 +211,10 @@ export default function TransactionsPage() {
 
       window.URL.revokeObjectURL(url);
 
-      toast.success('Transactions exported successfully');
+      toast.success("Transactions exported successfully");
     } catch (error) {
       console.log(error);
-      toast.error('Failed to export transactions');
+      toast.error("Failed to export transactions");
     }
   };
 
@@ -231,10 +231,10 @@ export default function TransactionsPage() {
         amount: selectedTransaction?.amount,
       };
       await refundClientTransaction(payload).unwrap();
-      toast.success('Refund initiated successfully');
+      toast.success("Refund initiated successfully");
     } catch (error) {
       console.log(error);
-      toast.error('Failed to refund transactions');
+      toast.error("Failed to refund transactions");
     }
   };
 
@@ -251,103 +251,103 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className='py-4'>
-      <div className='flex items-start justify-between mb-10'>
+    <div className="py-4">
+      <div className="flex items-start justify-between mb-10">
         <div>
-          <h1 className='text-2xl font-semibold'>Transactions</h1>
+          <h1 className="text-2xl font-semibold">Transactions</h1>
 
-          <p className='text-sm text-gray-500'>
+          <p className="text-sm text-gray-500">
             View and track all your payout transactions.
           </p>
         </div>
       </div>
 
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10'>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         <StatCard
-          title='Total Payouts'
+          title="Total Payouts"
           value={Number(transactionDashStats?.totalPayouts).toLocaleString()}
-          icon={<Download className='w-5 h-5' />}
-          color='purple'
+          icon={<Download className="w-5 h-5" />}
+          color="purple"
           change={`${transactionDashStats?.totalGrowth}% from last month`}
         />
         <StatCard
-          title='Completed'
+          title="Completed"
           value={Number(transactionDashStats?.completed).toLocaleString()}
-          icon={<Check className='w-5 h-5' />}
-          color='green'
+          icon={<Check className="w-5 h-5" />}
+          color="green"
           change={`${transactionDashStats?.completedGrowth}% from last month`}
         />
         <StatCard
-          title='Processing'
+          title="Processing"
           value={Number(transactionDashStats?.processing).toLocaleString()}
-          icon={<Clock3 className='w-5 h-5' />}
-          color='blue'
+          icon={<Clock3 className="w-5 h-5" />}
+          color="blue"
           change={`${transactionDashStats?.processingGrowth}% from last month`}
         />
         <StatCard
-          title='Failed'
+          title="Failed"
           value={Number(transactionDashStats?.failed).toLocaleString()}
-          icon={<X className='w-5 h-5' />}
-          color='orange'
+          icon={<X className="w-5 h-5" />}
+          color="orange"
           change={`${transactionDashStats?.failedGrowth}% from last month`}
         />
       </div>
 
       {/* FILTERS */}
-      <div className='sm:flex sm:items-center sm:justify-between xl:flex xl:justify-between mb-6 rounded-2xl bg-white p-4 shadow-sm mt-6'>
-        <div className='flex items-center gap-4 mb-4 sm:mb-0 xl:mb-0'>
-          <div className='relative' ref={dateFilterRef}>
+      <div className="sm:flex sm:items-center sm:justify-between xl:flex xl:justify-between mb-6 rounded-2xl bg-white p-4 shadow-sm mt-6">
+        <div className="flex items-center gap-4 mb-4 sm:mb-0 xl:mb-0">
+          <div className="relative" ref={dateFilterRef}>
             <button
-              type='button'
+              type="button"
               onClick={handleOpenDateFilter}
-              className='h-12 px-5 bg-white border border-[#EAECF0] rounded-2xl flex items-center gap-2 text-sm font-medium text-[#344054]'
+              className="h-12 px-5 bg-white border border-[#EAECF0] rounded-2xl flex items-center gap-2 text-sm font-medium text-[#344054]"
             >
               <CalendarDays size={20} />
               {startDate && endDate
                 ? `${startDate} – ${endDate}`
-                : 'Select date range'}
+                : "Select date range"}
               <ChevronDown size={18} />
             </button>
 
             {isDateFilterOpen && (
-              <div className='absolute z-10 mt-2 w-72 rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-lg'>
-                <div className='flex flex-col gap-3'>
-                  <label className='text-xs font-medium text-[#667085]'>
+              <div className="absolute z-10 mt-2 w-72 rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-lg">
+                <div className="flex flex-col gap-3">
+                  <label className="text-xs font-medium text-[#667085]">
                     Start date
                     <input
-                      type='date'
+                      type="date"
                       value={draftStartDate}
                       max={draftEndDate || undefined}
                       onChange={(e) => setDraftStartDate(e.target.value)}
-                      className='mt-1 w-full rounded-xl border border-[#EAECF0] px-3 py-2 text-sm text-[#344054]'
+                      className="mt-1 w-full rounded-xl border border-[#EAECF0] px-3 py-2 text-sm text-[#344054]"
                     />
                   </label>
 
-                  <label className='text-xs font-medium text-[#667085]'>
+                  <label className="text-xs font-medium text-[#667085]">
                     End date
                     <input
-                      type='date'
+                      type="date"
                       value={draftEndDate}
                       min={draftStartDate || undefined}
                       onChange={(e) => setDraftEndDate(e.target.value)}
-                      className='mt-1 w-full rounded-xl border border-[#EAECF0] px-3 py-2 text-sm text-[#344054]'
+                      className="mt-1 w-full rounded-xl border border-[#EAECF0] px-3 py-2 text-sm text-[#344054]"
                     />
                   </label>
                 </div>
 
-                <div className='mt-4 flex items-center justify-between'>
+                <div className="mt-4 flex items-center justify-between">
                   <button
-                    type='button'
+                    type="button"
                     onClick={clearDateFilter}
-                    className='text-sm font-medium text-[#667085] hover:text-[#344054]'
+                    className="text-sm font-medium text-[#667085] hover:text-[#344054]"
                   >
                     Clear
                   </button>
 
                   <button
-                    type='button'
+                    type="button"
                     onClick={applyDateFilter}
-                    className='rounded-xl bg-[#6D4AFF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#5c3ce6]'
+                    className="rounded-xl bg-[#6D4AFF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#5c3ce6]"
                   >
                     Apply
                   </button>
@@ -356,11 +356,11 @@ export default function TransactionsPage() {
             )}
           </div>
 
-          <div className='relative h-12'>
+          <div className="relative h-12">
             <select
               value={statusFilterValue}
               onChange={handleStatusFilterChange}
-              className='h-12 pl-5 pr-10 bg-white border border-[#EAECF0] rounded-2xl appearance-none text-sm font-medium text-[#344054] cursor-pointer'
+              className="h-12 pl-5 pr-10 bg-white border border-[#EAECF0] rounded-2xl appearance-none text-sm font-medium text-[#344054] cursor-pointer"
             >
               {STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -370,15 +370,15 @@ export default function TransactionsPage() {
             </select>
             <ChevronDown
               size={18}
-              className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#344054]'
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#344054]"
             />
           </div>
 
-          <div className='relative h-12'>
+          <div className="relative h-12">
             <select
               value={paymentMethodFilter}
               onChange={handlePaymentMethodFilterChange}
-              className='h-12 pl-5 pr-10 bg-white border border-[#EAECF0] rounded-2xl appearance-none text-sm font-medium text-[#344054] cursor-pointer'
+              className="h-12 pl-5 pr-10 bg-white border border-[#EAECF0] rounded-2xl appearance-none text-sm font-medium text-[#344054] cursor-pointer"
             >
               {PAYMENT_METHOD_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -388,46 +388,46 @@ export default function TransactionsPage() {
             </select>
             <ChevronDown
               size={18}
-              className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#344054]'
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#344054]"
             />
           </div>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           <BookingSearch value={searchValue} setSearchFilter={setSearchValue} />
 
           {/* EXPORT */}
           <button
-            type='button'
-            className='h-12 px-6 rounded-2xl border border-[#C7BFFF] text-[#6D4AFF] font-semibold text-sm flex items-center gap-3 hover:bg-[#f7f5ff] transition'
+            type="button"
+            className="h-12 px-6 rounded-2xl border border-[#C7BFFF] text-[#6D4AFF] font-semibold text-sm flex items-center gap-3 hover:bg-[#f7f5ff] transition"
             onClick={handleExportTransactions}
             disabled={isExporting}
           >
             <Download size={18} />
-            {isExporting ? 'Exporting...' : 'Export CSV'}
+            {isExporting ? "Exporting..." : "Export CSV"}
           </button>
         </div>
       </div>
 
       {/* TABLE */}
-      <div className='mt-4 w-full'>
-        <div className='overflow-x-auto scrollbar-thin'>
-          <table className='min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm'>
-            <thead className='text-md bg-gray-50 text-gray-500 uppercase tracking-wider'>
+      <div className="mt-4 w-full">
+        <div className="overflow-x-auto scrollbar-thin">
+          <table className="min-w-[700px] w-full text-left rounded-xl border border-gray-200 text-sm">
+            <thead className="text-md bg-gray-50 text-gray-500 uppercase tracking-wider">
               <tr>
                 {[
-                  'Client',
-                  'Date',
-                  'Description',
-                  'Amount',
-                  'Status',
-                  'Method',
-                  'Reference',
-                  'Actions',
+                  "Client",
+                  "Date",
+                  "Description",
+                  "Amount",
+                  "Status",
+                  "Method",
+                  "Reference",
+                  "Actions",
                 ].map((head) => (
                   <th
                     key={head}
-                    className='px-6 py-4 text-left text-xs font-semibold text-[#667085]'
+                    className="px-6 py-4 text-left text-xs font-semibold text-[#667085]"
                   >
                     {head}
                   </th>
@@ -439,63 +439,72 @@ export default function TransactionsPage() {
               {transactions?.map((item: any, i: number) => (
                 <tr
                   key={`${i}-${item?.providerRef}`}
-                  className='border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition'
+                  className="border-b border-[#EAECF0] last:border-none hover:bg-[#FAFAFB] transition"
                 >
-                  <td className='px-6 py-4'>
-                    {item?.senderDetails?.senderName || item?.booking?.clientName}
+                  <td className="px-6 py-4">
+                    {item?.senderDetails?.senderName ||
+                      item?.booking?.clientName ||
+                      item?.name ||
+                      "N/A"}
                   </td>
 
-                  <td className='px-6 py-4'>
-                    <div className='text-sm font-medium text-[#101828] mb-1'>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-[#101828] mb-1">
                       {formatDate(item?.createdAt)}
                     </div>
 
-                    <div className='text-xs text-[#667085] font-medium'>
+                    <div className="text-xs text-[#667085] font-medium">
                       {formatTimeFromISO(item?.createdAt)}
                     </div>
                   </td>
 
-                  <td className='px-6 py-4'>
-                    <div className='text-sm font-semibold text-[#101828] mb-1'>
-                      {item?.senderDetails?.senderDescription}
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-semibold text-[#101828] mb-1">
+                      {item?.senderDetails?.senderDescription ||
+                        "Pending Payment"}
                     </div>
 
-                    <div className='text-xs text-[#667085] font-medium'>
-                      {item?.bank || 'N/A'}
+                    <div className="text-xs text-[#667085] font-medium">
+                      {item?.bank || "N/A"}
                     </div>
                   </td>
 
-                  <td className='px-6 py-4 text-sm font-semibold text-[#101828]'>
+                  <td className="px-6 py-4 text-sm font-semibold text-[#101828]">
                     ₦{Number(item?.amount).toLocaleString()}
                   </td>
 
-                  <td className='px-6 py-4'>
+                  <td className="px-6 py-4">
                     <div
                       className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold ${
                         statusStyles[item?.status]?.wrapper
                       }`}
                     >
-                      {item?.status === 'CONFIRMED' && (
+                      {item?.status === "COMPLETED" && (
                         <CheckCircle2
                           size={14}
                           className={statusStyles[item?.status]?.icon}
                         />
                       )}
-
-                      {item?.status === 'PENDING' && (
+                      {item?.status === "CONFIRMED" && (
+                        <CheckCircle2
+                          size={14}
+                          className={statusStyles[item?.status]?.icon}
+                        />
+                      )}
+                      {item?.status === "PENDING" && (
                         <Clock3
                           size={14}
                           className={statusStyles[item?.status]?.icon}
                         />
                       )}
 
-                      {item?.status === 'FAILED' && (
+                      {item?.status === "FAILED" && (
                         <Clock3
                           size={14}
                           className={statusStyles[item?.status]?.icon}
                         />
                       )}
-                      {item?.status === 'CANCELLED' && (
+                      {item?.status === "CANCELLED" && (
                         <X
                           size={14}
                           className={statusStyles[item?.status]?.icon}
@@ -506,22 +515,24 @@ export default function TransactionsPage() {
                     </div>
                   </td>
 
-                  <td className='px-6 py-4'>
-                    <div className='flex items-center gap-3 text-sm font-medium text-[#344054]'>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3 text-sm font-medium text-[#344054]">
                       <Landmark size={18} />
-                      {item?.paymentMethod || 'N/A'}
+                      {item?.paymentMethod === "PAID_BY_HAND"
+                        ? "Pay By Hand"
+                        : item?.paymentMethod || "N/A"}
                     </div>
                   </td>
 
-                  <td className='px-6 py-4 text-sm font-medium text-[#475467]'>
+                  <td className="px-6 py-4 text-sm font-medium text-[#475467]">
                     {item?.providerRef}
                   </td>
 
-                  <td className='px-6 py-4'>
+                  <td className="px-6 py-4">
                     <LinkActions
                       setSelectedView={setSelectedView}
                       link={item}
-                      component='transaction'
+                      component="transaction"
                       setViewVendorOpen={setOpenTransaction}
                       onReschedule={openRefundTransaction}
                     />
@@ -532,12 +543,12 @@ export default function TransactionsPage() {
           </table>
 
           {transactions.length > 0 && (
-            <div className='mt-4 px-6 flex items-center align-center justify-between'>
+            <div className="mt-4 px-6 flex items-center align-center justify-between">
               <SelectLimit
                 ITEMS_OPTIONS={[5, 10, 20, 50]}
                 itemsPerPage={itemsPerPage}
                 handleItemsChange={handleItemsChange}
-                text='Transactions'
+                text="Transactions"
               />
               <Pagination
                 currentPage={currentPage}
@@ -551,8 +562,8 @@ export default function TransactionsPage() {
       <Modal
         open={openTransaction}
         onClose={() => setOpenTransaction(false)}
-        title='Transaction Details'
-        size='lg'
+        title="Transaction Details"
+        size="lg"
       >
         <TransactionViewModal
           transaction={selectedView}
@@ -562,16 +573,16 @@ export default function TransactionsPage() {
       <Modal
         open={openRefund}
         onClose={() => setOpenRefund(false)}
-        title='Refund Transaction'
-        size='md'
+        title="Refund Transaction"
+        size="md"
       >
         <Dialog
           setCancelOpen={setOpenRefund}
           cancelLoading={isRefunding}
           handleCancel={() => handleRefund()}
-          headerText='Are you sure you want to refund this transaction? This action cannot be undone.'
-          btnCancelText='No, keep it'
-          btnKeepText='Yes, refund'
+          headerText="Are you sure you want to refund this transaction? This action cannot be undone."
+          btnCancelText="No, keep it"
+          btnKeepText="Yes, refund"
         />
       </Modal>
     </div>

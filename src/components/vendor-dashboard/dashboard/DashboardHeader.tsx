@@ -15,6 +15,7 @@ export default function DashboardHeader({
   
   const { data: platformSettings } = useGetSettingsQuery({});
   const vendorSettings = platformSettings?.data;
+  
   return (
     <>
       <div className='space-y-6'>

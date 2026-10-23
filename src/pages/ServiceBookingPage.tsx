@@ -273,6 +273,7 @@ export default function ServiceBookingPage() {
           dayOfWeek={selectedSlot ? new Date(selectedSlot.startTime).getDay() : null}
           vendorId={data?.data?.service?.vendorId}
           serviceId={service?.id}
+          serviceAmount={service?.price}
           open={openBooking}
           onClose={() => setOpenBooking(false)}
         />
